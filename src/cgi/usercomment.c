@@ -1,3 +1,13 @@
+/*
+ *
+ * usercomment.c
+ * ==========
+ * provides functions which deal with user comments in the cgi
+ * 
+*/
+
+/*===================Preprocessor Statments===============================*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +15,10 @@
 #include "cgic.h"
 #include "globals.h"
 #include "../shared/defines.h"
+
+
+/*======================Function Declarations=============================*/
+
 
 static void doAddUserComment(void);
 static void doViewUserComment(void);
@@ -16,6 +30,16 @@ static void printAddForm(void);
 static void printAllUserCommentsByUser(int);
 static void printAllUserCommentsForUser(int);
 
+/*======================Function Definitions=============================*/
+
+/*
+ * Function: printUserComment
+ * Parameters: funcName stuct
+ * Returns: (void)
+ *
+ * checks to see if the function name is for adding an artist.
+ * if not it calls the doViewUser method
+ */
 void printUserComment(funcName_t func) {
     switch(func) {
     case FUNC_ADD:
@@ -33,6 +57,16 @@ void printUserComment(funcName_t func) {
     }
 }
 
+
+/*
+ * Function: doAddUserComment
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function communicates with the database and adds usercomments. Then checks that there
+ * are users in the database which we can attribute the comment with. Providing there are no errors the
+ * user comment is then added to the database and a message is sent back to the user - Adding Successful.
+ */
 static void doAddUserComment(void) {
     int result=0;
     Boolean isAdding=FALSE;
@@ -86,6 +120,13 @@ static void doAddUserComment(void) {
     }
 }
 
+/*
+ * Function: processAddForm
+ * Parameters: (void)
+ * Returns: int
+ *
+ * This is used to process the form that adds the new usercomment..
+ */
 static int processAddForm(void) {
     int result=0;
     int newUserCommentid=-1;
@@ -140,6 +181,14 @@ static int processAddForm(void) {
     return newUserCommentid;
 }
 
+/*
+ * Function: printAddForm
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function checks for errors like its too big, is invalid or already exist
+ * and then once this has been processed the form(html code) can be written to the cgi output stream 
+ */
 static void printAddForm(void) {
     int result=-1;
     int userid=-1;
@@ -229,6 +278,13 @@ static void printAddForm(void) {
     }
 }
 
+/*
+ * Function: doViewUserComment
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function lets the user view the details of a specified UserComment
+ */
 static void doViewUserComment(void) {
     int result=0;
     int userid=0;
@@ -283,6 +339,14 @@ static void doViewUserComment(void) {
     }
 }
 
+/*
+ * Function: printAllUserCommentsByUser
+ * Parameters: int
+ * Returns: (void)
+ *
+ * This lists all the UserCommentsByUser in the database in a table that the user can view.
+ * The method goes through the list and adds each to a table
+ */
 static void printAllUserCommentsByUser(int userid) {
     int *allUserComments=NULL;
     int curr_id=0;
@@ -343,6 +407,16 @@ static void printAllUserCommentsByUser(int userid) {
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
+
+/*
+ * Function: printAllUserCommentsForUser
+ * Parameters: int
+ * Returns: (void)
+ * 
+ * function prints all the comments written about this user
+ * This lists all the UserCommentsForUser in the database in a table that the user can view.
+ * The function goes through the list and adds each to a table
+ */
 static void printAllUserCommentsForUser(int userid) {
     int *allUserComments=NULL;
     int curr_id=0;
@@ -404,6 +478,15 @@ static void printAllUserCommentsForUser(int userid) {
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
+
+/*
+ * Function: doShowUserComment
+ * Parameters: (void)
+ * Returns: (void)
+ * 
+ * This function first checks the user exsists then it finds what privileges it has.
+ * Once this is done it will show the comments that have been said about this user.
+ */
 static void doShowUserComment(void) {
     int result=0;
     int userid=0;

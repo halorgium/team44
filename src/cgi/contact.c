@@ -1,7 +1,12 @@
 /*
-  contains one function which prints information out and
-  creates the contact page.  
+ * contact.c
+ * ==========
+ * 
+ * contains one function which prints information out and
+ * creates the contact page.  
 */
+
+/*===================== Preprocessor statements===========================*/
 
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +15,14 @@
 #include "globals.h"
 #include "../shared/defines.h"
 
+/*
+ * Function: printContact
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * Prints out each of the programmers names and information who designed
+ * this site and their contact details.
+ */
 void printContact(void) {
   fprintf(cgiOut, "<div class=\"head1\">Contact Us!</div>\n");
   fprintf(cgiOut, "If you have problems with our site or general inquiries please feel free to contact us and we will be happy to hear from you!<br />\n");

@@ -36,9 +36,8 @@ static void printSpecificAlbum(int);
  * Returns: (void)
  *
  * checks to see if the function name is for adding an album.
- * if not it calls the doViewAlbum method
+ * if not it calls the doViewAlbum function
  */
-
 void printAlbum(funcName_t func) {
     switch(func) {
     case FUNC_ADD:

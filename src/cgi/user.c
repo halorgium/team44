@@ -1,3 +1,11 @@
+/*
+ *
+ * user.c
+ * ==========
+ * provides functions which deal with users in the cgi
+ * 
+*/
+
 /*================= Preprocessor statements===============================*/
 
 #include <stdlib.h>
@@ -24,6 +32,15 @@ static void printSpecificUser(int);
 
 /*======================Function Definitions=============================*/
 
+
+/*
+ * Function: printUser
+ * Parameters: funcName stuct
+ * Returns: (void)
+ *
+ * checks to see if the function name is for adding an user.
+ * if not it calls the doViewUser function
+ */
 void printUser(funcName_t func) {
     switch(func) {
     case FUNC_ADD:
@@ -37,6 +54,17 @@ void printUser(funcName_t func) {
     }
 }
 
+
+/*
+ * Function: doAddUser
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function communicates with the database and adds users. Checks privileges of current user
+ * to see if they are a librarian. Because only librarians can add Users. Then the ablum checks that there
+ * are artists in the database which we can attribute the user with. Providing there are no errors the user
+ * is then added to the database and a message is sent back to the user - Adding Successful.
+ */
 static void doAddUser(void) {
     Boolean needAddForm=TRUE;
 
@@ -138,6 +166,15 @@ static void doAddUser(void) {
     }
 }
 
+
+/*
+ * Function: processAddForm
+ * Parameters: int, struct
+ * Returns: Boolean
+ *
+ * This is used to process the form that adds the new user. It communicates with the database and checks 
+ * whether the user being added has already been added before.
+ */
 static Boolean processAddForm(int *errors, userNode_t *formdata) {
     int result=0;
     int size=-1;
@@ -237,6 +274,14 @@ static Boolean processAddForm(int *errors, userNode_t *formdata) {
     return TRUE;
 }
 
+/*
+ * Function: printAddForm
+ * Parameters: int, int*, struct
+ * Returns: (void)
+ *
+ * This function checks for errors like User name is too big, is invalid or already exist
+ * and then once this has been processed the form (html code) can be written to the cgi output stream 
+ */
 static void printAddForm(Boolean isAdding, int *errors, userNode_t *formdata) {
   Boolean freshForm=FALSE;
 
@@ -364,6 +409,13 @@ static void printAddForm(Boolean isAdding, int *errors, userNode_t *formdata) {
     fprintf(cgiOut, "</form>\n");
 }
 
+/*
+ * Function: doViewUser
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function lets the user view the details of a specified user
+ */
 static void doViewUser(void) {
     int result=0;
     int userid=-1;
@@ -416,6 +468,15 @@ static void printAllUsers(void) {
     printAllUsersByType(FALSE);
 }
 
+
+/*
+ * Function: printAllUsers
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This lists all the users in the database in a table that the user can view.
+ * The method goes through the list of users and adds each to the table
+ */
 static void printAllUsersByType(Boolean isLib) {
     int *allUsers=NULL;
     int curr_id=0;
@@ -489,6 +550,14 @@ static void printAllUsersByType(Boolean isLib) {
     }
 }
 
+/*
+ * Function: printSpecificUser
+ * Parameters: int
+ * Returns: (void)
+ *
+ * Users can specify the user they wish to view. This function allows them to do this. 
+ * The users details are then printed out for the user to view.
+ */
 static void printSpecificUser(int userid) {
     /*variables used to display data in following output*/
     char *userCode=getUserCode(userid);
