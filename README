@@ -1,0 +1,11 @@
+This is the cosc204 casestudy project completed by tsm20, ejs73, jbk20, djb142.
+We hope you like our work.
+
+
+Instructions:
+
+1. Type 'make' in the casestudy directory. This will compile all the nessasary files.
+
+2. Type 'make install' this will install casestudy. Making it ready to use.
+
+Now you can access this music library through the linux1 server.
