@@ -1,3 +1,4 @@
+%folders not useful = html images
 \documentclass{article}
 \usepackage{palatino}
 \title{Programmers Guide to MusicLib (MusicLib for Genius's)}
@@ -5,7 +6,142 @@
 
 \begin{document}
 \tableofcontents
+\newpage
+\section{Overview}
+This document describes the different sections of the Musiclib program and the functionality of each file included within it. This guide is designed for programmers interested in examining or modifying the source code. Reading the code itself will explain much more of the details, this guide is designed to point out which code to read.
 
-\section{Random Section}
+Analysis and design specifications for this project can be found in;
 
-\end{documents}
+ ``http://www.cosc.canterbury.ac.nz/teaching/handouts/cosc204/casestudy\_2.pdf''.
+
+The MusicLib program is divided up into two main layers;
+\begin{description} 
+\item[The Database Layer] controls all the storing and recovering of information received from users.
+\item[The CGI Layer] controls the web interface and generation of the html pages.
+\end{description}
+
+Some files are used by both the Database and the CGI layer, these are located in the directory named ``shared''.
+
+All the webpages are Xhtml 1.0 compliant visit ``http://w3.org'' for more details.
+
+\section{Database}
+This Section will explain the purpose of each `.c' file and what each function achieves.
+\subsection{add.c}
+This file is responsible for adding to the database and saving objects to disk.
+
+\subsubsection*{getctime}
+ This function is a wrapper function that returns the current time of day based on the number of seconds since the Linux epoch 01/01/1970. It is used to record the dates and times of loans within the library.
+
+\subsubsection*{checkString}
+ The checkString function takes in a string and makes sure that it is not null, and that it does not include and \% characters as these are bad for the database.
+
+\subsubsection*{addUser}
+This function takes in string values for the User's usercode, the User's name, the User's email address, and whether or not the user is a librarian.  These values are mapped to a ``userNode'' and then memory is allocated on disk for each field using \verb|malloc (3)|. This new information is then saved to disk using the \verb|saveUser| function.
+
+\subsubsection*{addAlbum}
+Similar to the addUser, this method allocates the memory for a new Album, and uses the title and artistID passed to it to create a new album in the database. Checks are made that the album does not already exist, and that none of the input fields are null. The \verb|saveAlbum| is then called to write the album details to disk.
+
+\subsubsection*{addArtist}
+This function takes in the name of the new artist, and checks that the name does not currently exist in the database. If it is a new artist, it is allocated an artist ID using the \verb|_nextArtistID| value, and then memory is allocated using \verb|malloc (3)|. Finally the \verb|saveArtist| function is called to save the new artist to disk.
+
+\subsubsection*{addUserComment}
+This Function is called when a librarian writes a comment about a user. It takes in three different arguments; the \verb|userID| of the user this comment is about, the \verb|owner| or author of the comment, and finally the comment \verb|body| which is the comment itself. Checks are made to make sure the users exist, and then memory is allocated for a new comment strut. The fields are copied to the struct, then it is given an ID field, and saved to disk using the \verb|saveUserComment| function.
+
+\subsubsection*{addAlbumComment}
+This function is essentially the same as the \verb|addUserComment| except that the comment is about an Album. Instead of having a \verb|userID| it has an \verb|albumID| and also it uses the \verb|saveAlbumComment| function to write the information to disk.
+
+\subsubsection*{addArtistComment}
+Again this method closely resembles the addUserComment, it takes in the \verb|artistID| of the artist it is about, the \verb|owner| that wrote it, and the comment \verb|body| itself. These are copied to a \verb|commentNode| and from there the infomation is written to disk.
+
+\subsubsection*{addLoan}
+This function creates a new loan object, meaning that a user wants to borrow an album from the library. The arguments for this are the \verb|userID| of the borrowing user, and the \verb|albumID| of the borrowed album. Both these are checked for validity and then the \verb|getctime| function is called to record the time that the album was borrowed. This information is the saved to disk using the \verb|saveLoan| function.
+
+\subsubsection*{addLoanReturned}
+This function is complimentary to the addLoan function, it takes a \verb|loanID| as an argument, checks that it exists and then sets the loan as returned using the set \verb|setLoanReturned| function. Then the return itself is written as information to disk for future reference.
+
+\subsection{get.c}
+This file contains all the get functions for the various structures within the database. Also it has functions to convert special characters to their corresponding html entities.
+
+\subsubsection*{htmlEscape}
+This is the function that converts text values to their proper html syntax, values that are converted are \verb| & `` < > |. Various C functions are used in this process including \verb|malloc (3), strncpy (3), strlen(3)|. Also the function \verb|replaceChar| is used. This is explained in the next section. This function is called everytime an item of information is requested from the database, making each displayable by the cgi function calls.
+
+\subsubsection*{replaceChar}
+This is the main working part of the \verb|htmlEscape| function. It takes as arguments; the \verb|data| to be searched through, the character to be replaced (\verb|replacee|) and the html string to replace it with (\verb|replacment|).The function then searches through the \verb|data| replacing all instances of the \verb|replacee| character with the \verb|replacement| string.
+
+\subsubsection{User Functions}
+\begin{description}
+\item[getUser] returns a user from the database with the requested \verb|userID|. This function is not accessible outside of the database so outsiders cannot directly access or modify the data in the database. All the other User functions call this one in order to access the database information.
+\item[getUserExists] returns true if a user is present in the database
+\item[makeUserID] returns a hash value which is used as a \verb|userID|, calculated from the user's \verb|userCode|.
+\item[getUserCode] returns a \verb|userCode| based on a user's ID number.
+\item[getUserName] returns a user's name based on their ID Number.
+\item[getUserEmail] returns a user's email address based on their ID Number.
+\item[isUserLibrarian] returns true if the selected ID Number represents a librarian.
+\item[getUsers] returns a list of all current users in the database.
+\item[getUsersCount] returns the total number of users in the database.
+\item[getUsersByType] returns a list of all the users in the database who are either Librarians or standard users.
+\item[getUsersByTypeCount] returns the number of Librarians or standard users in the database.
+\end{description}
+
+\subsubsection{Album Functions}
+\begin{description}
+\item[getAlbum] returns an \verb|albumNode_t| with the specified ID Number. Once again this cannot be accessed from outside the database, for data integrity reasons. All other album functions calls this function to retrieve album information from the database.
+\item[getAlbumExists] return true if an album with the specified ID Number exists.
+\item[getAlbumTitle] returns the title of the album with the specified ID Number.
+\item[getAlbumArtist] returns the artist who made the album with the ID Number specified.
+\item[getAlbumCurrentLoan] returns the current \verb|loanID| if the album selected is on loan.
+\item[getAlbums] returns a list of all the albums currently present in the database.
+\item[getAlbumsCount] returns the total number of albums that are currently in the database.
+\end{description}
+
+\subsubsection{Artist Functions}
+\begin{description}
+\item[getArtist] returns an artist from the database, if the correct artist ID is supplied. All other artist functions call this function.
+\item[getArtistExists] returns true if an artist with the given ID is present in the database.
+\item[getArtistName] returns the name of the artist with the given ID.
+\item[getArtists] returns a list of all the artists currently in the database.
+\item[getArtistsCount] returns the number of artists currently present in the database.
+\item[getArtistAlbums] returns an array of \verb|albumID|'s of albums that this artist has composed.
+\item[getArtistAlbumsCount] returns the number of albums this artist has composed.
+\end{description}
+
+\subsubsection{User Comment Functions}
+\begin{description}
+\item[getUserComment] returns a \verb|userCommentNode| with the idNumber that is supplied as an argument. 
+\item[getUserCommentExists] returns true if a user comment with the given id exists in the database.
+\item[getUserCommentUser] returns the \verb|userID| of the user that the comment is about.
+\item[getUserCommentOwner] returns the \verb|userID| of the user that made the user comment.
+\item[getUserCommentBody] returns the  user comment that is represented by the given id Number.
+\item[getUserCommentsByUser] returns an array of all user comments made by a user with the supplied ID Number.
+\item[getUserCommentsByUserCount] returns the total number of user comments made by the specified user.
+\item[getUserCommentsForUser] returns an array of all the user comments made about a specific user
+\item[getUserCommentsForUserCount] returns the number of user comments made about the specified user.
+\end{description}
+
+\subsubsection{Album Comment Functions}
+\begin{description}
+\item[getAlbumComment] returns an \verb|albumCommentNode| with the idNumber that is supplied as an argument. 
+\item[getAlbumCommentExists] returns true if an album comment with the given id exists in the database.
+\item[getAlbumCommentAlbum] returns the \verb|albumID| of the album that the comment is about.
+\item[getAlbumCommentOwner] returns the \verb|userID| of the user that made the album comment.
+\item[getAlbumCommentBody] returns the  album comment that is represented by the given id Number.
+\item[getAlbumCommentsByUser] returns an array of all album comments made by a user with the supplied ID Number.
+\item[getAlbumCommentsByUserCount] returns the total number of album comments made by the specified user.
+\item[getAlbumCommentsForAlbum] returns an array of all the album comments made about a specific album.
+\item[getAlbumCommentsForAlbumCount] returns the number of album comments made about the specified album.
+\end{description}
+
+\subsubsection{Artist Comment Functions}
+\begin{description}
+\item[getArtistComment] returns an \verb|artistCommentNode| with the idNumber that is supplied as an argument. 
+\item[getArtistCommentExists] returns true if an artist comment with the given id exists in the database.
+\item[getArtistCommentArtist] returns the \verb|artistID| of the artist that the comment is about.
+\item[getArtistCommentOwner] returns the \verb|userID| of the user that made the artist comment.
+\item[getArtistCommentBody] returns the artist comment that is represented by the given id Number.
+\item[getArtistCommentsByUser] returns an array of all artist comments made by a user with the supplied ID Number.
+\item[getArtistCommentsByUserCount] returns the total number of artist comments made by the specified user.
+\item[getArtistCommentsForArtist] returns an array of all the artist comments made about a specific artist.
+\item[getArtistCommentsForArtistCount] returns the number of artist comments made about the specified artist.
+\end{description}
+
+\end{document}
