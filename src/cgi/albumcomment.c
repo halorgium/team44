@@ -272,8 +272,10 @@ static void printAllAlbumCommentsByUser(int userid) {
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing Album Comments written by %s</div>", getUserName(userid));
-
+    char *userName=getUserName(userid);
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Album Comments written by %s</div>", userName);
+    free(userName);
+    
     allAlbumComments=getAlbumCommentsByUser(userid);
 
     if(allAlbumComments == NULL) {
@@ -330,10 +332,11 @@ static void printAllAlbumCommentsForAlbum(int albumid) {
     int *allAlbumComments=NULL;
     int curr_id=0;
     int count=0;
+    
     char *title = getAlbumTitle(albumid);
-
     fprintf(cgiOut, "<div class=\"head1\">Viewing Album Comments written about %s</div>", title);
-
+    free(title);
+    
     allAlbumComments=getAlbumCommentsForAlbum(albumid);
 
     if(allAlbumComments == NULL) {
