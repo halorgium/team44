@@ -12,15 +12,16 @@ typedef struct userNode{
     Boolean isLibrarian;       /* FALSE-standard, TRUE-librarian*/
     
     struct userNode *next;
-}userNode_t;
+} userNode_t;
 
 /* structure which holds an album and links to next album in list */
 typedef struct albumNode{
     int ID;
     char *title;
     int artistID;
+
     struct albumNode* next;
-}albumNode_t;
+} albumNode_t;
 
 /*struct to hold an artist*/
 typedef struct artistNode{
@@ -28,7 +29,7 @@ typedef struct artistNode{
     char *name;
     
     struct artistNode *next;
-}artistNode_t;
+} artistNode_t;
 
 /* structure which holds a comment about a user and links to next comment in list*/
 typedef struct userCommentNode{
@@ -39,7 +40,7 @@ typedef struct userCommentNode{
     char *comment;
 
     struct userCommentNode *next;
-}userCommentNode_t;
+} userCommentNode_t;
 
 /* structure which holds a comment about an album  and links to next comment in list*/
 typedef struct albumCommentNode{
@@ -50,7 +51,7 @@ typedef struct albumCommentNode{
     char *comment;
     
     struct albumCommentNode *next;
-}albumCommentNode_t;
+} albumCommentNode_t;
 
 /* structure which holds a comment about an artist and links to next comment in list*/
 typedef struct artistCommentNode{
@@ -61,7 +62,7 @@ typedef struct artistCommentNode{
     char *comment;
     
     struct artistCommentNode *next;
-}artistCommentNode_t;
+} artistCommentNode_t;
 
 /*struct to hold loans */
 typedef struct loanNode{
@@ -73,6 +74,6 @@ typedef struct loanNode{
     Boolean isReturned;
     
     struct loanNode *next;
-}loanNode_t;
+} loanNode_t;
 
 #endif

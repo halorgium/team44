@@ -6,7 +6,7 @@
 int loadDatabase(void);
 
 /* This method checks whether the string is acceptable */
-Boolean checkString(char *);
+Boolean checkString2(char *);
 
 /* Add methods */
 int addUser(const char *, const char *, const char *, Boolean);

@@ -1,4 +1,4 @@
-/*================= Preprocessor statments===============================*/
+/*================= Preprocessor statements===============================*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,14 +7,15 @@
 #include "cgic.h"
 #include "globals.h"
 #include "../shared/defines.h"
+#include "../database/structs.h"
 
 /*======================Function Declarations=============================*/
 
 static void doAddArtist(void);
 static void doViewArtist(void);
 
-static int processAddForm(void);
-static void printAddForm(void);
+static Boolean processAddForm(int *, artistNode_t *);
+static void printAddForm(Boolean, int *, artistNode_t *);
 
 static void printAllArtists(void);
 static void printSpecificArtist(int);
@@ -52,12 +53,19 @@ check that the cgi form was a success and then will add the new artist
 by communicating with the database.
 */
 static void doAddArtist(void) {
+    Boolean needAddForm=TRUE;
+
     int result=0;
+
+    /* Temporary Struct to store form data */
+    artistNode_t *formdata=NULL;
+    /* Array to store errors */
+    int *errors=NULL;
     Boolean isAdding=FALSE;
 
     /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
-	fprintf(cgiOut, "You are not privleged to add new Artists\n");
+	fprintf(cgiOut, "You are not privileged to add new Artists\n");
 	return;
     }
     
@@ -70,87 +78,177 @@ static void doAddArtist(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding == TRUE) {
-	/* The curr data is ready for processing */
-	int newartistid=processAddForm();
-	if(newartistid > 0) {
-	    /* Artist added ok */
+    /* Malloc space for form data */
+    formdata=malloc(sizeof(artistNode_t));
+    if(formdata == NULL) {
+      isAdding=FALSE;
+    }
+    else {
+      Boolean formOK=FALSE;
+      
+      formdata->name=NULL;
+
+      /* Malloc space for error code of each field */
+      errors=malloc(sizeof(int)*1);
+      if(errors == NULL) {
+	free(formdata);
+	isAdding=FALSE;
+      }
+      
+      /* Set errors to E_NOERROR */
+      {
+	int i=0;
+	for(i=0; i < 1; i++) {
+	  errors[i]=E_NOERROR;
+	}
+      }
+      
+      /* The curr data is ready for processing */
+      formOK=processAddForm(errors, formdata);
+      
+      if(isAdding == TRUE && formOK == TRUE) {
+	int newArtistid=-1;
+	
+	/* All form data is good */
+	/* Add artist to database */
+	newArtistid=addArtist(formdata->name);
+	
+	if(newArtistid > 0) {
+	  /* User added ok */
+	  needAddForm=FALSE;
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a><br />\n", newartistid, _currUserLogon);
-	    if(isUserLibrarian(_currUserLogon) == TRUE){
-		fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add Album by this Artist]</a><br />\n", newartistid, _currUserLogon);
-	    }
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a><br />\n", newArtistid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add Album by this Artist]</a><br />\n", newArtistid, _currUserLogon);
 	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Another Artist]</a>", _currUserLogon);
 	}
 	else {
-	    /* Artist adding error */
-	    /* Link back to add page */
-	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Another Artist]</a>", _currUserLogon);
+	  /* Artist adding error */
+	  fprintf(cgiOut, "DB Save Error<br />\n");
 	}
+      }
     }
-    else {
-	/* Need to print form */
-	printAddForm();
+
+    if(needAddForm == TRUE) {
+      /* Need to print form */
+      printAddForm(isAdding, errors, formdata);
+    }
+
+    /* Free the memory */
+    if(errors != NULL) {
+      free(errors);
+    }
+    if(formdata != NULL) {
+      if(formdata->name != NULL) {
+	free(formdata->name);
+      }
+      free(formdata);
     }
 }
 
   
 /*
 FUNCTION: processAddForm
-PARAMETERS: none
+PARAMETERS: int *errors, artistNode_t *formdata
 USED TO: This function is used to process the data that was entered in the adding form. The function allocates memory and if it fails memory allocation error will be printed to the user. It also checks there were no errors in new artists id and if there are errors the appropriate message will be shown to the user.
 */
-static int processAddForm(void) {
+static Boolean processAddForm(int *errors, artistNode_t *formdata) {
     int result=0;
-    int newArtistid=-1;
-    char *artname=malloc(sizeof(char)*MAXSIZE_ARTISTNAME);
-    if(artname == NULL) {
-	fprintf(cgiOut, "Memory Allocation Error<br />\n");
-	return E_MALLOC_FAILED;
+    int size=-1;
+    
+    /* Check arguments */
+    if(errors == NULL || formdata == NULL) {
+      return FALSE;
     }
 
-    result = cgiFormStringNoNewlines("artname", artname, MAXSIZE_ARTISTNAME);
-    if(result != cgiFormSuccess || artname == NULL) {
-	newArtistid =  E_INVALID_PARAM;
+    /* Get artist name */
+    result = cgiFormStringSpaceNeeded("artname", &size);
+    if(result != cgiFormSuccess) {
+      errors[0]=E_FORM;
+    }
+    else if(size > MAXLEN_ARTISTNAME+1) {
+      errors[0]=E_TOOBIG;
     }
     else {
-	newArtistid=addArtist(artname);
+      formdata->name=malloc(sizeof(char)*size);
+      if(formdata->name == NULL) {
+	errors[0]=E_MALLOC_FAILED;
+      }
+      else {
+	result = cgiFormStringNoNewlines("artname", formdata->name, size);
+	if(result != cgiFormSuccess) {
+	  errors[0]=E_FORM;
+	}
+	else if(checkString2(formdata->name) == FALSE) {
+	  errors[0]=E_INVALID_PARAM;
+	}
+	else {
+	  /* check whether artist already exists */
+	  {
+	    /*pointer to list of artists*/
+	    int *allArtists = getArtists();
+	    int i;  /*counter*/
+	    
+	    for(i = 0; allArtists[i] != LAST_ID_IN_ARRAY; i++){
+	      char *artistName=getArtistName(allArtists[i]);
+	      if(strcmp(artistName, formdata->name) == 0) {
+		/*artist added is 'the same' as another in database*/
+		errors[0]=ALREADY_ADDED;
+	      }
+	      free(artistName);
+	    }
+	    free(allArtists);
+	  }
+	}
+      }
     }
 
-    if(newArtistid < 0) {
-	switch(newArtistid) {
-	case DB_NEXTID_ERROR:
-	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
-	    break;
-	case DB_SAVE_FAILURE:
-	    fprintf(cgiOut, "Database failure: Artist save incomplete<br />\n");
-	    break;
-	case E_INVALID_PARAM:
-	    fprintf(cgiOut, "Artist Name is invalid<br />\n");
-	    break;
-	case ALREADY_ADDED:
-	    fprintf(cgiOut, "Artist called &quot;%s&quot; has already been added<br />\n", artname);
-	    break;
-	case E_MALLOC_FAILED:
-	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
-	    break;
-	default:
-	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    newArtistid = E_UNKNOWN;
-	    break;
-	}
-	free(artname);
+    if(errors[0] != E_NOERROR) {
+      return FALSE;
     }
-    
-    return newArtistid;
-} 
+    return TRUE;
+}
 
 /*
 FUNCTION: printAddForm
 PARAMETERS: none
 USED TO: This funtion prints the appropriate form for the user to add an artist. The output is written to the cgi output stream
 */
-static void printAddForm(void) {
+static void printAddForm(Boolean isAdding, int *errors, artistNode_t *formdata) {
+  Boolean freshForm=FALSE;
+
+  /* Check arguments */
+  if(isAdding == FALSE || errors == NULL || formdata == NULL) {
+    /* Print a fresh form */
+    freshForm=TRUE;
+  }
+  else {
+    /* Process errors */
+
+    /* Artist Name */
+    switch(errors[0]) {
+    case E_NOERROR:
+      break;
+    case E_FORM:
+      fprintf(cgiOut, "Artist Name is empty<br />\n");
+      break;
+    case E_TOOBIG:
+      fprintf(cgiOut, "Artist Name is too big<br />\n");
+      break;
+    case E_INVALID_PARAM:
+      fprintf(cgiOut, "Artist Name is invalid<br />\n");
+      break;
+    case ALREADY_ADDED:
+      fprintf(cgiOut, "Artist Name &quot;%s&quot; already exists<br />\n", formdata->name);
+      break;
+    case E_MALLOC_FAILED:
+      fprintf(cgiOut, "Memory Allocation Error<br />\n");
+      break;
+    default:
+      fprintf(cgiOut, "Unknown form error<br />\n");
+      break;
+    }
+  }
+
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
     fprintf(cgiOut, "<tbody>\n");
@@ -163,10 +261,10 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artname\" title=\"Artist Name\">Artist Name: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe%s\"><label for=\"artname\" title=\"Artist Name\"><u>A</u>rtist Name: </label></td>\n", ((isAdding == TRUE && errors != NULL && errors[0] != E_NOERROR)?"2":""));
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"artname\" name=\"artname\" size=\"%d\" /></td>\n", MAXSIZE_ARTISTNAME);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"artname\" name=\"artname\" size=\"%d\" maxlength=\"%d\" value=\"%s\" accesskey=\"a\" /></td>\n", MAXLEN_ARTISTNAME, MAXLEN_ARTISTNAME, ((errors != NULL && errors[0] == E_NOERROR && formdata != NULL && formdata->name != NULL)?formdata->name:""));
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "\n");
     fprintf(cgiOut, "  <tr>\n");

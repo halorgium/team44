@@ -15,15 +15,17 @@ typedef int Boolean;
 #define MAXLEN_USERNAME 50
 #define MAXLEN_USEREMAIL 100
 
-#define MAXSIZE_ALBUMTITLE 50
+#define MAXLEN_ALBUMTITLE 50
 
-#define MAXSIZE_ARTISTNAME 50
+#define MAXLEN_ARTISTNAME 50
 
 #define MAXSIZE_USERCOMMENT 200
 #define MAXSIZE_ARTISTCOMMENT 200
 #define MAXSIZE_ALBUMCOMMENT 200
 
 /* Error codes */
+
+#define E_NOERROR 1
 
 #define E_INVALID_PARAM -1
 #define E_MALLOC_FAILED -2
@@ -33,7 +35,7 @@ typedef int Boolean;
 #define DB_SAVE_FAILURE -6
 #define DB_BAD_TIME -7
 
-#define DB_LOAD_SUCCESS 1
+#define DB_LOAD_SUCCESS E_NOERROR
 
 #define NEXTID_LOAD_FAILURE -10
 #define USER_LOAD_FAILURE -11
@@ -50,6 +52,7 @@ typedef int Boolean;
 #define DB_NEXTID_ERROR -22
 
 #define E_FORM -40
+#define E_TOOBIG -45
 #define E_UNKNOWN -50
 
 #define E_NOUSER -101

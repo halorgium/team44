@@ -22,12 +22,12 @@ body, td {
 
 td { 
   padding : 2px 5px 2px 5px;
-  margin : 0px;
+  margin : 0px 0px 0px 0px;
 }
 
 body {
-  padding : 0px;
-  margin : 0px;
+  padding : 0px 0px 0px 0px;
+  margin : 0px 0px 0px 0px;
   color : #000000;
   background : #FFFFFF;
 }
@@ -141,6 +141,14 @@ a.dirlink {
 /* Content Styles */
 /*----------------*/
 
+td.errormsg { 
+  padding : 20px 0px 0px 0px;
+  text-align : center;
+  font-size : 18px;
+  font-weight : bolder;
+  color : #3333FF;
+}
+
 td#bodycontent { 
   padding : 10px 15px 10px 15px;
   width : 100%;
@@ -150,6 +158,11 @@ td#bodycontent {
 
 td.describe { 
   font-weight : bold;
+}
+
+td.describe2 { 
+  font-weight : bold;
+  color : #FF0000;
 }
 
 td.field {

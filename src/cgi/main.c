@@ -41,7 +41,7 @@ static void theRealWork(void) {
     result=loadDatabase();
     if(result != DB_LOAD_SUCCESS) {
 	/* some problem with loading */
-	fprintf(cgiOut, "<td id=\"bodycontent\">DB Load problem [%d]</td>\n</tr>\n<tr>\n", result);
+	fprintf(cgiOut, "<td class=\"errormsg\">DB Load problem [%d]</td>\n</tr>\n<tr>\n", result);
 	return;
     }
     
@@ -67,14 +67,14 @@ static void theRealWork(void) {
 	    if(result != cgiFormSuccess) {
 		/* Unsuccessful */
 		/* Display Login */
-		fprintf(cgiOut, "<td id=\"bodycontent\">No such user</td></tr>\n<tr>\n");
+		fprintf(cgiOut, "<td class=\"errormsg\">No such user</td></tr>\n<tr>\n");
 		pageName=PAGE_LOGIN;
 	    }
 	    else {
 		/* Get the usercode variable */
-		char *userCode=malloc(sizeof(char)*(size+1));
+		char *userCode=malloc(sizeof(char)*size);
 		if(userCode == NULL) {
-		    fprintf(cgiOut, "<td id=\"bodycontent\">Memory Error</td></tr>\n<tr>\n");
+		    fprintf(cgiOut, "<td class=\"errormsg\">Memory Error</td></tr>\n<tr>\n");
 		    return;
 		}
 		
@@ -82,7 +82,7 @@ static void theRealWork(void) {
 		if(result != cgiFormSuccess) {
 		    /* Unsuccessful */
 		    /* Display login */
-		    fprintf(cgiOut, "<td id=\"bodycontent\">No such user</td></tr>\n<tr>\n");
+		    fprintf(cgiOut, "<td class=\"errormsg\">No such user</td></tr>\n<tr>\n");
 		    pageName=PAGE_LOGIN;
 		}
 		else {
@@ -90,7 +90,7 @@ static void theRealWork(void) {
 		    int tempHash=makeUserID(userCode);
 		    if(getUserExists(tempHash) == FALSE) {
 			/* No such user */
-			fprintf(cgiOut, "<td id=\"bodycontent\">No such user</td></tr>\n<tr>\n");
+			fprintf(cgiOut, "<td class=\"errormsg\">No such user</td></tr>\n<tr>\n");
 			pageName=PAGE_LOGIN;			
 		    }
 		    else {
@@ -106,7 +106,7 @@ static void theRealWork(void) {
 	/* Make sure logged in */
 	if(getUserExists(userHash) == FALSE) {
 	    /* UserHash invalid */
-	    fprintf(cgiOut, "<td id=\"bodycontent\">Bad hash</td></tr>\n<tr>\n");
+	    fprintf(cgiOut, "<td class=\"errormsg\">Bad hash</td></tr>\n<tr>\n");
 	    pageName=PAGE_LOGIN;
 	}
 	else {
@@ -122,7 +122,7 @@ static void theRealWork(void) {
 	    }
 	    else {
 		/* Get the page variable */
-		char *temppageName=malloc(sizeof(char)*(size+1));
+		char *temppageName=malloc(sizeof(char)*size);
 		if(temppageName == NULL) {
 		    /* Malloc fail */
 		    /* Display Home */
@@ -185,7 +185,7 @@ static void theRealWork(void) {
 			}
 			else {
 			    /* Get the page variable */
-			    char *tempfuncName=malloc(sizeof(char)*(size+1));
+			    char *tempfuncName=malloc(sizeof(char)*size);
 			    if(tempfuncName == NULL) {
 				/* Malloc fail */
 				/* Func is unknown */

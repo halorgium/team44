@@ -1,3 +1,5 @@
+/*================= Preprocessor statements===============================*/
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -5,17 +7,22 @@
 #include "cgic.h"
 #include "globals.h"
 #include "../shared/defines.h"
+#include "../database/structs.h"
+
+/*======================Function Declarations=============================*/
 
 static void doAddUser(void);
 static void doViewUser(void);
 
-static int processAddForm(void);
-static void printAddForm(void);
+static int processAddForm(int *, userNode_t *);
+static void printAddForm(Boolean, int *, userNode_t *);
 
 static void printAllUsers(void);
 static void printAllUsersByType(Boolean);
 
 static void printSpecificUser(int);
+
+/*======================Function Definitions=============================*/
 
 void printUser(funcName_t func) {
     switch(func) {
@@ -31,12 +38,19 @@ void printUser(funcName_t func) {
 }
 
 static void doAddUser(void) {
+    Boolean needAddForm=TRUE;
+
     int result=0;
+
+    /* Temporary Struct to store form data */
+    userNode_t *formdata=NULL;
+    /* Array to store errors */
+    int *errors=NULL;
     Boolean isAdding=FALSE;
 
     /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
-	fprintf(cgiOut, "You are not privleged to add new Users\n");
+	fprintf(cgiOut, "You are not privileged to add new Users\n");
 	return;
     }
     
@@ -49,157 +63,258 @@ static void doAddUser(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding == TRUE) {
-	/* The curr data is ready for processing */
-	int newuserid=processAddForm();
-	if(newuserid > 0) {
-	    /* User added ok */
-	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">[View User]</a><br />\n", newuserid, _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;hash=%d\">[Add Another User]</a>", _currUserLogon);
-	}
-	else {
-	    /* User adding error */
-	    /* Link back to add page */
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;hash=%d\">[Add Another User]</a>", _currUserLogon);
-	}
+    /* Malloc space for form data */
+    formdata=malloc(sizeof(userNode_t));
+    if(formdata == NULL) {
+      isAdding=FALSE;
     }
     else {
-	/* Need to print form */
-	printAddForm();
+      Boolean formOK=FALSE;
+      
+      formdata->userCode=NULL;
+      formdata->userName=NULL;
+      formdata->emailAddress=NULL;
+      formdata->isLibrarian=FALSE;
+      
+      /* Malloc space for error code of each field */
+      errors=malloc(sizeof(int)*4);
+      if(errors == NULL) {
+	free(formdata);
+	isAdding=FALSE;
+      }
+      
+      /* Set errors to E_NOERROR */
+      {
+	int i=0;
+	for(i=0; i < 4; i++) {
+	  errors[i]=E_NOERROR;
+	}
+      }
+      
+      /* The curr data is ready for processing */
+      formOK=processAddForm(errors, formdata);
+      
+      if(isAdding == TRUE && formOK == TRUE) {
+	int newUserid=-1;
+	
+	/* All form data is good */
+	/* Add user to database */
+	newUserid=addUser(formdata->userCode, formdata->userName, formdata->emailAddress, formdata->isLibrarian);
+	
+	if(newUserid > 0) {
+	  /* User added ok */
+	  needAddForm=FALSE;
+	  fprintf(cgiOut, "Adding successful<br />\n");
+	  fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">[View User]</a><br />\n", newUserid, _currUserLogon);
+	  fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;hash=%d\">[Add Another User]</a>", _currUserLogon);
+	}
+	else {
+	  /* User adding error */
+	  fprintf(cgiOut, "DB Save Error<br />\n");
+	}
+      }
+    }
+
+    if(needAddForm == TRUE) {
+      /* Need to print form */
+      printAddForm(isAdding, errors, formdata);
+    }
+
+    /* Free the memory */
+    if(errors != NULL) {
+      free(errors);
+    }
+    if(formdata != NULL) {
+      if(formdata->userCode != NULL) {
+	free(formdata->userCode);
+      }
+      if(formdata->userName != NULL) {
+	free(formdata->userName);
+      }
+      if(formdata->emailAddress != NULL) {
+	free(formdata->emailAddress);
+      }
+      free(formdata);
     }
 }
 
-static int processAddForm(void) {
+static Boolean processAddForm(int *errors, userNode_t *formdata) {
     int result=0;
     int size=-1;
-
-    Boolean err[3]={FALSE};
     
-    int newUserid=-1;
-    char *userCode=NULL;
-    char *userName=NULL; 
-    char *userEmail=NULL; 
-    Boolean isLib=FALSE;
+    /* Check arguments */
+    if(errors == NULL || formdata == NULL) {
+      return FALSE;
+    }
 
     /* Get user code */
     result = cgiFormStringSpaceNeeded("usrcode", &size);
-    if(result != cgiFormSuccess || size < 0 || size > MAXLEN_USERCODE) {
-	err[0]=TRUE;
-	newUserid=E_FORM;
+    if(result != cgiFormSuccess) {
+      errors[0]=E_FORM;
+    }
+    else if(size > MAXLEN_USERCODE+1) {
+      errors[0]=E_TOOBIG;
     }
     else {
-	userCode=malloc(sizeof(char)*(size+1));
-	if(userCode == NULL) {
-	    newUserid=E_MALLOC_FAILED;
+      formdata->userCode=malloc(sizeof(char)*size);
+      if(formdata->userCode == NULL) {
+	errors[0]=E_MALLOC_FAILED;
+      }
+      else {
+	result = cgiFormStringNoNewlines("usrcode", formdata->userCode, size);
+	if(result != cgiFormSuccess) {
+	  errors[0]=E_FORM;
 	}
-	else {
-	    result = cgiFormStringNoNewlines("usrcode", userCode, size);
-	    if(result != cgiFormSuccess || userCode == NULL) {
-		err[0]=TRUE;
-		newUserid=E_FORM;
-	    }
-	    else if(checkString(userCode) == FALSE) {
-		err[0]=TRUE;
-		newUserid=E_INVALID_PARAM;
-		free(userCode);
-	    }
+	else if(checkString2(formdata->userCode) == FALSE) {
+	  errors[0]=E_INVALID_PARAM;
 	}
+	else if(getUserExists(makeUserID(formdata->userCode)) == TRUE) {
+	  errors[0]=ALREADY_ADDED;
+	}
+      }
     }
     /* Get user name */
     result = cgiFormStringSpaceNeeded("usrname", &size);
-    if(result != cgiFormSuccess || size < 0 || size > MAXLEN_USERNAME) {
-	err[1]=TRUE;
-	newUserid=E_FORM;
+    if(result != cgiFormSuccess) {
+      errors[1]=E_FORM;
+    }
+    else if(size > MAXLEN_USERNAME+1) {
+      errors[1]=E_TOOBIG;
     }
     else {
-	userName=malloc(sizeof(char)*(size+1));
-	if(userName == NULL) {
-	    newUserid=E_MALLOC_FAILED;
+	formdata->userName=malloc(sizeof(char)*size);
+	if(formdata->userName == NULL) {
+	    errors[1]=E_MALLOC_FAILED;
 	}
 	else {
-	    result = cgiFormStringNoNewlines("usrname", userName, size);
-	    if(result != cgiFormSuccess || userName == NULL) {
-		err[1]=TRUE;
-		newUserid = E_FORM;
+	    result = cgiFormStringNoNewlines("usrname", formdata->userName, size);
+	    if(result != cgiFormSuccess) {
+	      errors[1]=E_FORM;
+	    }
+	    else if(checkString2(formdata->userName) == FALSE) {
+	      errors[1]=E_INVALID_PARAM;
 	    }
 	}
     }
     /* Get email address */
     result = cgiFormStringSpaceNeeded("usremail", &size);
-    if(result != cgiFormSuccess || size < 0 || size > MAXLEN_USEREMAIL) {
-	err[2]=TRUE;
-	newUserid=E_FORM;
+    if(result != cgiFormSuccess) {
+	errors[2]=E_FORM;
+    }
+    else if(size > MAXLEN_USEREMAIL+1) {
+      errors[1]=E_TOOBIG;
     }
     else {
-	userEmail=malloc(sizeof(char)*(size+1));
-	if(userEmail == NULL) {
-	    newUserid=E_MALLOC_FAILED;
+	formdata->emailAddress=malloc(sizeof(char)*size);
+	if(formdata->emailAddress == NULL) {
+	    errors[2]=E_MALLOC_FAILED;
 	}
 	else {
-	    result = cgiFormStringNoNewlines("usremail", userEmail, size);
-	    if(result != cgiFormSuccess || userEmail == NULL) {
-		err[2]=TRUE;
-		newUserid = E_FORM;
+	    result = cgiFormStringNoNewlines("usremail", formdata->emailAddress, size);
+	    if(result != cgiFormSuccess) {
+	      errors[2]=E_FORM;
+	    }
+	    else if(checkString2(formdata->emailAddress) == FALSE) {
+	      errors[2]=E_INVALID_PARAM;
 	    }
 	}
     }
     /* Get isLibrarian */
     result = cgiFormCheckboxSingle("islib");
     if(result != cgiFormSuccess) {
-	isLib=FALSE;
+	formdata->isLibrarian=FALSE;
     }
     else {
-	isLib=TRUE;
+	formdata->isLibrarian=TRUE;
     }
 
-    if(newUserid > 0) {
-	newUserid=addUser(userCode, userName, userEmail, isLib);
+    if(errors[0] != E_NOERROR ||
+       errors[1] != E_NOERROR ||
+       errors[2] != E_NOERROR ||
+       errors[3] != E_NOERROR) {
+      return FALSE;
     }
-			    
-    if(newUserid < 0) {
-	switch(newUserid) {
-	case DB_NEXTID_ERROR:
-	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
-	    break;
-	case DB_SAVE_FAILURE:
-	    fprintf(cgiOut, "Database failure: User save incomplete<br />\n");
-	    break;
-	case E_FORM:
-	    if(err[0] == TRUE) {
-		fprintf(cgiOut, "User code is incorrect");
-	    }
-	    if(err[1] == TRUE) {
-		fprintf(cgiOut, "User name is incorrect");
-	    }
-	    if(err[2] == TRUE) {
-		fprintf(cgiOut, "Email address is incorrect");
-	    }
-	    break;
-	case E_INVALID_PARAM:
-	    fprintf(cgiOut, "One or more input fields are invalid<br />\n");
-	    break;
-	case ALREADY_ADDED:
-	    fprintf(cgiOut, "User Code &quot;%s&quot; already exists<br />\n", userCode);
-	    break;
-	case E_MALLOC_FAILED:
-	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
-	    break;
-	default:
-	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    newUserid = E_UNKNOWN;
-	    break;
-	}
-    }
-    /*finished with malloced variables: free memory*/
-    free(userCode);
-    free(userName);
-    free(userEmail);
-	
-    return newUserid;
+    return TRUE;
 }
 
-static void printAddForm(void) {
+static void printAddForm(Boolean isAdding, int *errors, userNode_t *formdata) {
+  Boolean freshForm=FALSE;
+
+  /* Check arguments */
+  if(isAdding == FALSE || errors == NULL || formdata == NULL) {
+    /* Print a fresh form */
+    freshForm=TRUE;
+  }
+  else {
+    /* Process errors */
+
+    /* User code */
+    switch(errors[0]) {
+    case E_NOERROR:
+      break;
+    case E_FORM:
+      fprintf(cgiOut, "User code is empty<br />\n");
+      break;
+    case E_TOOBIG:
+      fprintf(cgiOut, "User code is too big<br />\n");
+      break;
+    case E_INVALID_PARAM:
+      fprintf(cgiOut, "User code is invalid<br />\n");
+      break;
+    case ALREADY_ADDED:
+      fprintf(cgiOut, "User Code &quot;%s&quot; already exists<br />\n", formdata->userCode);
+      break;
+    case E_MALLOC_FAILED:
+      fprintf(cgiOut, "Memory Allocation Error<br />\n");
+      break;
+    default:
+      fprintf(cgiOut, "Unknown form error<br />\n");
+      break;
+    }
+
+    /* User Name */
+    switch(errors[1]) {
+    case E_NOERROR:
+      break;
+    case E_FORM:
+      fprintf(cgiOut, "User name is empty<br />\n");
+      break;
+    case E_TOOBIG:
+      fprintf(cgiOut, "User name is too big<br />\n");
+      break;
+    case E_INVALID_PARAM:
+      fprintf(cgiOut, "User name is invalid<br />\n");
+      break;
+    case E_MALLOC_FAILED:
+      fprintf(cgiOut, "Memory Allocation Error<br />\n");
+      break;
+    default:
+      fprintf(cgiOut, "Unknown form error<br />\n");
+      break;
+    }
+
+    /* Email Address */
+    switch(errors[2]) {
+    case E_NOERROR:
+      break;
+    case E_FORM:
+      fprintf(cgiOut, "Email Address is empty<br />\n");
+      break;
+    case E_TOOBIG:
+      fprintf(cgiOut, "Email Address is too big<br />\n");
+      break;
+    case E_INVALID_PARAM:
+      fprintf(cgiOut, "Email Address is invalid<br />\n");
+      break;
+    case E_MALLOC_FAILED:
+      fprintf(cgiOut, "Memory Allocation Error<br />\n");
+      break;
+    default:
+      fprintf(cgiOut, "Unknown form error<br />\n");
+      break;
+    }
+  }
+
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
     fprintf(cgiOut, "<tbody>\n");
@@ -213,30 +328,30 @@ static void printAddForm(void) {
     fprintf(cgiOut, "  </tr>\n");
 
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"usrcode\" title=\"User Code\">User Code: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe%s\"><label for=\"usrcode\" title=\"User Code\">User <u>C</u>ode: </label></td>\n", ((isAdding == TRUE && errors != NULL && errors[0] != E_NOERROR)?"2":""));
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrcode\" name=\"usrcode\" size=\"%d\" maxlength=\"%d\" /></td>\n", MAXLEN_USERCODE, MAXLEN_USERCODE);
-    fprintf(cgiOut, "  </tr>\n");
-
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"usrname\" title=\"User Name\">User Name: </label></td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrname\" name=\"usrname\" size=\"%d\" maxlength=\"%d\" /></td>\n", MAXLEN_USERNAME, MAXLEN_USERNAME);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrcode\" name=\"usrcode\" size=\"%d\" maxlength=\"%d\" value=\"%s\" accesskey=\"c\" /></td>\n", MAXLEN_USERCODE, MAXLEN_USERCODE, ((errors != NULL && errors[0] == E_NOERROR && formdata != NULL && formdata->userCode != NULL)?formdata->userCode:""));
     fprintf(cgiOut, "  </tr>\n");
 
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"usremail\" title=\"Email Address\">Email Address: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe%s\"><label for=\"usrname\" title=\"User Name\">User <u>N</u>ame: </label></td>\n", ((isAdding == TRUE && errors != NULL && errors[1] != E_NOERROR)?"2":""));
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usremail\" name=\"usremail\" size=\"%d\" maxlength=\"%d\" /></td>\n", MAXLEN_USEREMAIL, MAXLEN_USEREMAIL);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrname\" name=\"usrname\" size=\"%d\" maxlength=\"%d\" value=\"%s\" accesskey=\"n\" /></td>\n", MAXLEN_USERNAME, MAXLEN_USERNAME, ((errors != NULL && errors[1] == E_NOERROR && formdata != NULL && formdata->userName != NULL)?formdata->userName:""));
+    fprintf(cgiOut, "  </tr>\n");
+
+    fprintf(cgiOut, "  <tr>\n");
+    fprintf(cgiOut, "    <td class=\"describe%s\"><label for=\"usremail\" title=\"Email Address\"><u>E</u>mail Address: </label></td>\n", ((isAdding == TRUE && errors != NULL && errors[2] != E_NOERROR)?"2":""));
+    fprintf(cgiOut, "  </tr>\n");
+    fprintf(cgiOut, "  <tr>\n");
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usremail\" name=\"usremail\" size=\"%d\" maxlength=\"%d\" value=\"%s\" accesskey=\"e\" /></td>\n", MAXLEN_USEREMAIL, MAXLEN_USEREMAIL, ((errors != NULL && errors[2] == E_NOERROR && formdata != NULL && formdata->emailAddress != NULL)?formdata->emailAddress:""));
     fprintf(cgiOut, "  </tr>\n");
 
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"field\">");
-    fprintf(cgiOut, "<input type=\"checkbox\" id=\"islib\" name=\"islib\" value=\"%d\" />&nbsp;", TRUE);
-    fprintf(cgiOut, "<label for=\"islib\" title=\"Is Librarian\">Is Librarian</label>\n");
+    fprintf(cgiOut, "<input type=\"checkbox\" id=\"islib\" name=\"islib\" value=\"%d\" accesskey=\"l\"%s />&nbsp;", TRUE, ((errors != NULL && errors[3] == E_NOERROR && formdata != NULL && formdata->isLibrarian == TRUE)?" checked":""));
+    fprintf(cgiOut, "<label for=\"islib\" title=\"Is Librarian\">Is <u>L</u>ibrarian</label>\n");
     fprintf(cgiOut, "    </td>\n");
     fprintf(cgiOut, "  </tr>\n");
 
