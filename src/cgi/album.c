@@ -1,3 +1,9 @@
+/*
+ album.c provides functions which deal with albums in the cgi
+*/
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +46,7 @@ void printAlbum(void) {
 
 static void doAddAlbum(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
@@ -82,16 +88,22 @@ static void doAddAlbum(void) {
 static int processAddForm(void) {
     int result=0;
     int newAlbumid=-1;
-    char *albtitle=malloc(sizeof(char)*MAXSIZE_ALBUMTITLE);
     int artistid=-1;
+    char *albtitle=malloc(sizeof(char)*MAXSIZE_ALBUMTITLE);
+    if(albtitle == NULL) {
+	fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	return E_MALLOC_FAILED;
+    }    
 
     result = cgiFormStringNoNewlines("albtitle", albtitle, MAXSIZE_ARTISTNAME);
     if(result != cgiFormSuccess || albtitle == NULL) {
+	/*error*/
 	newAlbumid = E_INVALID_PARAM;
     }
     else {
 	result = cgiFormInteger("artistid", &artistid, -1);
 	if(result != cgiFormSuccess || artistid == -1) {
+	    /*error*/
 	    newAlbumid = E_FORM;
 	}
 	else {
@@ -100,6 +112,8 @@ static int processAddForm(void) {
     }
 
     if(newAlbumid < 0) {
+	char *artistName = getArtistName(artistid);
+	
 	switch(newAlbumid) {
 	case DB_NEXTID_ERROR:
 	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
@@ -117,15 +131,19 @@ static int processAddForm(void) {
 	    fprintf(cgiOut, "Album Name is invalid<br />\n");
 	    break;
 	case ALREADY_ADDED:
-	    fprintf(cgiOut, "Album called &quot;%s&quot; written by &quot;%s&quot; has already been added<br />\n", albtitle, getArtistName(artistid));
+	    fprintf(cgiOut, "Album called &quot;%s&quot; written by &quot;%s&quot; has already been added<br />\n", albtitle, artistName);
 	    break;
 	case E_MALLOC_FAILED:
 	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
 	    break;
 	default:
 	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    return E_UNKNOWN;
+	    newAlbumid = E_UNKNOWN;
+	    break;
 	}
+	free(artistName);
+	/*error so free mem*/
+	free(albtitle);
     }
     
     return newAlbumid;
@@ -189,16 +207,25 @@ static void printAddForm(void) {
 	
 	curr_id=allArtists[count];
 	while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getArtistName(curr_id));
+	    char *artistName = getArtistName(curr_id);
+	
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, artistName);
 	    count++;
 	    curr_id=allArtists[count];
+	    
+	    free(artistName);
 	}
 	
 	fprintf(cgiOut, "</select>\n");
 	fprintf(cgiOut, "</td>\n");
+
+	free(allArtists);
     }
     else {
-	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
+	char *artName = getArtistName(artistid);
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", artName);
+
+	free(artName);
     }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "\n");
@@ -208,6 +235,8 @@ static void printAddForm(void) {
     fprintf(cgiOut, "</tbody>\n");
     fprintf(cgiOut, "</table>\n");
     fprintf(cgiOut, "</form>\n");
+
+    
 }
 
 static void doViewAlbum(void) {
@@ -311,29 +340,37 @@ static void printAllAlbums(void) {
 }
 
 static void printSpecificAlbum(int albumid) {
-    int artistid=getAlbumArtist(albumid);
-
     fprintf(cgiOut, "<div class=\"head1\">View Album [%d]</div>", albumid);
 
-    fprintf(cgiOut, "<table>\n");
-    fprintf(cgiOut, "<tbody>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\">Album Title: </td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getAlbumTitle(albumid));
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\">Artist Name: </td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s&nbsp;<a class=\"small\" href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a></td>\n", getArtistName(artistid), artistid, _currUserLogon);
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "</tbody>\n");
-    fprintf(cgiOut, "</table>\n");
+    {
+	/* Print out information about the album */
+	int artistid = getAlbumArtist(albumid);
+	char *albumTitle = getAlbumTitle(albumid);
+	char *artistName = getArtistName(artistid);
 
-    fprintf(cgiOut, "<hr />\n");
-
+	fprintf(cgiOut, "<table>\n");
+	fprintf(cgiOut, "<tbody>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"describe\">Album Title: </td>\n");
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", albumTitle);
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"describe\">Artist Name: </td>\n");
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"field\">%s&nbsp;<a class=\"small\" href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a></td>\n", artistName, artistid, _currUserLogon);
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "</tbody>\n");
+	fprintf(cgiOut, "</table>\n");
+	
+	fprintf(cgiOut, "<hr />\n");
+	
+	free(albumTitle);
+	free(artistName);
+    }
+    
     {
 	/* is album on loan */
 	int currLoan=getAlbumCurrentLoan(albumid);
@@ -357,13 +394,17 @@ static void printSpecificAlbum(int albumid) {
 	    else {
 		fprintf(cgiOut, "Album is on loan ");
 		if(isUserLibrarian(_currUserLogon) == TRUE) {
+		    char *userName = getUserName(tempUserID);
+		    
 		    fprintf(cgiOut, "to <b>");
-		    userLink("", tempUserID, getUserName(tempUserID), cgiOut);
+		    userLink("", tempUserID, userName, cgiOut);
 		    fprintf(cgiOut, "</b><br />\n");
 		    fprintf(cgiOut, "[Taken at ");
 		    printTime(getLoanTimeIn(currLoan), cgiOut);
-		    fprintf(cgiOut, "]\n");
-		}
+		    fprintf(cgiOut,"]\n");
+		    
+		    free(userName);		    
+	        }
 	    }
 	}
 	else {

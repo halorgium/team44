@@ -55,12 +55,13 @@ static void doAddArtistComment(void) {
 	int newartistCommentid=processAddForm();
 	if(newartistCommentid > 0) {
 	    /* Artist Comment added ok */
-	    const char* artistname=getArtistName(getArtistCommentArtist(newartistCommentid));
+	    int artist = getArtistCommentArtist(newartistCommentid);
+	    char* artistname=getArtistName(artist);
 	    
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Info about %s]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon, artistname);
-	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&amp;hash=%d\">[View All Comments about %s]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon, artistname);
-	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Write another Comment about %s]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon, artistname);
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Info about %s]</a><br />\n", artist, _currUserLogon, artistname);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&amp;hash=%d\">[View All Comments about %s]</a><br />\n", artist, _currUserLogon, artistname);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Write another Comment about %s]</a>\n", artist, _currUserLogon, artistname);
 	}
 	else {
 	    /* Some sort of failure */
@@ -78,6 +79,10 @@ static int processAddForm(void) {
     int newArtistCommentid=-1;
     int artistid=-1;
     char *combody=malloc(sizeof(char)*MAXSIZE_ARTISTCOMMENT);
+    if(combody == NULL){
+	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	    return E_MALLOC_FAILED;
+    }
 
     result = cgiFormInteger("artid", &artistid, -1);
     if(result != cgiFormSuccess || artistid == -1) {
@@ -118,8 +123,10 @@ static int processAddForm(void) {
 	    break;
 	default:
 	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    return E_UNKNOWN;
+	    newArtistCommentid = E_UNKNOWN;
+	    break;
 	}
+	free(combody);
     }
     return newArtistCommentid;
 }
@@ -173,17 +180,26 @@ static void printAddForm(void) {
 	fprintf(cgiOut, "<select id=\"artid\" name=\"artid\" size=\"5\">\n");
 	
 	curr_id=allArtists[count];
+	/*loop through all artists, printing their names out*/
 	while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getArtistName(curr_id));
+	    char * name = getArtistName(curr_id);
+	    
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, name);
 	    count++;
 	    curr_id=allArtists[count];
+	    
+	    free(name);			       
 	}
 	
 	fprintf(cgiOut, "</select>\n");
 	fprintf(cgiOut, "</td>\n");
+
+	free(allArtists);
     }
     else {
-	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
+	char *artName = getArtistName(artistid);
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", artName);
+	free(artName);
     }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
@@ -257,8 +273,11 @@ static void printAllArtistCommentsByUser(int userid) {
     int *allArtistComments=NULL;
     int curr_id=0;
     int count=0;
+    char *userName = getUserName(userid);
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing Artist Comments written by %s</div>", getUserName(userid));
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Artist Comments written by %s</div>", userName);
+
+    free(userName);
 
     allArtistComments=getArtistCommentsByUser(userid);
 
@@ -276,19 +295,27 @@ static void printAllArtistCommentsByUser(int userid) {
 	    
 	    curr_id=allArtistComments[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int artistID = getArtistCommentArtist(curr_id);
+		char *artistName = getArtistName(artistID);
+		char *body = getArtistCommentBody(curr_id);
+
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
-		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", getArtistCommentArtist(curr_id), _currUserLogon, getArtistName(getArtistCommentArtist(curr_id)));
+		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", artistID, _currUserLogon, artistName);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "%s", getArtistCommentBody(curr_id));
+		fprintf(cgiOut, "%s", body);
 		fprintf(cgiOut, "</td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allArtistComments[count];
+
+		free(body);
+		free(artistName);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");

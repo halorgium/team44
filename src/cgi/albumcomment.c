@@ -39,7 +39,7 @@ void printAlbumComment(void) {
 
 static void doAddAlbumComment(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     fprintf(cgiOut, "<div class=\"head1\">Adding New Album Comment</div>\n");
 
@@ -55,12 +55,15 @@ static void doAddAlbumComment(void) {
 	int newalbumCommentid=processAddForm();
 	if(newalbumCommentid > 0) {
 	    /* Album Comment added ok */
-	    const char *albumtitle=getAlbumTitle(getAlbumCommentAlbum(newalbumCommentid));
+	    int albumid = getAlbumCommentAlbum(newalbumCommentid);
+	    char *albumtitle=getAlbumTitle(albumid);
 	  
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon, albumtitle);
-	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&amp;hash=%d\">[View All Comments about &quot;%s&quot;]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon, albumtitle);
-	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a>\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon, albumtitle);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", albumid, _currUserLogon, albumtitle);
+	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&amp;hash=%d\">[View All Comments about &quot;%s&quot;]</a><br />\n", albumid, _currUserLogon, albumtitle);
+	    fprintf(cgiOut, " <a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a>\n", albumid, _currUserLogon, albumtitle);
+	    
+	    free(albumtitle);
 	}
 	else {
 	    /* Some sort of failure */
@@ -77,7 +80,12 @@ static int processAddForm(void) {
     int result=0;
     int newAlbumCommentid=-1;
     int albumid=-1;
-    char *combody=malloc(sizeof(char)*MAXSIZE_ALBUMCOMMENT);
+    char *combody = NULL;
+    combody = malloc(sizeof(char)*MAXSIZE_ALBUMCOMMENT);
+    if(combody == NULL){
+	fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	return E_MALLOC_FAILED;
+    }
 
     result = cgiFormInteger("albid", &albumid, -1);
     if(result != cgiFormSuccess || albumid == -1) {
@@ -118,8 +126,10 @@ static int processAddForm(void) {
 	    break;
 	default:
 	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    return E_UNKNOWN;
+	    newAlbumCommentid = E_UNKNOWN;
+	    break;
 	}
+	free(combody);
     }
     return newAlbumCommentid;
 }
@@ -174,16 +184,22 @@ static void printAddForm(void) {
 	
 	curr_id=allAlbums[count];
 	while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getAlbumTitle(curr_id));
+	    char *title = getAlbumTitle(curr_id);	    
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, title);
 	    count++;
-	    curr_id=allAlbums[count];
+	    curr_id=allAlbums[count];	    
+	    free(title);
 	}
 	
 	fprintf(cgiOut, "</select>\n");
 	fprintf(cgiOut, "</td>\n");
+
+	free(allAlbums);
     }
     else {
-	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getAlbumTitle(albumid));
+	char *title = getAlbumTitle(albumid);
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", title);
+	free(title);
     }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
@@ -274,19 +290,26 @@ static void printAllAlbumCommentsByUser(int userid) {
 	    
 	    curr_id=allAlbumComments[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int albumid = getAlbumCommentAlbum(curr_id);
+		char *commentBody = getAlbumCommentBody(curr_id);
+		char *title = getAlbumTitle(albumid);
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
-		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getAlbumCommentAlbum(curr_id), _currUserLogon, getAlbumTitle(getAlbumCommentAlbum(curr_id)));
+		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", albumid, _currUserLogon, title);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "%s", getAlbumCommentBody(curr_id));
+		fprintf(cgiOut, "%s", commentBody);
 		fprintf(cgiOut, "</td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allAlbumComments[count];
+
+		free(commentBody);
+		free(title);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");
@@ -301,12 +324,15 @@ static void printAllAlbumCommentsByUser(int userid) {
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
+
+/*function prints all the comments written about this album.*/
 static void printAllAlbumCommentsForAlbum(int albumid) {
     int *allAlbumComments=NULL;
     int curr_id=0;
     int count=0;
+    char *title = getAlbumTitle(albumid);
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing Album Comments written about %s</div>", getAlbumTitle(albumid));
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Album Comments written about %s</div>", title);
 
     allAlbumComments=getAlbumCommentsForAlbum(albumid);
 
@@ -314,6 +340,7 @@ static void printAllAlbumCommentsForAlbum(int albumid) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Album Comments</div>");
     }
     else {
+	/*checks whether any comments have been written about this album*/
 	if(getAlbumCommentsForAlbumCount(albumid) == 0) {
 	    fprintf(cgiOut, "No album comments\n");
 	}
@@ -324,19 +351,26 @@ static void printAllAlbumCommentsForAlbum(int albumid) {
 	    
 	    curr_id=allAlbumComments[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int ownerID = getAlbumCommentOwner(curr_id);
+		char *name = getUserName(ownerID);
+		char *body = getAlbumCommentBody(curr_id);
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-		userLink(" class=\"topper\"", getAlbumCommentOwner(curr_id), getUserName(getAlbumCommentOwner(curr_id)), cgiOut);
+		userLink(" class=\"topper\"", ownerID, name, cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "%s", getAlbumCommentBody(curr_id));
+		fprintf(cgiOut, "%s", body);
 		fprintf(cgiOut, "</td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allAlbumComments[count];
+
+		free(body);
+		free(name);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");

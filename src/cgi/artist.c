@@ -83,6 +83,10 @@ static int processAddForm(void) {
     int result=0;
     int newArtistid=-1;
     char *artname=malloc(sizeof(char)*MAXSIZE_ARTISTNAME);
+    if(artname == NULL) {
+	fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	return E_MALLOC_FAILED;
+    }
 
     result = cgiFormStringNoNewlines("artname", artname, MAXSIZE_ARTISTNAME);
     if(result != cgiFormSuccess || artname == NULL) {
@@ -111,8 +115,10 @@ static int processAddForm(void) {
 	    break;
 	default:
 	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    return E_UNKNOWN;
+	    newArtistid = E_UNKNOWN;
+	    break;
 	}
+	free(artname);
     }
     
     return newArtistid;
@@ -174,6 +180,7 @@ static void doViewArtist(void) {
     }
 }
 
+/*displays all the artists*/
 static void printAllArtists(void) {
     int *allArtists=NULL;
     int curr_id=0;

@@ -55,7 +55,7 @@ void printLoan(void) {
 
 static void doAddLoan(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     fprintf(cgiOut, "<div class=\"head1\">Borrowing an Album</div>\n");
 
@@ -71,12 +71,13 @@ static void doAddLoan(void) {
 	int newloanid=processAddForm();
 	if(newloanid != -1) {
 	    /* Loan added ok */
-	    const char *albumtitle=getAlbumTitle(getLoanAlbum(newloanid));
+	    int albumID = getLoanAlbum(newloanid);
+	    char *albumtitle = getAlbumTitle(albumID);
 	    
 	    fprintf(cgiOut, "Borrowing successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getLoanAlbum(newloanid), _currUserLogon, getAlbumTitle(getLoanAlbum(newloanid)));
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
 	    if(isUserLibrarian(_currUserLogon) == TRUE) {
-		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", getLoanAlbum(newloanid), _currUserLogon, albumtitle);
+		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
 	    }
 	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
 	}

@@ -1,3 +1,8 @@
+/*
+  contains one function which prints information out and
+  creates the contact page.  
+*/
+
 #include <stdio.h>
 #include <string.h>
 
