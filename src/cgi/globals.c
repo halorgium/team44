@@ -13,7 +13,7 @@ void userLink(int userid, const char *content,  FILE *output) {
     fprintf(output, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", userid, _currUserLogon, content);
   }
   else {
-    fprintf(output, "%s", content);
+    fprintf(output, "<b>%s</b>", content);
   }
 }
 
