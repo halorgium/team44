@@ -2,8 +2,6 @@
  album.c provides functions which deal with albums in the cgi
 */
 
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -9,12 +9,12 @@
 /* This method prints a link to user info if the curruser is a librarian */
 /* otherwise it just prints the name of the user */
 void userLink(char *extra, int userid, const char *content,  FILE *output) {
-  if(isUserLibrarian(_currUserLogon) == TRUE) {
-    fprintf(output, "<a %shref=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", extra, userid, _currUserLogon, content);
-  }
-  else {
-    fprintf(output, "<b>%s</b>", content);
-  }
+    if(isUserLibrarian(_currUserLogon) == TRUE) {
+	fprintf(output, "<a %shref=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", extra, userid, _currUserLogon, content);
+    }
+    else {
+	fprintf(output, "<b>%s</b>", content);
+    }
 }
 
 void printTime(long thectime, FILE *output) {

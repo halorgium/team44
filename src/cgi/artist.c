@@ -84,6 +84,9 @@ static void doAddArtist(void) {
 	    /* Artist added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a><br />\n", newartistid, _currUserLogon);
+	    if(isUserLibrarian(_currUserLogon) == TRUE){
+		fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add Album by this Artist]</a><br />\n", newartistid, _currUserLogon);
+	    }
 	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Another Artist]</a>", _currUserLogon);
 	}
 	else {
