@@ -275,7 +275,74 @@ static void printSpecificAlbum(int albumid) {
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%d\" />\n", _currUserLogon->ID);
 	    fprintf(cgiOut, "    <input type=\"submit\" value=\"Borrow Album\" />\n");
 	    fprintf(cgiOut, "  </p>\n");
-	    fprintf(cgiOut, "</form>\n");
+	    fprintf(cgiOut, "</form><hr />\n");
+	}
+    }
+
+    {
+	/* view borrowing history */
+	int *allLoans=NULL;
+	int curr_id=0;
+	int count=0;
+
+	fprintf(cgiOut, "<div class=\"head1\">Borrowing History</div>");
+
+	allLoans=getLoansByAlbum(albumid);
+
+	if(allLoans == NULL) {
+	    fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Loans</div>");
+	}
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<thead>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Album Title</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Status</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Start</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">End</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</thead>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tfoot>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"4\">&nbsp;</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</tfoot>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+
+	    if(getLoansByAlbumCount(albumid) == 0) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+	    }
+
+	    curr_id=allLoans[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getLoanUser(curr_id), _currUserLogon->ID, getUserName(getLoanUser(curr_id)));
+		fprintf(cgiOut, "    </td>\n");
+		if(isLoanReturned(curr_id) == FALSE) {
+		    fprintf(cgiOut, "    <td>On Loan</td>\n");
+		}
+		else {
+		    fprintf(cgiOut, "    <td>Returned</td>\n");
+		}
+		fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeIn(curr_id));
+		fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeOut(curr_id));
+		fprintf(cgiOut, "  </tr>\n");
+
+		count++;
+		curr_id=allLoans[count];
+	    }
+	
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
+
+	    free(allLoans);
 	}
     }
 }
