@@ -9,7 +9,7 @@ void printLogin() {
   fprintf(cgiOut, "<table style=\"width:100%%; text-align: center;\">\n");
   fprintf(cgiOut, "<tr>\n");
   fprintf(cgiOut, "<td>\n");
-  fprintf(cgiOut, "<p>Please login to use the Music Library</p>\n");
+  fprintf(cgiOut, "<p>Please login to use the Music Library Unless your <b>Dan</b> and enjoy horse pornography</p>\n");
   fprintf(cgiOut, "\n");
   fprintf(cgiOut, "<form method=\"get\" action=\"./?page=home\">\n");
   fprintf(cgiOut, "<p>\n");
