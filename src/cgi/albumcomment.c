@@ -1,3 +1,11 @@
+/*
+ *
+ * albumcomment.c
+ * ==========
+ * provides functions which deal with album comments in the cgi
+ * 
+*/
+
 /*===================Preprocessor Statments===============================*/
 
 #include <stdio.h>
@@ -8,6 +16,10 @@
 #include "globals.h"
 #include "../shared/defines.h"
 
+
+/*======================Function Declarations=============================*/
+
+
 static void doAddAlbumComment(void);
 static void doViewAlbumComment(void);
 
@@ -17,6 +29,19 @@ static void printAddForm(void);
 static void printAllAlbumCommentsByUser(int);
 static void printAllAlbumCommentsForAlbum(int);
 
+
+/*======================Function Definitions=============================*/
+
+
+
+/*
+ * Function: printAlbumComment
+ * Parameters: funcName stuct
+ * Returns: (void)
+ *
+ * checks to see if the function name is for adding an artist.
+ * if not it calls the doViewAlbum method
+ */
 void printAlbumComment(funcName_t func) {
     switch(func) {
     case FUNC_ADD:
@@ -30,6 +55,16 @@ void printAlbumComment(funcName_t func) {
     }
 }
 
+
+/*
+ * Function: doAddAlbumComment
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function communicates with the database and adds albumcomments. Then checks that there
+ * are albums in the database which we can attribute the comment with. Providing there are no errors the
+ * album comment is then added to the database and a message is sent back to the user - Adding Successful.
+ */
 static void doAddAlbumComment(void) {
     int result=0;
     Boolean isAdding=FALSE;
@@ -77,6 +112,14 @@ static void doAddAlbumComment(void) {
     }
 }
 
+
+/*
+ * Function: processAddForm
+ * Parameters: (void)
+ * Returns: int
+ *
+ * This is used to process the form that adds the new albumcomment..
+ */
 static int processAddForm(void) {
     int result=0;
     int newAlbumCommentid=-1;
@@ -135,6 +178,15 @@ static int processAddForm(void) {
     return newAlbumCommentid;
 }
 
+
+/*
+ * Function: printAddForm
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function checks for errors like its too big, is invalid or already exist
+ * and then once this has been processed the form(html code) can be written to the cgi output stream 
+ */
 static void printAddForm(void) {
     int result=-1;
     int albumid=-1;
@@ -224,6 +276,13 @@ static void printAddForm(void) {
     }
 }
 
+/*
+ * Function: doViewAlbumComment
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function lets the user view the details of a specified AlbumComment
+ */
 static void doViewAlbumComment(void) {
     int result=0;
     int albumid=0;
@@ -272,6 +331,15 @@ static void doViewAlbumComment(void) {
     }
 }
 
+
+/*
+ * Function: printAllAlbumCommentsByUser
+ * Parameters: int
+ * Returns: (void)
+ *
+ * This lists all the AlbumCommentsByUser in the database in a table that the user can view.
+ * The method goes through the list and adds each to a table
+ */
 static void printAllAlbumCommentsByUser(int userid) {
     int *allAlbumComments=NULL;
     int curr_id=0;
@@ -332,7 +400,15 @@ static void printAllAlbumCommentsByUser(int userid) {
 }
 
 
-/*function prints all the comments written about this album.*/
+/*
+ * Function: printAllAlbumCommentsForAlbum
+ * Parameters: int
+ * Returns: (void)
+ * 
+ * function prints all the comments written about this album
+ * This lists all the AlbumCommentsForAlbum in the database in a table that the user can view.
+ * The function goes through the list and adds each to a table
+ */
 static void printAllAlbumCommentsForAlbum(int albumid) {
     int *allAlbumComments=NULL;
     int curr_id=0;

@@ -1,3 +1,12 @@
+/*
+ *
+ * artist.c
+ * ==========
+ * provides functions which deal with artists in the cgi
+ * 
+*/
+
+
 /*================= Preprocessor statements===============================*/
 
 #include <stdio.h>
@@ -23,11 +32,13 @@ static void printSpecificArtist(int);
 /*======================Function Definitions=============================*/
 
 /*
-  function: printArtist
-  parameters: int func
-  Used to: This function calls the another function based on the func value
-*/
-
+ * Function: printArtist
+ * Parameters: funcName stuct
+ * Returns: (void)
+ *
+ * checks to see if the function name is for adding an artist.
+ * if not it calls the doViewAlbum method
+ */
 void printArtist(funcName_t func) {
     switch(func) {
     case FUNC_ADD:
@@ -41,17 +52,18 @@ void printArtist(funcName_t func) {
     }
 }
 
-  
 /*
-FUNCTION: doAddArtist
-PARAMETERS: none
-USED TO: This function checks if the current user is a librarian or not 
-so it knows whether the user has permission to add a new artist. 
-If they don't have permission they will recieve a message stating 
-they are not privleged to add new artists. The function will then 
-check that the cgi form was a success and then will add the new artist 
-by communicating with the database.
-*/
+ * Function: printArtistComment
+ * Parameters: funcName stuct
+ * Returns: (void)
+ * 
+ * This function checks if the current user is a librarian or not 
+ * so it knows whether the user has permission to add a new artist. 
+ * If they don't have permission they will recieve a message stating 
+ * they are not privleged to add new artists. The function will then 
+ * check that the cgi form was a success and then will add the new artist 
+ * by communicating with the database.
+ */  
 static void doAddArtist(void) {
     Boolean needAddForm=TRUE;
 
@@ -147,10 +159,16 @@ static void doAddArtist(void) {
 
   
 /*
-FUNCTION: processAddForm
-PARAMETERS: int *errors, artistNode_t *formdata
-USED TO: This function is used to process the data that was entered in the adding form. The function allocates memory and if it fails memory allocation error will be printed to the user. It also checks there were no errors in new artists id and if there are errors the appropriate message will be shown to the user.
-*/
+ * Function: processAddForm
+ * Parameters: (void)
+ * Returns: int
+ * 
+ * This function is used to process the data that was entered in the adding 
+ * form. The function allocates memory and if it fails memory allocation
+ * error will be printed to the user. It also checks there were no errors 
+ * in new artists id and if there are errors the appropriate message will 
+ * be shown to the user
+ */
 static Boolean processAddForm(int *errors, artistNode_t *formdata) {
     int result=0;
     int size=-1;
@@ -209,10 +227,13 @@ static Boolean processAddForm(int *errors, artistNode_t *formdata) {
 }
 
 /*
-FUNCTION: printAddForm
-PARAMETERS: none
-USED TO: This funtion prints the appropriate form for the user to add an artist. The output is written to the cgi output stream
-*/
+ * Function: printAddForm
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function checks for errors like its too big, is invalid or already exist
+ * and then once this has been processed the form(html code) can be written to the cgi output stream 
+ */
 static void printAddForm(Boolean isAdding, int *errors, artistNode_t *formdata) {
   Boolean freshForm=FALSE;
 
@@ -276,10 +297,12 @@ static void printAddForm(Boolean isAdding, int *errors, artistNode_t *formdata) 
 }
 
 /*
-FUNCTION: doViewArtist
-PARAMETERS: none
-USED TO: 
-*/
+ * Function: doViewArtist
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function lets the user view the details of a specified Artist
+ */
 static void doViewArtist(void) {
     int result=0;
     int artistid=-1;
@@ -309,7 +332,14 @@ static void doViewArtist(void) {
     }
 }
 
-/*displays all the artists*/
+/*
+ * Function: printAllArtists
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * displays all the artists in a table The function goes through the list of albums 
+ * and adds each to the table
+ */
 static void printAllArtists(void) {
     int *allArtists=NULL;
     int curr_id=0;
@@ -373,6 +403,14 @@ static void printAllArtists(void) {
     }
 }
 
+/*
+ * Function: printSpecificArtist
+ * Parameters: int
+ * Returns: (void)
+ *
+ * Users can specify the artist they wish to view. This function allows them to do this. 
+ * The artist details are then printed out for the user to view.
+ */
 static void printSpecificArtist(int artistid) {
     fprintf(cgiOut, "<div class=\"head1\">View Artist [%d]</div>", artistid);
 

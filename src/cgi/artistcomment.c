@@ -37,7 +37,7 @@ static void printAllArtistCommentsForArtist(int);
  * Returns: (void)
  *
  * checks to see if the function name is for adding an artist.
- * if not it calls the doViewAlbum method
+ * if not it calls the doViewArtist function
  */
 void printArtistComment(funcName_t func) {
     switch(func) {
