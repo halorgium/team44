@@ -19,4 +19,13 @@ typedef int Boolean;
 #define MAXSIZE_ARTISTCOMMENT 1000
 #define MAXSIZE_ALBUMCOMMENT 1000
 
+#define E_INVALID_PARAM -1
+#define E_MALLOC_FAILED -2
+#define E_NOALBUM -3
+#define E_NOUSER -4
+#define LAST_ID_IN_ARRAY -5
+#define ALREADY_ADDED -6
+#define SAVE_FAILURE -7
+#define LOAD_FAILURE -8
+
 #endif

@@ -8,7 +8,7 @@ typedef struct userNode{
     char *userCode;   /*unique user name*/
     char *userName;
     char *emailAddress;
-    Boolean isLibrarian;       /* FALSE-standard, TRUE-librarian*/
+    int isLibrarian;       /* FALSE-standard, TRUE-librarian*/
     
     struct userNode *next;
 }userNode_t;
@@ -70,7 +70,7 @@ typedef struct loanNode{
     char *userName;
     int timetake;
     int timereturn;
-    Boolean returned;
+    int returned;
     
     struct loanNode *next;
 }loan_t;
