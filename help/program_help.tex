@@ -51,7 +51,7 @@ Each Node has a Unique ID value, this is dynamically allocated to it upon creati
 \section{Database Layer}
 Data within the database is stored to disk as [value]\%[value]\%[value]. The \% character is used as a delimiter between different data objects. This Section will explain the purpose of each `.c' file within the database and what each function achieves.
 \subsection{add.c}
-This file is responsible for adding to the database and saving objects to disk. All add functions check fields for invalid input by calling the \verb|checkString| method before performing their intended task. Also each add function checks that the current data does not already exist in the database before adding, so there should never be two of the same artist, album or user in the database. At the end of each add function there is a call to the corresponding \emph{save} function described in \verb|save.c|.
+This file is responsible for adding to the database. All add functions check fields for invalid input by calling the \verb|checkString| method before performing their intended task. Also each add function checks that the current data does not already exist in the database before adding, so there should never be two of the same entity in the database. At the end of each add function there is a call to the corresponding \emph{save} function described in \verb|save.c|.
 
 \subsubsection*{getctime()}
  This function is a wrapper function for the \verb|getTimeOfDay()| function in \verb|sys/time.h|, it returns the current time of day based on the number of seconds since the Linux epoch 01/01/1970. It is used to record the dates and times of loans within the library.
@@ -192,7 +192,7 @@ This header file contains 3 different sections;
 \end{description}
 
 \subsection{load.c}
-This file is used when the program is fist initialized, it loads all the information current stored in the database using the following methods;
+This file is used when the program is fist initialized, it loads all the information currently stored in the database, into system memory, using the following methods;
 
 \subsubsection*{loadDatabase()}
 This is the main function of this file. It sets all the first variables to Null
@@ -229,7 +229,7 @@ These methods all work similarly to load the different types of comments from th
 This file consists of one function that takes in a file and returns the first line of the file as an array of chars.
 
 \subsection{save.c}
-This file contains functions to save the various entities within the MusicLib program to disk.
+This file contains functions to save the various entities within the MusicLib program from system memory to disk.
 
 \subsubsection*{saveNextID}
 This function saves all the \verb|nextID|'s to file. Next ID's are the unique id value for each different entity that will be allocated if a new entity of that type is added to the database.
@@ -284,7 +284,7 @@ This function outputs to cgi all the comments written about the album specified 
 This file is very similar to album.c as is uses the same basic functions to output to cgi, see the album.c help file for more details. 
 
 \subsection{artistcomment.c}
-See the help for albumcomment.c as all functions are equivalent with this file, apart from the fact that this file refers to artists not albums.
+See the help for albumcomment.c as all functions are equivalent with this file, except that this file refers to artists not albums.
 
 \subsection{cgic.c}
 This is the standard C library of functions that support the development of web based applications.
