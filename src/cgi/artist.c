@@ -43,6 +43,11 @@ static void doAddArtist(void) {
     int result=0;
     Boolean isAdding=-1;
 
+    if(isUserLibrarian(_currUserLogon) == FALSE) {
+	fprintf(cgiOut, "You are not privleged to add new Artists\n");
+	return;
+    }
+    
     fprintf(cgiOut, "<div class=\"head1\">Adding New Artist</div>\n");
 
     /* if adding field is set */

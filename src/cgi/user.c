@@ -42,6 +42,11 @@ static void doAddUser(void) {
     int result=0;
     Boolean isAdding=-1;
 
+    if(isUserLibrarian(_currUserLogon) == FALSE) {
+	fprintf(cgiOut, "You are not privleged to add new Users\n");
+	return;
+    }
+    
     fprintf(cgiOut, "<div class=\"head1\">Adding New User</div>\n");
 
     /* if adding field is set */

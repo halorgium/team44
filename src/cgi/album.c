@@ -42,6 +42,11 @@ static void doAddAlbum(void) {
     int result=0;
     Boolean isAdding=-1;
 
+    if(isUserLibrarian(_currUserLogon) == FALSE) {
+	fprintf(cgiOut, "You are not privleged to add new Albums\n");
+	return;
+    }
+    
     fprintf(cgiOut, "<div class=\"head1\">Adding New Album</div>\n");
 
     /* if adding field is set */
