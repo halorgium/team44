@@ -69,14 +69,22 @@ static void doAddUserComment(void) {
 	    char *username=getUserName(commentUser);
 	    
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View Info about %s]</a><br />\n", commentUser, _currUserLogon, username);
-	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View All Comments about %s]</a><br />\n", commentUser, _currUserLogon, username);
-	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Write another comment about %s]</a>\n", commentUser, _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">[View Info about %s]</a><br />\n", commentUser, _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">[View All Comments about %s]</a><br />\n", commentUser, _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&amp;hash=%d\">[Write another comment about %s]</a><br />\n", commentUser, _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;hash=%d\">[Write a comment about another User]</a>\n", _currUserLogon);
 
 	    free(username);
 	}
 	else {
 	    /* Some sort of failure */
+            int userid=-1;
+            result = cgiFormInteger("usrid", &userid, -1);
+            if(result == cgiFormSuccess && getUserExists(userid) == TRUE) {
+	        char *username=getUserName(userid);
+	        fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a><br />\n", userid, _currUserLogon, username);
+                free(username);
+            }
 	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;hash=%d\">[Write another Comment about a User]</a>\n", _currUserLogon);
 	}
     }
@@ -142,9 +150,15 @@ static int processAddForm(void) {
 
 static void printAddForm(void) {
     int result=-1;
+    int userid=-1;
+    
+    if(getUsersCount() == 0) {
+	fprintf(cgiOut, "No users in database<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&hash=%d\">[Add User]</a><br />\n", _currUserLogon);
+	return;
+    }
     
     /* Check for userid */
-    int userid=-1;
     result = cgiFormInteger("userid", &userid, -1);
     if(result != cgiFormSuccess || userid == -1) {
 	/* No userid */
@@ -153,16 +167,10 @@ static void printAddForm(void) {
     
     if(userid != -1 && getUserExists(userid) == FALSE) {
 	/* No userid */
-	fprintf(cgiOut, "User [%d] does not exist in the database\n", userid);
+	fprintf(cgiOut, "User [%d] does not exist in the database<br />\n", userid);
 	userid=-1;
     }
 
-    if(getUsersCount() == 0) {
-	fprintf(cgiOut, "No users in database<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&hash=%d\">[Add User]</a><br />\n", _currUserLogon);
-	return;
-    }
-    
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
     fprintf(cgiOut, "<tbody>\n");

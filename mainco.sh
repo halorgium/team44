@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco,v 1.3 2003/09/25 05:09:10 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco.sh,v 1.1 2003/09/25 14:23:02 tsm20 Exp $
 
 CLEANOUT="releases"
-   CVSIN="/home/cosc/student/tsm20/team44cvs"
+   CVSIN=`cat CVS/Root`
   MODULE="casestudy"
 
 rm -fr $CLEANOUT || exit
@@ -25,7 +25,7 @@ rm -fr $CLEANDIR || exit
 mkdir $CLEANDIR || exit
 
 cp $MODULE/Makefile $CLEANDIR || exit
-cp -r $MODULE/src $CLEANDIR || exit
+cp -r $MODULE/src  $CLEANDIR || exit
 mkdir $CLEANDIR/help
 cp $MODULE/help/Makefile $CLEANDIR/help || exit
 cp $MODULE/help/*.tex $CLEANDIR/help || exit

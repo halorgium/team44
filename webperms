@@ -1,7 +1,0 @@
-#!/bin/sh
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/webperms,v 1.1 2003/05/26 05:54:21 tsm20 Exp $
-
-chown -R :c204g18 .
-chmod g+rx web
-chmod -R g+r web
-chmod g+x `find web -type d`

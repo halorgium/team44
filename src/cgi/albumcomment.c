@@ -61,12 +61,20 @@ static void doAddAlbumComment(void) {
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", albumid, _currUserLogon, albumtitle);
 	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&amp;hash=%d\">[View All Comments about &quot;%s&quot;]</a><br />\n", albumid, _currUserLogon, albumtitle);
-	    fprintf(cgiOut, " <a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a>\n", albumid, _currUserLogon, albumtitle);
+	    fprintf(cgiOut, " <a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a><br />\n", albumid, _currUserLogon, albumtitle);
+	    fprintf(cgiOut, " <a href=\"./?page=albumcomment&amp;func=add&amp;hash=%d\">[Write a Comment about another Album]</a>\n", _currUserLogon);
 	    
 	    free(albumtitle);
 	}
 	else {
 	    /* Some sort of failure */
+            int albumid=-1;
+            result = cgiFormInteger("albid", &albumid, -1);
+            if(result == cgiFormSuccess && getAlbumExists(albumid) == TRUE) {
+	        char *albumtitle=getAlbumTitle(albumid);
+	        fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a><br />\n", albumid, _currUserLogon, albumtitle);
+                free(albumtitle);
+            }
 	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;hash=%d\">[Write another Comment about an Album]</a>\n", _currUserLogon);
 	}
     }
@@ -136,9 +144,15 @@ static int processAddForm(void) {
 
 static void printAddForm(void) {
     int result=-1;
+    int albumid=-1;
+    
+    if(getAlbumsCount() == 0) {
+	fprintf(cgiOut, "No albums in database<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&hash=%d\">[Add Album]</a><br />\n", _currUserLogon);
+	return;
+    }
     
     /* Check for albumid */
-    int albumid=-1;
     result = cgiFormInteger("albumid", &albumid, -1);
     if(result != cgiFormSuccess || albumid == -1) {
 	/* No albumid */
@@ -147,14 +161,8 @@ static void printAddForm(void) {
     
     if(albumid != -1 && getAlbumExists(albumid) == FALSE) {
 	/* No albumid */
-	fprintf(cgiOut, "Album [%d] does not exist in the database\n", albumid);
+	fprintf(cgiOut, "Album [%d] does not exist in the database<br />\n", albumid);
 	albumid=-1;
-    }
-    
-    if(getAlbumsCount() == 0) {
-	fprintf(cgiOut, "No albums in database<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&hash=%d\">[Add Album]</a><br />\n", _currUserLogon);
-	return;
     }
 
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
