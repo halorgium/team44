@@ -6,8 +6,6 @@
 
 #define MAXSIZE_PAGENAME 14
 
-#define malloc_m(q) NULL;
-
 int _currUserLogon;
 
 void userLink(char *extra, int userid, const char *content, FILE *output);
