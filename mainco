@@ -1,28 +1,38 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco,v 1.2 2003/07/25 04:06:30 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco,v 1.3 2003/09/25 05:09:10 tsm20 Exp $
 
-CLEANOUT="/home/cosc/student/tsm20/team44clean"
+CLEANOUT="releases"
    CVSIN="/home/cosc/student/tsm20/team44cvs"
   MODULE="casestudy"
 
+rm -fr $CLEANOUT || exit
+mkdir $CLEANOUT || exit
 cd $CLEANOUT || exit
 
-echo "pwd="`pwd`
-rm -fr $MODULE
+echo "pwd="`pwd` || exit
+rm -fr $MODULE || exit
 
-cvs -d $CVSIN export -f -r HEAD $MODULE
+cvs -d $CVSIN export -f -r HEAD $MODULE || exit
 
-echo "----------------------------------"
-echo "Start perms "$CLEANOUT
+# copy needed files
 
-echo "Add rw for group (all files)"
-echo "Add x  for group (dirs and scripts)"
-chmod ug+rwX  `find $CLEANOUT`
-echo "Remove perms for other"
-chmod o-rwx `find $CLEANOUT`
+(cd $MODULE/help; make)
 
-# at this point:
-#   other has no perms
-#   group has rx for dirs and scripts
-#         has r  for random files
+CLEANDIR=musiclib-1.0
+
+rm -fr $CLEANDIR || exit
+mkdir $CLEANDIR || exit
+
+cp $MODULE/Makefile $CLEANDIR || exit
+cp -r $MODULE/src $CLEANDIR || exit
+mkdir $CLEANDIR/help
+cp $MODULE/help/Makefile $CLEANDIR/help || exit
+cp $MODULE/help/*.tex $CLEANDIR/help || exit
+cp $MODULE/help/*.pdf $CLEANDIR/help || exit
+cp -r $MODULE/help/usr_help $CLEANDIR/help || exit
+cp -r $MODULE/var $CLEANDIR || exit
+
+rm -f $CLEANDIR.tar.gz
+
+tar zcvf $CLEANDIR.tar.gz $CLEANDIR
