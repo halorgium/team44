@@ -30,12 +30,12 @@ void printUser(void) {
     }
 
     if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
-	/* Do add album etc */
+	/* Do add user etc */
 	doAddUser();
     }
     else {
 	/* Default */
-	/* Do view album etc */
+	/* Do view user etc */
 	doViewUser();
     }
 }
@@ -44,6 +44,7 @@ static void doAddUser(void) {
     int result=0;
     Boolean isAdding=-1;
 
+    /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
 	fprintf(cgiOut, "You are not privleged to add new Users\n");
 	return;
@@ -61,15 +62,16 @@ static void doAddUser(void) {
     if(isAdding) {
 	/* The curr data is ready for processing */
 	int newuserid=processAddForm();
-	if(newuserid != -1) {
+	if(newuserid > 0) {
 	    /* User added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">[View User]</a><br />\n", newuserid, _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;userid=%d&amp;hash=%d\">[Add another User]</a>", newuserid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;hash=%d\">[Add Another User]</a>", _currUserLogon);
 	}
 	else {
-	    /* Some sort of failure */
-	    fprintf(cgiOut, "Adding failed\n");
+	    /* User adding error */
+	    /* Link back to add page */
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;hash=%d\">[Add Another User]</a>", _currUserLogon);
 	}
     }
     else {
@@ -88,35 +90,54 @@ static int processAddForm(void) {
 
     result = cgiFormStringNoNewlines("usrcode", userCode, MAXSIZE_USERCODE);
     if(result != cgiFormSuccess || userCode == NULL) {
-	printf("no code<br />\\n");
-	return -1;
-    }
-
-    result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
-    if(result != cgiFormSuccess || userName == NULL) {
-	printf("no name<br />\\n");
-	return -1;
-    }
-   
-    result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
-    if(result != cgiFormSuccess || userEmail == NULL) {
-	printf("no email<br />\\n");
-	return -1;
-    }
-
-    result = cgiFormCheckboxSingle("islib");
-    if(result != cgiFormSuccess) {
-	isLib=FALSE;
+	newUserid = E_INVALID_PARAM;
     }
     else {
-	isLib=TRUE;
+	result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
+	if(result != cgiFormSuccess || userName == NULL) {
+	    newUserid = E_INVALID_PARAM;
+	}
+	else {
+	    result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
+	    if(result != cgiFormSuccess || userEmail == NULL) {
+		newUserid = E_INVALID_PARAM;
+	    }
+	    else {
+		result = cgiFormCheckboxSingle("islib");
+		if(result != cgiFormSuccess) {
+		    isLib=FALSE;
+		}
+		else {
+		    isLib=TRUE;
+		}
+		newUserid=addUser(userCode, userName, userEmail, isLib);
+	    }
+	}
     }
-
-    newUserid=addUser(userCode, userName, userEmail, isLib);
+    
     if(newUserid < 0) {
-	printf("unable to add - %d<br />\n", newUserid);
-	return -1;
+	switch(newUserid) {
+	case DB_NEXTID_ERROR:
+	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
+	    break;
+	case DB_SAVE_FAILURE:
+	    fprintf(cgiOut, "Database failure: User save incomplete<br />\n");
+	    break;
+	case E_INVALID_PARAM:
+	    fprintf(cgiOut, "One or more input fields are invalid<br />\n");
+	    break;
+	case ALREADY_ADDED:
+	    fprintf(cgiOut, "User Code &quot;%s&quot; already exists<br />\n", userCode);
+	    break;
+	case E_MALLOC_FAILED:
+	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	    break;
+	default:
+	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
+	    return E_UNKNOWN;
+	}
     }
+    
     return newUserid;
 }
 

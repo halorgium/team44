@@ -11,7 +11,7 @@ static void doViewUserComment(void);
 static void doShowUserComment(void);
 
 static int processAddForm(void);
-static void printAddForm(int);
+static void printAddForm(void);
 
 static void printAllUserCommentsByUser(int);
 static void printAllUserCommentsForUser(int);
@@ -24,7 +24,7 @@ void printUserComment(void) {
     result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
     if(result != cgiFormSuccess || func == NULL) {
 	/* Some sort of failure */
-      strncpy(func, "main", MAXSIZE_PAGENAME);
+	strncpy(func, "main", MAXSIZE_PAGENAME);
     }
 
     if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
@@ -48,9 +48,9 @@ static void doAddUserComment(void) {
     fprintf(cgiOut, "<div class=\"head1\">Adding New User Comment</div>\n");
 
     if(isUserLibrarian(_currUserLogon) == FALSE) {
-      /* curr User is not privileged */
-      fprintf(cgiOut, "You can not add user comments\n");
-      return;
+	/* curr User is not privileged */
+	fprintf(cgiOut, "You can not add user comments\n");
+	return;
     }
 
     /* if adding field is set */
@@ -61,39 +61,23 @@ static void doAddUserComment(void) {
     }
 
     if(isAdding) {
-      /* The curr data is ready for processing */
-      int newuserCommentid=processAddForm();
-      if(newuserCommentid != -1) {
-	/* User Comment added ok */
-	fprintf(cgiOut, "Adding successful<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View User Comments for User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Add another comment on User]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon);
-      }
-      else {
-	/* Some sort of failure */
-	fprintf(cgiOut, "Adding failed - %d\n", newuserCommentid);
-      }
+	/* The curr data is ready for processing */
+	int newuserCommentid=processAddForm();
+	if(newuserCommentid != -1) {
+	    /* User Comment added ok */
+	    fprintf(cgiOut, "Adding successful<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View User Comments for User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Add another comment on User]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon);
+	}
+	else {
+	    /* Some sort of failure */
+	    fprintf(cgiOut, "Adding failed - %d\n", newuserCommentid);
+	}
     }
     else {
-      /* Check for userid */
-      int userid=-1;
-      result = cgiFormInteger("userid", &userid, -1);
-      if(result != cgiFormSuccess || userid == -1) {
-	/* No userid */
-	fprintf(cgiOut, "No user specified\n");
-	return;
-      }
-
-      if(getUserExists(userid) == FALSE) {
-	/* No userid */
-	fprintf(cgiOut, "User [%d] does not exist in the database\n", userid);
-	return;
-      }
-
-      /* Need to print form */
-      fprintf(cgiOut, "Should we print add form even if no userid???? [Let user specify etc]\n");
-      printAddForm(userid);
+	/* Need to print form */
+	printAddForm();
     }
 }
 
@@ -121,14 +105,38 @@ static int processAddForm(void) {
     return newUserCommentid;
 }
 
-static void printAddForm(int userid) {
+static void printAddForm(void) {
+    int result=-1;
+    
+    /* Check for userid */
+    int userid=-1;
+    result = cgiFormInteger("userid", &userid, -1);
+    if(result != cgiFormSuccess || userid == -1) {
+	/* No userid */
+	userid=-1;
+    }
+    
+    if(userid != -1 && getUserExists(userid) == FALSE) {
+	/* No userid */
+	fprintf(cgiOut, "User [%d] does not exist in the database\n", userid);
+	userid=-1;
+    }
+
+    if(getUsersCount() == 0) {
+	fprintf(cgiOut, "No users in database<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&hash=%d\">[Add User]</a><br />\n", _currUserLogon);
+	return;
+    }
+    
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
     fprintf(cgiOut, "<tbody>\n");
     fprintf(cgiOut, "  <tr><td>\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"usercomment\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"usrid\" value=\"%d\" />\n", userid);
+    if(userid != -1) {
+	fprintf(cgiOut, "    <input type=\"hidden\" name=\"usrid\" value=\"%d\" />\n", userid);
+    }
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
     fprintf(cgiOut, "  </td></tr>\n");
@@ -136,7 +144,28 @@ static void printAddForm(int userid) {
     fprintf(cgiOut, "    <td class=\"describe\"><label title=\"User Name\">User Name: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getUserName(userid));
+    if(userid == -1) {
+	int *allUsers=getUsers();
+	int count=0;
+	int curr_id=0;
+	
+	fprintf(cgiOut, "    <td class=\"field\">\n");
+	/* Print out the <select> for all users */
+	fprintf(cgiOut, "<select id=\"usrid\" name=\"usrid\" size=\"5\">\n");
+	
+	curr_id=allUsers[count];
+	while (curr_id != LAST_ID_IN_ARRAY) {
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getUserName(curr_id));
+	    count++;
+	    curr_id=allUsers[count];
+	}
+	
+	fprintf(cgiOut, "</select>\n");
+	fprintf(cgiOut, "</td>\n");
+    }
+    else {
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getUserName(userid));
+    }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"combody\" title=\"The Comment\">The Comment: </label></td>\n");
@@ -152,7 +181,9 @@ static void printAddForm(int userid) {
     fprintf(cgiOut, "</table>\n");
     fprintf(cgiOut, "</form>\n");
 
-    fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
+    if(userid != -1) {    
+	fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
+    }
 }
 
 static void doViewUserComment(void) {
@@ -168,10 +199,18 @@ static void doViewUserComment(void) {
 	result = cgiFormInteger("owner", &owner, -1);
 	if(result != cgiFormSuccess || owner == -1) {
 	    /* Nothing specified */
-	    fprintf(cgiOut, "No id specified\n");
+	    fprintf(cgiOut, "No user specified\n");
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;hash=%d\">[View All Users]</a>\n", _currUserLogon);
 	    return;
 	}
 	else {
+	    /* Check User exists */
+	    if(getUserExists(owner) == FALSE) {
+		fprintf(cgiOut, "User [%d] does not exist<br />\n", owner);
+		fprintf(cgiOut, "<a href=\"./?page=user&amp;hash=%d\">[View All Users]</a>\n", _currUserLogon);
+		return;
+	    }
+	
 	    /* Check privileges */
 	    if(owner == _currUserLogon || isUserLibrarian(_currUserLogon) == TRUE) {
 		/* Will use owner */
@@ -183,6 +222,13 @@ static void doViewUserComment(void) {
 	}
     }
     else {
+	/* Check User exists */
+	if(getUserExists(userid) == FALSE) {
+	    fprintf(cgiOut, "User [%d] does not exist<br />\n", userid);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;hash=%d\">[View All Users]</a>\n", _currUserLogon);
+	    return;
+	}
+
 	/* Check privileges */
 	if(userid == _currUserLogon || isUserLibrarian(_currUserLogon) == TRUE) {
 	    /* Will use userid */
@@ -295,37 +341,45 @@ static void printAllUserCommentsForUser(int userid) {
 }
 
 void doShowUserComment(void) {
-  int result=0;
-  int userid=0;
+    int result=0;
+    int userid=0;
   
-  /* check for userid field */
-  result = cgiFormInteger("userid", &userid, -1);
-  if(result != cgiFormSuccess || userid == -1) {
-    /* Some sort of failure */
-    /* Nothing specified */
-    fprintf(cgiOut, "No id specified\n");
-    return;
-  }
-  else {
-    /* Check privileges */
-    if(userid != _currUserLogon && isUserLibrarian(_currUserLogon) == FALSE) {
-      fprintf(cgiOut, "You can not view info about Comments by/about User [%d]\n", userid);
-      return;
+    /* check for userid field */
+    result = cgiFormInteger("userid", &userid, -1);
+    if(result != cgiFormSuccess || userid == -1) {
+	/* Some sort of failure */
+	/* Nothing specified */
+	fprintf(cgiOut, "No user specified<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=user&amp;hash=%d\">[View All Users]</a>\n", _currUserLogon);
+	return;
     }
-  }
-  
-  /* Will use userid */
-  fprintf(cgiOut, "<div class=\"head1\">Comments written by and written about %s</div>\n", getUserName(userid));
+    else {
+	/* Check User exists */
+	if(getUserExists(userid) == FALSE) {
+	    fprintf(cgiOut, "User [%d] does exist<br />\n", userid);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;hash=%d\">[View All Users]</a>\n", _currUserLogon);
+	    return;
+	}
+	
+	/* Check privileges */
+	if(userid != _currUserLogon && isUserLibrarian(_currUserLogon) == FALSE) {
+	    fprintf(cgiOut, "You can not view info about Comments by/about User [%d]\n", userid);
+	    return;
+	}
+    }
 
-  fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">View Comments about <b>%s</b> (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsForUserCount(userid));
+    /* Will use userid */
+    fprintf(cgiOut, "<div class=\"head1\">Comments written by and written about %s</div>\n", getUserName(userid));
 
-  if(isUserLibrarian(userid) == TRUE) {
-	fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has about Users (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsByUserCount(userid));
-  }
+    fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">View Comments about <b>%s</b> (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsForUserCount(userid));
 
-  fprintf(cgiOut, "<p><a href=\"./?page=albumcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has about Albums (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getAlbumCommentsByUserCount(userid));
+    if(isUserLibrarian(userid) == TRUE) {
+	fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Users (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsByUserCount(userid));
+    }
 
-  fprintf(cgiOut, "<p><a href=\"./?page=artistcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has bout Artists (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getArtistCommentsByUserCount(userid));
+    fprintf(cgiOut, "<p><a href=\"./?page=albumcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Albums (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getAlbumCommentsByUserCount(userid));
 
-  fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
+    fprintf(cgiOut, "<p><a href=\"./?page=artistcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Artists (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getArtistCommentsByUserCount(userid));
+
+    fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }

@@ -42,6 +42,7 @@ static void doAddAlbum(void) {
     int result=0;
     Boolean isAdding=-1;
 
+    /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
 	fprintf(cgiOut, "You are not privleged to add new Albums\n");
 	return;
@@ -59,19 +60,16 @@ static void doAddAlbum(void) {
     if(isAdding) {
 	/* The curr data is ready for processing */
 	int newalbumid=processAddForm();
-	if(newalbumid == ALREADY_ADDED){
-	    fprintf(cgiOut, " Sorry there is already an album with that title by that artist. Adding failed.\n");
-	}
-	
-	else if(newalbumid != -1) {
+	if(newalbumid > 0) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a><br />\n", newalbumid, _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Add another Album]</a>", newalbumid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add another Album]</a>", _currUserLogon);
 	}
 	else {
-	    /* Some sort of failure */
-	    fprintf(cgiOut, "Adding failed\n");
+	    /* Album adding error */
+	    /* Link back to add page */
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add Another Album]</a>", _currUserLogon);
 	}
     }
     else {
@@ -86,49 +84,70 @@ static int processAddForm(void) {
     int newAlbumid=-1;
     char *albtitle=malloc(sizeof(char)*MAXSIZE_ALBUMTITLE);
     int artistid=-1;
-    /*pointer t0 list of albums*/
-    int *albumsInLibrary=0;
-    int albumCount;
-    int i;  /*counter*/
 
     result = cgiFormStringNoNewlines("albtitle", albtitle, MAXSIZE_ARTISTNAME);
     if(result != cgiFormSuccess || albtitle == NULL) {
-	return -1;
+	newAlbumid = E_INVALID_PARAM;
     }
-
-    result = cgiFormInteger("artistid", &artistid, -1);
-    if(result != cgiFormSuccess || artistid == -1) {
-	return -1;
-    }
-
-    /*check for album 'already in' library*/
-    albumsInLibrary = getAlbums();
-    albumCount = getAlbumsCount();
-    
-    for(i = 0; i < albumCount; i++){
-	if(strcmp(getAlbumTitle(albumsInLibrary[i]), albtitle) == 0 &&
-		   artistid == getAlbumArtist(albumsInLibrary[i])){
-	    /*album added is 'the same' as another in database*/
-	    return ALREADY_ADDED;
+    else {
+	result = cgiFormInteger("artistid", &artistid, -1);
+	if(result != cgiFormSuccess || artistid == -1) {
+	    newAlbumid = E_FORM;
+	}
+	else {
+	    newAlbumid=addAlbum(albtitle, artistid);
 	}
     }
 
-    newAlbumid=addAlbum(albtitle, artistid);
     if(newAlbumid < 0) {
-	return -1;
+	switch(newAlbumid) {
+	case DB_NEXTID_ERROR:
+	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
+	    break;
+	case DB_SAVE_FAILURE:
+	    fprintf(cgiOut, "Database failure: Album save incomplete<br />\n");
+	    break;
+	case E_NOARTIST:
+	    fprintf(cgiOut, "Artist [%d] does not exist<br />\n", artistid);
+	    break;
+	case E_FORM:
+	    fprintf(cgiOut, "Artist not selected<br />\n");
+	    break;
+	case E_INVALID_PARAM:
+	    fprintf(cgiOut, "Album Name is invalid<br />\n");
+	    break;
+	case ALREADY_ADDED:
+	    fprintf(cgiOut, "Album called &quot;%s&quot; written by &quot;%s&quot; has already been added<br />\n", albtitle, getArtistName(artistid));
+	    break;
+	case E_MALLOC_FAILED:
+	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	    break;
+	default:
+	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
+	    return E_UNKNOWN;
+	}
     }
+    
     return newAlbumid;
 } 
-
+	
 static void printAddForm(void) {
-    int *allArtists=getArtists();
-    int curr_id=0;
-    int count=0;
-
-    if(allArtists == NULL) {
-	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Artists</div>");
-	return;
+    int result=-1;
+    
+    /* Check for artistid */
+    int artistid=-1;
+    result = cgiFormInteger("artistid", &artistid, -1);
+    if(result != cgiFormSuccess || artistid == -1) {
+	/* No artistid */
+	artistid=-1;
     }
+    
+    if(artistid != -1 && getArtistExists(artistid) == FALSE) {
+	/* No artistid */
+	fprintf(cgiOut, "Artist [%d] does not exist in the database\n", artistid);
+	artistid=-1;
+    }
+
     if(getArtistsCount() == 0) {
 	fprintf(cgiOut, "To be able to add an album, the database must contain an artist<br />\n");
 	fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Artist]</a>\n", _currUserLogon);
@@ -142,6 +161,9 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <td>\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
+    if(artistid != -1) {
+	fprintf(cgiOut, "    <input type=\"hidden\" name=\"artistid\" value=\"%d\" />\n", artistid);
+    }
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
     fprintf(cgiOut, "    </td>\n");
@@ -156,18 +178,28 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artistid\" title=\"Artist Name\">Artist Name: </label>&nbsp;<a class=\"small\" href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Artist]</a></td>\n", _currUserLogon);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">\n");
-    fprintf(cgiOut, "<select id=\"artistid\" name=\"artistid\" size=\"5\">\n");
-
-    curr_id=allArtists[count];
-    while (curr_id != LAST_ID_IN_ARRAY) {
-	fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getArtistName(curr_id));
-	count++;
+    if(artistid == -1) {
+	int *allArtists=getArtists();
+	int count=0;
+	int curr_id=0;
+	
+	fprintf(cgiOut, "    <td class=\"field\">\n");
+	/* Print out the <select> for all artists */
+	fprintf(cgiOut, "<select id=\"artistid\" name=\"artistid\" size=\"5\">\n");
+	
 	curr_id=allArtists[count];
+	while (curr_id != LAST_ID_IN_ARRAY) {
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getArtistName(curr_id));
+	    count++;
+	    curr_id=allArtists[count];
+	}
+	
+	fprintf(cgiOut, "</select>\n");
+	fprintf(cgiOut, "</td>\n");
     }
-
-    fprintf(cgiOut, "</select>\n");
-    fprintf(cgiOut, "    </td>\n");
+    else {
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
+    }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "\n");
     fprintf(cgiOut, "  <tr>\n");

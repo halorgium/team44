@@ -10,7 +10,7 @@ static void doAddArtistComment(void);
 static void doViewArtistComment(void);
 
 static int processAddForm(void);
-static void printAddForm(int);
+static void printAddForm(void);
 
 static void printAllArtistCommentsByUser(int);
 static void printAllArtistCommentsForArtist(int);
@@ -23,7 +23,7 @@ void printArtistComment(void) {
     result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
     if(result != cgiFormSuccess || func == NULL) {
 	/* Some sort of failure */
-      strncpy(func, "view", MAXSIZE_PAGENAME);
+	strncpy(func, "view", MAXSIZE_PAGENAME);
     }
 
     if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
@@ -31,9 +31,9 @@ void printArtistComment(void) {
 	doAddArtistComment();
     }
     else {
-      /* Default */
-      /* Do view artistComment etc */
-      doViewArtistComment();
+	/* Default */
+	/* Do view artistComment etc */
+	doViewArtistComment();
     }
 }
 
@@ -51,40 +51,23 @@ static void doAddArtistComment(void) {
     }
 
     if(isAdding) {
-      /* The curr data is ready for processing */
-      int newartistCommentid=processAddForm();
-      if(newartistCommentid != -1) {
-	/* Artist Comment added ok */
-	fprintf(cgiOut, "Adding successful<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&hash=%d\">[View Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&hash=%d\">[View Artist Comments for Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
-	/*fprintf(cgiOut, "<br />\n");*/
-	fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&hash=%d\">[Add Another Comment on this Artist]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
-      }
-      else {
-	/* Some sort of failure */
-	fprintf(cgiOut, "Adding failed - %d\n", newartistCommentid);
-      }
+	/* The curr data is ready for processing */
+	int newartistCommentid=processAddForm();
+	if(newartistCommentid > 0) {
+	    /* Artist Comment added ok */
+	    fprintf(cgiOut, "Adding successful<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&amp;hash=%d\">[View Artist Comments for Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add Another Comment on this Artist]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
+	}
+	else {
+	    /* Some sort of failure */
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;hash=%d\">[Add Another Comment on an Artist]</a>\n", _currUserLogon);
+	}
     }
     else {
-      /* Check for artistid */
-      int artistid=-1;
-      result = cgiFormInteger("artistid", &artistid, -1);
-      if(result != cgiFormSuccess || artistid == -1) {
-	/* No artistid */
-	fprintf(cgiOut, "No artist specified\n");
-	return;
-      }
-
-      if(getArtistExists(artistid) == FALSE) {
-	/* No artistid */
-	fprintf(cgiOut, "Artist [%d] does not exist in the database\n", artistid);
-	return;
-      }
-
-      /* Need to print form */
-      fprintf(cgiOut, "Should we print add form even if no artistid???? [Let user specify etc]\n");
-      printAddForm(artistid);
+	/* Need to print form */
+	printAddForm();
     }
 }
 
@@ -96,30 +79,81 @@ static int processAddForm(void) {
 
     result = cgiFormInteger("artid", &artistid, -1);
     if(result != cgiFormSuccess || artistid == -1) {
-	return -1;
+	newArtistCommentid = E_FORM;
     }
-    
-    result = cgiFormStringNoNewlines("combody", combody, MAXSIZE_ARTISTCOMMENT);
-    if(result != cgiFormSuccess || combody == NULL) {
-	printf("no comment\n");
-	return -1;
+    else {
+	result = cgiFormStringNoNewlines("combody", combody, MAXSIZE_ARTISTCOMMENT);
+	if(result != cgiFormSuccess || combody == NULL) {
+	    newArtistCommentid = E_INVALID_PARAM;
+	}
+	else {
+	    newArtistCommentid=addArtistComment(artistid, _currUserLogon, combody);
+	}
     }
 
-    newArtistCommentid=addArtistComment(artistid, _currUserLogon, combody);
     if(newArtistCommentid < 0) {
-	return -1;
+	switch(newArtistCommentid) {
+	case DB_NEXTID_ERROR:
+	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
+	    break;
+	case DB_SAVE_FAILURE:
+	    fprintf(cgiOut, "Database failure: Artist Comment save incomplete<br />\n");
+	    break;
+	case E_NOARTIST:
+	    fprintf(cgiOut, "Artist [%d] does not exist<br />\n", artistid);
+	    break;
+	case E_NOUSER:
+	    fprintf(cgiOut, "User [%d] attempting to add comment does not exist<br />\n", _currUserLogon);
+	    break;
+	case E_FORM:
+	    fprintf(cgiOut, "Artist not selected<br />\n");
+	    break;
+	case E_INVALID_PARAM:
+	    fprintf(cgiOut, "Comment body is invalid<br />\n");
+	    break;
+	case E_MALLOC_FAILED:
+	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	    break;
+	default:
+	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
+	    return E_UNKNOWN;
+	}
     }
     return newArtistCommentid;
 }
 
-static void printAddForm(int artistid) {
+static void printAddForm(void) {
+    int result=-1;
+    
+    /* Check for artistid */
+    int artistid=-1;
+    result = cgiFormInteger("artistid", &artistid, -1);
+    if(result != cgiFormSuccess || artistid == -1) {
+	/* No artistid */
+	artistid=-1;
+    }
+    
+    if(artistid != -1 && getArtistExists(artistid) == FALSE) {
+	/* No artistid */
+	fprintf(cgiOut, "Artist [%d] does not exist in the database\n", artistid);
+	artistid=-1;
+    }
+    
+    if(getArtistsCount() == 0) {
+	fprintf(cgiOut, "No artists in database<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&hash=%d\">[Add Artist]</a><br />\n", _currUserLogon);
+	return;
+    }
+
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
     fprintf(cgiOut, "<tbody>\n");
     fprintf(cgiOut, "  <tr><td>\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"artistcomment\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"artid\" value=\"%d\" />\n", artistid);
+    if(artistid != -1) {
+	fprintf(cgiOut, "    <input type=\"hidden\" name=\"artid\" value=\"%d\" />\n", artistid);
+    }
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
     fprintf(cgiOut, "  </td></tr>\n");
@@ -127,7 +161,28 @@ static void printAddForm(int artistid) {
     fprintf(cgiOut, "    <td class=\"describe\"><label title=\"Artist Title\">Artist Name: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
+    if(artistid == -1) {
+	int *allArtists=getArtists();
+	int count=0;
+	int curr_id=0;
+	
+	fprintf(cgiOut, "    <td class=\"field\">\n");
+	/* Print out the <select> for all artists */
+	fprintf(cgiOut, "<select id=\"artid\" name=\"artid\" size=\"5\">\n");
+	
+	curr_id=allArtists[count];
+	while (curr_id != LAST_ID_IN_ARRAY) {
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getArtistName(curr_id));
+	    count++;
+	    curr_id=allArtists[count];
+	}
+	
+	fprintf(cgiOut, "</select>\n");
+	fprintf(cgiOut, "</td>\n");
+    }
+    else {
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
+    }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"combody\" title=\"The Comment\">The Comment: </label></td>\n");
@@ -143,7 +198,9 @@ static void printAddForm(int artistid) {
     fprintf(cgiOut, "</table>\n");
     fprintf(cgiOut, "</form>\n");
 
-    fprintf(cgiOut, "<hr /><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">Back to Artist page</a>\n", artistid, _currUserLogon);
+    if(artistid != -1) {
+	fprintf(cgiOut, "<hr /><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">Back to Artist page</a>\n", artistid, _currUserLogon);
+    }
 }
 
 static void doViewArtistComment(void) {
@@ -159,10 +216,18 @@ static void doViewArtistComment(void) {
 	result = cgiFormInteger("owner", &owner, -1);
 	if(result != cgiFormSuccess || owner == -1) {
 	    /* Nothing specified */
-	    fprintf(cgiOut, "No id specified\n");
+	    fprintf(cgiOut, "No artist specified\n");
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;hash=%d\">[View All Artists]</a>\n", _currUserLogon);
 	    return;
 	}
 	else {
+	    /* Check User exists */
+	    if(getUserExists(owner) == FALSE) {
+		fprintf(cgiOut, "User [%d] does not exist<br />\n", owner);
+		fprintf(cgiOut, "<a href=\"./?page=user&amp;hash=%d\">[View All Users]</a>\n", _currUserLogon);
+		return;
+	    }
+  
 	    /* Check privileges */
 	    if(owner == _currUserLogon || isUserLibrarian(_currUserLogon) == TRUE) {
 		/* Will use owner */
@@ -174,8 +239,15 @@ static void doViewArtistComment(void) {
 	}
     }
     else {
-      /* Everyone can view these */
-      printAllArtistCommentsForArtist(artistid);
+	/* Check Artist exists */
+	if(getArtistExists(artistid) == FALSE) {
+	    fprintf(cgiOut, "Artist [%d] does not exist<br />\n", artistid);
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;hash=%d\">[View All Artists]</a>\n", _currUserLogon);
+	    return;
+	}
+	
+	/* Everyone can view these */
+	printAllArtistCommentsForArtist(artistid);
     }
 }
 
