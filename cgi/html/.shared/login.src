@@ -1,2 +1,15 @@
-<h1>Login now</h1>
+<table width="100%" style="text-align: center;">
+<tr>
+<td>
+<p>Please login to use the Music Library</p>
 
+<form method="post" action="./?page=login">
+<p>
+<label for="userCode" title="User Code">User Code: </label>
+<input type="text" id="userCode" name="user" value="" maxlength="16" />
+<input type="submit" value="Submit" />
+</p>
+</form>
+</td>
+</tr>
+</table>
