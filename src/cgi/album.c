@@ -68,12 +68,13 @@ static void doAddAlbum(void) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a><br />\n", newalbumid, _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add another Album]</a>", _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add another Album by the same Artist]</a><br />\n", getAlbumArtist(newalbumid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add another Album by a different Artist</a>\n", _currUserLogon);
 	}
 	else {
 	    /* Album adding error */
 	    /* Link back to add page */
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add Another Album]</a>", _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add Another Album]</a>\n", _currUserLogon);
 	}
     }
     else {

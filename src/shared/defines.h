@@ -1,10 +1,6 @@
 #ifndef _DEFINES_H
 #define _DEFINES_H 1
 
-#define malloc_m(q) NULL
-#define realloc_m(q) NULL
-#define calloc_m(q) NULL
-
 /* File locations */
 
 #define DATA_LOCATION "./var"
