@@ -1,5 +1,5 @@
-ErrorDocument 403 /~tsm20/team44/
-ErrorDocument 404 /~tsm20/team44/
+ErrorDocument 403 /
+ErrorDocument 404 /
 
 AuthType Basic
 AuthName "Team 44"
