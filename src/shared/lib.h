@@ -27,6 +27,9 @@ Boolean isUserLibrarian(int);
 int *getUsers(void);
 int getUsersCount(void);
 
+int *getUsersByType(Boolean);
+int getUsersByTypeCount(Boolean);
+
 /* Album */
 Boolean getAlbumExists(int);
 const char *getAlbumTitle(int);

@@ -13,6 +13,8 @@ static int processAddForm(void);
 static void printAddForm(void);
 
 static void printAllUsers(void);
+static void printAllUsersByType(Boolean);
+
 static void printSpecificUser(int);
 
 void printUser(void) {
@@ -85,19 +87,19 @@ static int processAddForm(void) {
 
     result = cgiFormStringNoNewlines("usrcode", userCode, MAXSIZE_USERCODE);
     if(result != cgiFormSuccess || userCode == NULL) {
-	printf("no code\n");
+	printf("no code<br />\\n");
 	return -1;
     }
 
     result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
     if(result != cgiFormSuccess || userName == NULL) {
-	printf("no name\n");
+	printf("no name<br />\\n");
 	return -1;
     }
    
     result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
     if(result != cgiFormSuccess || userEmail == NULL) {
-	printf("no email\n");
+	printf("no email<br />\\n");
 	return -1;
     }
 
@@ -111,6 +113,7 @@ static int processAddForm(void) {
 
     newUserid=addUser(userCode, userName, userEmail, isLib);
     if(newUserid < 0) {
+	printf("unable to add - %d<br />\n", newUserid);
 	return -1;
     }
     return newUserid;
@@ -207,20 +210,37 @@ static void doViewUser(void) {
 }
 
 static void printAllUsers(void) {
+    fprintf(cgiOut, "<div class=\"head1\">Viewing All Users</div>");
+
+    fprintf(cgiOut, "<b>Librarians: </b>\n");
+    printAllUsersByType(TRUE);
+
+    fprintf(cgiOut, "<hr />\n");
+
+    fprintf(cgiOut, "<b>Standard Users: </b>\n");
+    printAllUsersByType(FALSE);
+}
+
+static void printAllUsersByType(Boolean isLib) {
     int *allUsers=NULL;
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing All Users</div>");
-
-    allUsers=getUsers();
+    if(isLib != TRUE) {
+	isLib = FALSE;
+    }
+    else {
+	isLib = TRUE;
+    }
+    
+    allUsers=getUsersByType(isLib);
 
     if(allUsers == NULL) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Users</div>");
     }
     else {
-	if(getUsersCount() == 0) {
-	    fprintf(cgiOut, "No users\n");
+	if(getUsersByTypeCount(isLib) == 0) {
+	    fprintf(cgiOut, "<br />No users\n");
 	}
 	else {
 	    fprintf(cgiOut, "<table border=\"1\">\n");
@@ -230,7 +250,6 @@ static void printAllUsers(void) {
 	    fprintf(cgiOut, "    <td class=\"thead\">User Code</td>\n");
 	    fprintf(cgiOut, "    <td class=\"thead\">User Name</td>\n");
 	    fprintf(cgiOut, "    <td class=\"thead\">Email Address</td>\n");
-	    fprintf(cgiOut, "    <td class=\"thead\">Is Librarian?</td>\n");
 	    fprintf(cgiOut, "  </tr>\n");
 	    fprintf(cgiOut, "</thead>\n");
 	    fprintf(cgiOut, "\n");
@@ -244,19 +263,15 @@ static void printAllUsers(void) {
 	    
 	    curr_id=allUsers[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
-		fprintf(cgiOut, "  <tr>\n");
-		fprintf(cgiOut, "    <td>");
-		userLink(curr_id, getUserCode(curr_id), cgiOut);
-		fprintf(cgiOut, "    </td>\n");
-		fprintf(cgiOut, "    <td>%s</td>\n", getUserName(curr_id));
-		fprintf(cgiOut, "    <td>%s</td>\n", getUserEmail(curr_id));
-		if(isUserLibrarian(curr_id) == TRUE) {
-		    fprintf(cgiOut, "    <td>Yes</td>\n");
+		if(isUserLibrarian(curr_id) == isLib) {
+		    fprintf(cgiOut, "  <tr>\n");
+		    fprintf(cgiOut, "    <td>");
+		    userLink(curr_id, getUserCode(curr_id), cgiOut);
+		    fprintf(cgiOut, "    </td>\n");
+		    fprintf(cgiOut, "    <td>%s</td>\n", getUserName(curr_id));
+		    fprintf(cgiOut, "    <td>%s</td>\n", getUserEmail(curr_id));
+		    fprintf(cgiOut, "  </tr>\n");
 		}
-		else {
-		    fprintf(cgiOut, "    <td>No</td>\n");
-	    }
-		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allUsers[count];

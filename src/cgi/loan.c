@@ -171,7 +171,9 @@ static void doReturnLoan(void) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Album returned successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a><br />\n", getLoanAlbum(loanid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Album Borrowing History]</a><br />\n", getLoanAlbum(loanid), _currUserLogon);
+	    if(isUserLibrarian(_currUserLogon) == TRUE) {
+		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Album Borrowing History]</a><br />\n", getLoanAlbum(loanid), _currUserLogon);
+	    }
 	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View User Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
 	}
 	else {

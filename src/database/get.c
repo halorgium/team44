@@ -35,7 +35,7 @@ static char *htmlEscape(const char* input) {
     data=malloc(sizeof(char)*(strlen(input)+1));
     strncpy(data, input, strlen(input)+1);
 
-    /* Checking for ' ' */
+    /* Checking for '&' */
     replacee = '&';
     temp=strchr(data, replacee);
     while(temp != NULL) {
@@ -77,6 +77,47 @@ static char *htmlEscape(const char* input) {
     }
     
     /* Checking for ' ' */
+    replacee = '"';
+    temp=strchr(data, replacee);
+    while(temp != NULL) {
+	int lenToCopy=0;
+	char *replacement = "&quot;";
+	char *tempA=NULL;
+	char *tempB=NULL;
+	char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
+	if(newdata == NULL) return "(null)";
+
+	tempA=data;
+	tempB=newdata;
+
+	/* copy pre-string */
+	lenToCopy=strlen(tempA)-strlen(temp);
+	if(lenToCopy > 0) {
+	    strncpy(tempB, tempA, lenToCopy);
+	    tempB=tempB+lenToCopy;
+	    tempA=tempA+lenToCopy;
+	}
+	tempA++;
+
+	/* copy replacement */
+	strncpy(tempB, replacement, strlen(replacement));
+	tempB=tempB+strlen(replacement);
+
+	/* copy post-string */
+	lenToCopy=strlen(tempA)+1;
+	if(lenToCopy > 0) {
+	    strncpy(tempB, tempA, lenToCopy);
+	}
+
+	/* free old data */
+	free(data);
+	/* set to newdata */
+	data=newdata;
+
+	temp=strchr(data, replacee);
+    }
+
+    /* Checking for ' ' */
     replacee = ' ';
     temp=strchr(data, replacee);
     while(temp != NULL) {
@@ -116,7 +157,6 @@ static char *htmlEscape(const char* input) {
 
 	temp=strchr(data, replacee);
     }
-
 
 /* Checking for '<' */
     replacee = '<';
@@ -320,6 +360,42 @@ int getUsersCount(void) {
     /**count number of users in list,*/
     /*I assume this is faster than calling realloc at every node**/
     for(u = firstUser; u != NULL; u=u->next) size++;
+
+    return size;
+}
+
+int *getUsersByType(Boolean isLib){
+    int size = 0;   /**number of users in list**/
+    int *userArray=NULL;  /*array of users to be returned*/ 
+    userNode_t *u;
+    
+    size=getUsersByTypeCount(isLib);
+
+    /*mallocs memory for array and goes back through list, adding id's to array*/
+    userArray = (int *) malloc(sizeof(int)*(size+1));
+    if(userArray == NULL){
+	return NULL;
+    }
+    
+    for(u=firstUser, size=0; u != NULL; u=u->next){
+	if(isUserLibrarian(u->ID) == isLib) userArray[size++] = u->ID;
+    }
+
+    userArray[size] = LAST_ID_IN_ARRAY; /*set last field*/
+    
+    return userArray;
+}
+/* end getAllUsers()*/
+
+int getUsersByTypeCount(Boolean isLib) {
+    int size = 0;   /**number of users in list**/
+    userNode_t *u;
+    
+    /**count number of users in list,*/
+    /*I assume this is faster than calling realloc at every node**/
+    for(u = firstUser; u != NULL; u=u->next) {
+	if(isUserLibrarian(u->ID) == isLib) size++;
+    }
 
     return size;
 }
@@ -551,6 +627,13 @@ static userCommentNode_t *getUserComment(int idNumber){
     return NULL;
 }
 
+Boolean getUserCommentExists(int idNumber) {
+    if(getUserComment(idNumber) == NULL) {
+	return FALSE;
+    }
+    return TRUE;
+}
+
 int getUserCommentUser(int idNumber) {
     userCommentNode_t *a;
     a = getUserComment(idNumber);
@@ -657,6 +740,13 @@ static albumCommentNode_t *getAlbumComment(int idNumber){
 	} 
     }
     return NULL;
+}
+
+Boolean getAlbumCommentExists(int idNumber) {
+    if(getAlbumComment(idNumber) == NULL) {
+	return FALSE;
+    }
+    return TRUE;
 }
 
 int getAlbumCommentAlbum(int idNumber) {
@@ -774,7 +864,6 @@ Boolean getArtistCommentExists(int idNumber) {
     }
     return TRUE;
 }
-
 
 int getArtistCommentArtist(int idNumber) {
     artistCommentNode_t *a;

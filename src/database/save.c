@@ -15,6 +15,7 @@ int saveNextID(void) {
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%d%%%d%%%d%%\n", _nextAlbumID, _nextArtistID, _nextUserCommentID, _nextAlbumCommentID, _nextArtistCommentID, _nextLoanID);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -24,6 +25,7 @@ int saveUser(int ID, const char *userCode, const char* userName, const char *ema
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%s%%%s%%%s%%%d%%\n", ID, userCode, userName, emailAddress, isLibrarian);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -33,6 +35,7 @@ int saveAlbum(int ID, const char* title, const int artistID){
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%s%%%d%%\n", ID, title, artistID);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -42,6 +45,7 @@ int saveArtist(int ID, const char *name){
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%s%%\n", ID, name);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -51,6 +55,7 @@ int saveUserComment(int ID, int userID, int owner, const char *body){
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%s%%\n", ID, userID, owner, body);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -60,6 +65,7 @@ int saveAlbumComment(int ID, int albumID, int owner, const char *body){
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%s%%\n", ID, albumID, owner, body);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -69,6 +75,7 @@ int saveArtistComment(int ID, int artistID, int owner, const char *body){
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%s%%\n", ID, artistID, owner, body);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -80,6 +87,7 @@ int saveLoan(int ID, int albumID, int userID, long timeIn){
     }
     fprintf(outFile, "%d%%%d%%%d%%%ld%%\n", ID, albumID, userID, timeIn);
 
+    fclose(outFile);
     return 1;
 }
 
@@ -89,5 +97,6 @@ int saveLoanReturned(int loanID, long timeOut){
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%ld%%\n", loanID, timeOut);
 
+    fclose(outFile);
     return 1;
 }

@@ -21,23 +21,17 @@ static long getctime(void) {
 }
 
 static int checkString(const char *string) {
-  if(string == NULL) {
-    return -1;
-  }
-  if(string[0] == '\0' || string[0] == ' ') {
-    return -1;
-  }
-  if(strchr(string, '%') != NULL) {
-    return -1;
-  }
-  if(strchr(string, '"') != NULL) {
-    return -1;
-  }
-  if(strchr(string, '&') != NULL) {
-    return -1;
-  }
-  
-  return 1;
+    if(string == NULL) {
+	return -1;
+    }
+    if(string[0] == '\0' || string[0] == ' ') {
+	return -1;
+    }
+    if(strchr(string, '%') != NULL) {
+	return -1;
+    }
+ 
+    return 1;
 }
 
 /* Function: addUser
@@ -53,25 +47,18 @@ static int checkString(const char *string) {
  * Blank user names and emails are allowed to be added 
  */
 int addUser(const char *userCode, const char* name, const char* email, Boolean isLib){
-  userNode_t *newUserNode = NULL;
+    userNode_t *newUserNode = NULL;
 
-  /* check for char * params*/
-  if(checkString(userCode) != 1 || checkString(name) != 1 || checkString(email) != 1) {
-    return E_INVALID_PARAM;
-  }
-
-/*     if(userCode == NULL || name == NULL || email == NULL) { */
-/* 	return E_INVALID_PARAM; */
-/*     } */
-
-/*     if(strchr(userCode, '%') != NULL || strchr(name, '%') != NULL || strchr(email, '%') != NULL) { */
-/* 	return E_INVALID_PARAM; */
-/*     } */
-
+    /* get userCode */
     if(getUserExists(makeUserID(userCode)) == TRUE) {
-      return ALREADY_ADDED;
+	return ALREADY_ADDED;
     }
     
+    /* check for char * params*/
+    if(checkString(userCode) != 1 || checkString(name) != 1 || checkString(email) != 1) {
+	return E_INVALID_PARAM;
+    }
+
     /*allocates memory for the new user*/
     newUserNode = (userNode_t*) malloc(sizeof(userNode_t));
     if(newUserNode == NULL) {        /*malloc failure?*/
@@ -139,18 +126,19 @@ int addUser(const char *userCode, const char* name, const char* email, Boolean i
 int addAlbum(const char *title, int artistID){
     
     albumNode_t *newAlbumNode = NULL;
+
+    /* Check nextid is ok */
+    if(getAlbumExists(_nextAlbumID) == TRUE) {
+	return DB_SAVE_FAILURE;
+    }
     
     /*checks whether argument pointers are NULL */
-    if(title == NULL) {
+    if(checkString(title) != 1) {
 	return E_INVALID_PARAM;
     }
-    
-    if(strchr(title, '%') != NULL) {
-	return E_INVALID_PARAM;
-    }
-        
+   
     if(getArtistExists(artistID) == FALSE) {
-      return E_NOARTIST;
+	return E_NOARTIST;
     }
 
     /*allocates memory for new Album*/
@@ -164,7 +152,7 @@ int addAlbum(const char *title, int artistID){
     if(newAlbumNode->title == NULL){    /*pointer is null - malloc failure*/
 	free(newAlbumNode);
 	return E_MALLOC_FAILED;	
-    }  
+    }
     
     /*copy the param strings into the newAlbum, set ID*/
     strcpy(newAlbumNode->title, title);
@@ -190,16 +178,17 @@ int addAlbum(const char *title, int artistID){
 int addArtist(const char *name){
     
     artistNode_t *newArtistNode = NULL;
-    
-    /*checks whether argument pointers are NULL */
-    if(name == NULL){
-	return E_INVALID_PARAM;
-    }
 
-    if(strchr(name, '%') != NULL) {
+    /* Check nextid is ok */
+    if(getArtistExists(_nextArtistID) == TRUE) {
+	return DB_SAVE_FAILURE;
+    }
+   
+    /*checks whether argument pointers are NULL */
+    if(checkString(name) != 1){
 	return E_INVALID_PARAM;
     }
-        
+    
     /*allocates memory for new Artist*/
     newArtistNode = (artistNode_t*) malloc(sizeof(artistNode_t));
     if(newArtistNode == NULL){        /*malloc failure test*/
@@ -231,7 +220,6 @@ int addArtist(const char *name){
     return _nextArtistID-1;    /*return id then increment  CHANGE*/
 }/*end addArtist()*/
 
-
 /* Function: addComment
  * Params:  int albumID, int userID, char* title, char* body
  * Returns: int.
@@ -246,19 +234,20 @@ int addArtist(const char *name){
  */
 
 int addUserComment(int userID, int owner, const char* body){
-  userCommentNode_t *newCommentNode = NULL;
-    
-    if(body == NULL){/**null param  check**/
-	return E_INVALID_PARAM;
-    }
+    userCommentNode_t *newCommentNode = NULL;
 
-    if(strchr(body, '%') != NULL) {
+    /* Check nextid is ok */
+    if(getUserCommentExists(_nextUserCommentID) == TRUE) {
+	return DB_SAVE_FAILURE;
+    }
+ 
+    if(checkString(body) != 1) {
 	return E_INVALID_PARAM;
     }
     
     /*test to see if user is in the database*/
     if(getUserExists(userID) == FALSE || getUserExists(owner) == FALSE) {
-      return E_NOUSER;
+	return E_NOUSER;
     }
     
     /*allocates memory for newComment*/
@@ -299,23 +288,24 @@ int addUserComment(int userID, int owner, const char* body){
 int addAlbumComment(int albumID, int owner, const char *body){
     albumCommentNode_t *newCommentNode = NULL;
     
-    /**null param  check**/
-    if(body == NULL){
-	return E_INVALID_PARAM;
+    /* Check nextid is ok */
+    if(getAlbumCommentExists(_nextAlbumCommentID) == TRUE) {
+	return DB_SAVE_FAILURE;
     }
-
-    if(strchr(body, '%') != NULL) {
+    
+    /**null param  check**/
+    if(checkString(body) != -1){
 	return E_INVALID_PARAM;
     }
 
     /*test to see if album is in the database*/
     if(getAlbumExists(albumID) == FALSE) {
-      return E_NOARTIST;
+	return E_NOARTIST;
     }
 
     /*test to see if user is in the database*/
     if(getUserExists(owner) == FALSE) {
-      return E_NOUSER;
+	return E_NOUSER;
     }
     
     /*allocates memory for newComment*/
@@ -356,23 +346,24 @@ int addAlbumComment(int albumID, int owner, const char *body){
 int addArtistComment(int artistID, int owner, const char *body){
     artistCommentNode_t *newCommentNode = NULL;
 
-    /**null param  check**/
-    if(body == NULL){
-	return E_INVALID_PARAM;
-    }
-    
-    if(strchr(body, '%') != NULL) {
-	return E_INVALID_PARAM;
+    /* Check nextid is ok */
+    if(getArtistCommentExists(_nextArtistCommentID) == TRUE) {
+	return DB_SAVE_FAILURE;
     }
 
+    /**null param  check**/
+    if(checkString(body) != 1){
+	return E_INVALID_PARAM;
+    }
+   
     /*test to see if artist is in the database*/
     if(getArtistExists(artistID) == FALSE) {
-      return E_NOARTIST;
+	return E_NOARTIST;
     }
 
     /*test to see if user is in the database*/
     if(getUserExists(owner) == FALSE) {
-      return E_NOUSER;
+	return E_NOUSER;
     }
     
     /*allocates memory for newComment*/
@@ -412,9 +403,14 @@ int addLoan(int albumID, int userID) {
     long tempTime=-1;
     loanNode_t *newLoanNode = NULL;
     
+    /* check next id is ok */
+    if(getLoanExists(_nextLoanID) == TRUE) {
+        return DB_SAVE_FAILURE;
+    }
+    
     /*checks whether user existsL */
     if(getUserExists(userID) == FALSE) {
-      return E_NOUSER;
+	return E_NOUSER;
     }
     
     if(getAlbumExists(albumID) == FALSE) {
@@ -464,7 +460,7 @@ int addLoanReturned(int loanID){
     
     /*checks whether user existsL */
     if(getLoanExists(loanID) == FALSE && isLoanReturned(loanID) == FALSE) {
-      return E_NOLOAN;
+	return E_NOLOAN;
     }
 
     tempTime = getctime();
