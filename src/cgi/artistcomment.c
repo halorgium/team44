@@ -122,7 +122,7 @@ static void printAddForm(int artistid) {
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
     fprintf(cgiOut, "  </td></tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label title=\"Artist Title\">Artist Title: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe\"><label title=\"Artist Title\">Artist Name: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
