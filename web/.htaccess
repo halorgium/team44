@@ -3,7 +3,7 @@ ErrorDocument 404 /~tsm20/team44/
 
 AuthType Basic
 AuthName "Team 44"
-AuthUserFile .htpasswd
+AuthUserFile /home/cosc/student/tsm20/team44clean/web/.htpasswd
 Require valid-user
 
 # Needs to be changed so if some random person checks it out it is relative
