@@ -266,7 +266,7 @@ static void printAllUsersByType(Boolean isLib) {
 		if(isUserLibrarian(curr_id) == isLib) {
 		    fprintf(cgiOut, "  <tr>\n");
 		    fprintf(cgiOut, "    <td>");
-		    userLink(curr_id, getUserCode(curr_id), cgiOut);
+		    userLink("", curr_id, getUserCode(curr_id), cgiOut);
 		    fprintf(cgiOut, "    </td>\n");
 		    fprintf(cgiOut, "    <td>%s</td>\n", getUserName(curr_id));
 		    fprintf(cgiOut, "    <td>%s</td>\n", getUserEmail(curr_id));

@@ -297,7 +297,7 @@ static void printSpecificAlbum(int albumid) {
 		fprintf(cgiOut, "Album is on loan ");
 		if(isUserLibrarian(_currUserLogon) == TRUE) {
 		    fprintf(cgiOut, "to <b>");
-		    userLink(tempUserID, getUserName(tempUserID), cgiOut);
+		    userLink("", tempUserID, getUserName(tempUserID), cgiOut);
 		    fprintf(cgiOut, "</b><br />\n");
 		    fprintf(cgiOut, "[Taken at ");
 		    printTime(getLoanTimeIn(currLoan), cgiOut);

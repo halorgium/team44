@@ -461,7 +461,7 @@ static void printCurrentLoanByAlbum(int albumid) {
 	    fprintf(cgiOut, "Album is on loan ");
 	    if(isUserLibrarian(_currUserLogon) == TRUE) {
 		fprintf(cgiOut, "to <b>");
-		userLink(tempUserID, getUserName(tempUserID), cgiOut);
+		userLink("", tempUserID, getUserName(tempUserID), cgiOut);
 		fprintf(cgiOut, "</b><br />\n");
 		fprintf(cgiOut, "[Taken at ");
 		printTime(getLoanTimeIn(currLoan), cgiOut);
@@ -524,7 +524,7 @@ static void printPreviousLoansByAlbum(int albumid) {
 	    while (curr_id != LAST_ID_IN_ARRAY) {
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		userLink(getLoanUser(curr_id), getUserName(getLoanUser(curr_id)), cgiOut);
+		userLink("", getLoanUser(curr_id), getUserName(getLoanUser(curr_id)), cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "    <td>Returned</td>\n");
 		

@@ -218,7 +218,7 @@ static void printAllUserCommentsByUser(int userid) {
 	    while (curr_id != LAST_ID_IN_ARRAY) {
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
-		userLink(getUserCommentUser(curr_id), getUserName(getUserCommentUser(curr_id)), cgiOut);
+		userLink(" class=\"topper\"", getUserCommentUser(curr_id), getUserName(getUserCommentUser(curr_id)), cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
@@ -268,7 +268,7 @@ static void printAllUserCommentsForUser(int userid) {
 	    while (curr_id != LAST_ID_IN_ARRAY) {
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-		userLink(getUserCommentOwner(curr_id), getUserName(getUserCommentOwner(curr_id)), cgiOut);
+		userLink(" class=\"topper\"", getUserCommentOwner(curr_id), getUserName(getUserCommentOwner(curr_id)), cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");

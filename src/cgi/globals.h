@@ -8,7 +8,7 @@
 
 int _currUserLogon;
 
-void userLink(int userid, const char *content, FILE *output);
+void userLink(char *extra, int userid, const char *content, FILE *output);
 void printTime(long ctime, FILE *output);
 
 void printLogin(void);
