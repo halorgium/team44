@@ -6,7 +6,7 @@
 
 #define MAXSIZE_PAGENAME 14
 
-#define malloc(q) NULL;
+#define malloc_m(q) NULL;
 
 int _currUserLogon;
 
