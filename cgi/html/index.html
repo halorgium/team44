@@ -9,7 +9,7 @@
 
 <head>
 	<title>Library of Team44</title>
-	<!-- Changed by: Jeremy B Bush-King, 01-Aug-2003 -->
+	<!-- Changed by: Jeremy B Bush-King, 05-Aug-2003 -->
 	<meta name="description" content="Join the Penguin Posse!">
 	<meta name="keywords" content="penguin, posse">
 
@@ -68,9 +68,43 @@
 			</td>
 
 			<!-- This is the dynamic section of the document -->
-			<td width="80%" align="center">
-				<p><b>Home Page</b></p>
-				<p>This is the Team44 Music Library and we strive to give you the latest music free of cost!. If you would like to register with Team44 Music Library <a href="contact.html">click here!</a> and give us a hoolar.</p>
+			<td width="20%" align="left">
+<!-- takes in the users name and the email and the boolean isLibrarian and name -->
+
+<form method="POST" action="./?page=user&func=add">
+<p><b>Add a User</b></p>
+<p>
+	<label for="name" title="New Users Name">Name of new user: </label>
+</p>
+<p>
+	<label for="user_name" title="New Users Name">UserCode: </label>
+</p>
+<p>
+	<label for="email" title="Email">Email:</label>
+</p> 
+<p>
+	<label for="isLibrarian" title="isLibrarian">Is the new user a Librarian?</label>
+</p>
+<p>
+  <label for="submit" title="addUser"></label>
+  <input type="submit" name="addUser" value="Add User" />
+</p>
+
+<td width="70%" align="left">
+<br>
+	<p>
+	  <input type="text" id="user_name" user_name="user_name" />
+	</p>
+	<p>
+	  <input type="text" id="user_code" user_name="user_code" />
+	</p>
+	<p>
+	  <input type="text" id="email" email="email" />
+	</p>
+	<p>
+	  <input type="checkbox" id="isLibrarian" />
+	</p>
+</table>
 				<br>
 			</td>
 
