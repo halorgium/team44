@@ -217,7 +217,7 @@ void printAllAlbums(void) {
 	    fprintf(cgiOut, "    <td>");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getAlbumTitle(curr_id));
 	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "    <td>%s</td>\n", getArtistName(getAlbumArtist(curr_id)));
+            fprintf(cgiOut, "    <td><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a></td>\n", getAlbumArtist(curr_id), _currUserLogon, getArtistName(getAlbumArtist(curr_id)));
 
 	    if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
 		fprintf(cgiOut, "    <td>On Loan</td>\n");
