@@ -28,7 +28,7 @@
 
 
 
-int addArtist(const char *name){
+int addArtist(char *name){
     
     artistNode_t *newArtistNode = NULL;
     
@@ -60,7 +60,7 @@ int addArtist(const char *name){
     firstArtist = newArtistNode;
 
     /*created in memory so now needs to be saved*/
-    if(saveArtist(title, artistID, newArtistNode->ID)==0) return SAVE_FAILURE;
+    if(saveArtist(name, newArtistNode->ID) < 0) return SAVE_FAILURE;
     
     return nextArtistID++;    /*return id then increment  CHANGE*/
 }/*end addArtist()*/
@@ -132,8 +132,8 @@ int addAlbum(const char *title, const int artistID){
  * Blank user names and emails are allowed to be added 
  */
 int addUser(const char* name, const char *userCode, const char* email, const Boolean bool){
+
     userNode_t *newUserNode = NULL;
-    userNode_t *u = NULL;
 
     /* check for NULL params*/
     if(name == NULL || email == NULL|| userCode == NULL ){ 
@@ -789,11 +789,11 @@ int *getAllAlbums(void){
 
 
 
-Boolean isUserInDatabase(char *userCode){
-    userNode_t u;
+Boolean isUserInDatabase(const char *userCode){
+    userNode_t *u;
 /**/
     u = firstUser;
-    for(;u!=NULL; u=u->next){
+    for(;u != NULL; u=u->next){
 	if(strcmp(u->userName, userCode)== 0) return TRUE;
     }
     return FALSE;
@@ -866,15 +866,15 @@ int *getAllArtists(void){
     for(c = firstArtist; c != NULL; c=c->next){
 	/*reallocates mem for array and checks for mem error*/ 
 	if(realloc(artistsArray, sizeof(int)*(arraySize+2)) == NULL){
-	    free(albumsArray);
+	    free(artistsArray);
 	    return NULL;
 	}
 	/*add comment to array and increment size*/ 
-	albumsArray[arraySize++] = c->ID;
+	artistsArray[arraySize++] = c->ID;
     }
     
-    albumsArray[arraySize] = LAST_ID_IN_ARRAY;
-    return albumsArray;
+    artistsArray[arraySize] = LAST_ID_IN_ARRAY;
+    return artistsArray;
 }
 loanNode_t *getLoan(int loanID){
     loanNode_t *l; 

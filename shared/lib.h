@@ -3,7 +3,7 @@
 
 int addAlbum(const char *title, const int artistID);
 int addUser(const char *, const char *, const char *, const Boolean);
-int addArtist(const char *name);
+int addArtist(char *name);
 int addCommentArtist(char *, char *, int);
 int addCommentAlbum(char *, char *, int);
 int addCommentUser(char *owner, char *body, char *user);
@@ -19,7 +19,7 @@ int *getAllAlbums(void);
 /* int *getCommentsByAlbumAndUserID(int albumID, int userID); */
 
 
-int isUserInDatabase(char *userCode);
+int isUserInDatabase(const char *userCode);
 int *getAlbumsByArtistID(int ID);
 albumNode_t *getAlbum(int albumID);
 artistNode_t *getArtist(int artistID);
