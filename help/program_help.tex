@@ -25,7 +25,7 @@ Some files are used by both the Database and the CGI layer, these are located in
 
 All the webpages are Xhtml 1.0 compliant visit ``http://w3.org'' for more details.
 
-\section{Database}
+\section{Database Layer}
 Data within the database is stored as [value]\%[value]\%[value]. The \% character is used as a delimiter between different data objects. This Section will explain the purpose of each `.c' file within the database and what each function achieves.
 \subsection{add.c}
 This file is responsible for adding to the database and saving objects to disk.
@@ -170,38 +170,160 @@ This header file contains 3 different sections;
 
 \subsection{load.c}
 This file is used when the program is fist initialized, it loads all the information current stored in the database using the following methods;
+
 \subsubsection*{loadDatabase}
 This is the main function of this file. It sets all the first variables to Null
 and then sequentially calls the other methods in this file, loading and checking each different entity.
+
 \subsubsection*{loadNextID}
 This function loads up the ID's for the various entities within the database, using the file pointed to by \verb|NEXTID_FILE_NAME|
+
 \subsubsection*{loadAllUsers}
 Similar to the \verb|loadNextID| this function loads all artists stored in the database into memory to be accessed by the cgi layer.
+
 \subsubsection*{loadAllAlbums}
 This function loads all the albums from the data files into the current working application.
+
 \subsubsection*{loadAllArtists}
 This function loads all the artists from the database files into the current working application.
+
 \subsubsection*{loadAllLoans}
 \label{loan}
 This function retrieves all loan information from the database to be accessed and modified by the cgi application.
+
 \subsubsection*{loadAllLoansReturned}
 This function does exactly the same as \verb|loadAllLoans| except it is for returned loans.
+
 \subsubsection*{Comment loading}
-These methods all work similarly to load the different types of comments from the database into working memory..
+These methods all work similarly to load the different types of comments from the database into working memory.
 \begin{itemize}
 \item{loadArtistComments}
 \item{loadAlbumComments}
 \item{loadUserComments}
 \end{itemize}
-\subsection{read_line.c}
+
+\subsection{read\_line.c}
 This file consists of one function that takes in a file and returns the first line of the file as an array of chars.
+
 \subsection{save.c}
 This file contains functions to save the various entities within the Musiclib program to disk.
+
 \subsubsection*{saveNextID}
 This function saves all the \verb|nextID|'s to file. Next ID's are the unique id value for each different entity that will be allocated if a new entity of that type is added to the database.
+
 \subsubsection*{Other Save Functions}
 All of the following functions write the information they are passed to the appropriate data file in the database.
 \begin{itemize}
 \item{saveUser}
+\item{saveAlbum}
+\item{saveArtist}
+\item{saveUserComment}
+\item{saveAlbumComment}
+\item{saveArtistComment}
+\item{saveLoan}
+\item{saveLoanReturned}
 \end{itemize}
+
+\subsection{save.h}
+This file provides the function definitions for all the save functions within \verb|save.c|.
+
+\subsection{structs.h}
+This file contains definitions for all the structures used within the database to store and retrieve data. Every different entity has a struct related to it,a nd this is where the definitions for these can be found.
+
+\section{The CGI Layer}
+This layer provides the user interface via the use of html forms. It also makes calls to the various database functions depending on what is required by the user.
+
+\subsection{album.c}
+This file is responsible for processing the any album requests by the user. These are represented within the code as the \verb|func| variable. The default function of this file is to view the albums in the database. The functions within are described as follows;
+\begin{description}
+\item[printAlbum] The initial calling function that initialises the others depending on the request.
+\item[doAddAlbum]Performs basic checks on user and the current request and then calls the \verb|processAddForm| to create a new \verb|albumID|.
+\item[doViewAlbum]Calls the \verb|printAllAlbums| function by default, unless a specific album is requested, then it calls \verb|printSpecificAlbum|.
+\item[processAddForm] This effectively adds the album to the database and returns a message showing either error or success.
+\item[printAddForm] This function outputs to cgi, the html form that the user sees when wanting to add an album.
+\item[printAllAlbums]
+Outputs to cgi a list of all the albums currently stored in the database.
+\item[printSpecificAlbum]
+Same as \verb|printAllAlbums| except only outputs a single album specified by the user.
+\end{description}
+These functions are mirrored in most of the other files so many of them will point back here for information. For example in artist.c the first function is \verb|printArtist| which is virtually equivalent to the \verb|printAlbum| function except that it refers to artists not albums. 
+
+\subsection{albumcomment.c}
+The first five functions in this file are parallel with those explained in the help for album.c. The following two functions I will explain because they differ slightly.
+\begin{description}
+\item[printAllAlbumCommentsByUser]
+This function outputs to cgi all the comments written by the specified user about the specified album.
+\item[printAllAlbumCommentsForAlbum]
+This function outputs to cgi all the comments written about the album specified by the user.
+\end{description}
+
+\subsection{artist.c}
+This file is very similar to album.c as is uses the same basic functions to output to cgi, see the album.c help file for more details. 
+
+\subsection{artistcomment.c}
+See the help for albumcomment.c as all functions are equivalent with this file, apart from the fact that this file refers to artists not albums.
+
+\subsection{cgic.c}
+This is the standard C library of functions that support the development of web based applications.
+
+\subsection{cgic.h}
+This is the standard header file which needs to be included to use the cgic.c library of functions.
+
+\subsection{contact.c}
+This file outputs to cgi the html code for the ``Contact Us'' page within the MusicLib program.
+
+\subsection{globals.c}
+This file contains two functions that are used globally in the cgi layer of the Musiclib program. 
+\begin{description}
+\item[userLink] This function prints an extra link to ``User Info'' if the user has the right permissions.
+\item[printTime] This function prints the current time as a string to output.
+\end{description}
+
+\subsection{globals.h}
+This file defines the global variables and functions that are used within the cgi layer of the MusicLib program.
+
+\subsection{home.c}
+This file simply contains one function \verb|printHome|, this outputs to cgi the details for the homepage of the MusicLib program.
+
+\subsection{loan.c}
+Some functions within this file are similar to those explained in the album.c help section, those that are not are explained below;
+\begin{description}
+\item[doReturnLoan] This function calls the \verb|processReturnForm| function and outputs whether or not it is successful.
+\item[pricessReturnForm] This function calls the \verb|addLoanReturned| function which means that the album specified has been returned. It either returns a success or outputs an error message if something goes wrong.
+\item[doViewLoan] This function outputs to cgi a page showing all the loans relating to a specific album, ir the user has permission to view them.
+
+\item[Printing Specific Loans] The following methods output to cgi, the html code for showing specific types of loans. The loans can either be viewed by user, of which all, current, and previous loans can be shown, or Album where the same is true.
+\begin{itemize}
+\item{printAllLoansByUser}
+\item{printCurrentLoansByUser}
+\item{printPreviousLoansByUser}
+\item{printAllLoansByAlbum}
+\item{printCurrentLoansByAlbum}
+\item{printPreviousLoansByAlbum}
+\end{itemize}
+\end{description}
+
+\subsection{login.c}
+The function within this file \verb|printLogin| simply outputs the html code for the login page to cgi when it is called.
+
+\subsection{main.c}
+This is the file that controls the web interface using many of the other files in it's directory. It consists of the following functions;
+\begin{description}
+\item[cgiMain] This function calls the functions in order that produce the html code for all webpages within the MusicLib program.
+\item[theRealWork] This function deals with login issues and outputs the main starting webpage of the MusicLib application, also it outputs the generic header and footer and links for all the pages within the library.
+\item[printLinks] This function outputs the html code for the table of links that are constantly available to users of the MusicLib program. Note that if a user is a librarian, more links are printed.
+\item[printHeader] Similar to \verb|printLinks| this function outputs the \emph{``team44''} header that is used for every page within the library.
+\item[printFooter] This does the same as \verb|printHeader| but instead outputs the html footer that is used on every page within the library.
+\end{description}
+
+\subsection{user.c}
+This file is very similar to the album.c, see that help file for more details.
+
+The \verb|printAllUsersByType| function does no have an equivalent in album.c, all this method does is output to cgi either all librarians or all standard users depending on the program request.
+\subsection{usercomment.c}
+This file mirrors albumcomment.c so explanations of all the functions can be found there except the \verb|doShowUserComment| function which is explained below;
+
+This function outputs to cgi, a page with links to all comments that the selected user has made about any other entity. The most common use of this function is when the ``My Comments'' link is clicked within the browser.
+
+
 \end{document}
