@@ -4,3 +4,5 @@ echo "Set you to be editing .htpasswd file with cvs"
 cvs edit .htpasswd
 echo "Going to add web pass for "$F;
 htpasswd -d .htpasswd $F
+echo "if successful commit the changes"
+
