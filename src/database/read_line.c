@@ -9,14 +9,13 @@ char *readLine(FILE *file){
     char *line = NULL;
     int totSize = CHUNK_SIZE+1;
     
-   
     /*
      * If no storage is allocated, then allocate an initial buffer of
      * CHUNK_SIZE bytes.
      */
     line = malloc(sizeof(char)*totSize);
     if(line == NULL) return NULL;
-   
+    memset(line, '\0', totSize);
 
     for (;;) {
 	if (fgets(line + strlen(line), totSize - strlen(line), file) == 0) {
@@ -44,13 +43,15 @@ char *readLine(FILE *file){
 	 * buffer size if need be.
 	 */
 	if (strlen(line) + 1 == totSize) {
+	    int oldSize = totSize;
 	    totSize += CHUNK_SIZE;
 	    if ((line = realloc(line, totSize)) == 0) {
+		/* Realloc failed, free old memory */
+		free(line);
 		totSize = 0;
 		return NULL;
 	    }
+	    memset(line+oldSize, '\0', totSize-oldSize);
 	}
     } /* end of infinite loop to read in parts of a line */
-   
 }
-
