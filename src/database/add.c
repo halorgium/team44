@@ -12,12 +12,12 @@
 /* returns the current time of day (used for album borrowing and returning */
 static long getctime(void) {
     long toReturn=-1;
-    
+    int suc=0;
     struct timeval *tv=malloc(sizeof(struct timeval));
     if(tv == NULL) {
 	return -1;
     }
-    int suc=gettimeofday(tv, NULL);
+    suc=gettimeofday(tv, NULL);
     
     if(suc != 0) {
 	/* Some problem with retrieving the time */

@@ -696,7 +696,7 @@ static int loadUserComments(FILE *file){
 	temp2 = strchr(temp, '%');
 	if(temp2 == NULL) {
 	    free(line);
-	    free(newUserComment->name);
+	    free(newUserComment->comment);
 	    free(newUserComment);
 	    return DB_LOAD_FAILURE;
 	}
@@ -857,14 +857,14 @@ static int loadArtistComments(FILE *file){
 	newArtistComment = malloc(sizeof(artistCommentNode_t));
 	if(newArtistComment == NULL) {
 	    free(line);
-	    free(newAlbumComment);
+	    free(newArtistComment);
 	    return E_MALLOC_FAILED;
 	}
 	
 	temp2 = strchr(temp, '%');
 	if(temp2 == NULL) {
 	    free(line);
-	    free(newAlbumComment);
+	    free(newArtistComment);
 	    return DB_LOAD_FAILURE;
 	}
 
@@ -872,7 +872,7 @@ static int loadArtistComments(FILE *file){
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) {
 	    free(line);
-	    free(newAlbumComment);
+	    free(newArtistComment);
 	    return E_MALLOC_FAILED;
 	}
 
