@@ -1,3 +1,5 @@
+/*================= Preprocessor statments===============================*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +7,8 @@
 #include "cgic.h"
 #include "globals.h"
 #include "../shared/defines.h"
+
+/*======================Function Declarations=============================*/
 
 static void doAddArtist(void);
 static void doViewArtist(void);
@@ -14,6 +18,14 @@ static void printAddForm(void);
 
 static void printAllArtists(void);
 static void printSpecificArtist(int);
+
+/*======================Function Definitions=============================*/
+
+/*
+  function: printArtist
+  parameters: none
+  Used to: This function is used to print the artist and it checks??????
+*/
 
 void printArtist(void) {
     int result=0;
@@ -37,7 +49,14 @@ void printArtist(void) {
 	doViewArtist();
     }
 
-}  
+}
+
+  
+/*
+FUNCTION: doAddArtist
+PARAMETERS: none
+USED TO: This function checks if the current user is a librarian or not so it knows whether the user has permission to add a new artist. If they don't have permission they will recieve a message stating they are not privleged to add new artists. The function will then check that the cgi form was a success and then will add the new artist by communicating with the database.
+*/
 
 static void doAddArtist(void) {
     int result=0;
