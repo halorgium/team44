@@ -1,10 +1,11 @@
 %folders not useful = html images
 \documentclass{article}
-\usepackage{palatino}
+\usepackage{palatino,a4wide}
 \title{Programmers Guide to MusicLib (MusicLib for Genius's)}
 \author{Daniel Bakker}
 
 \begin{document}
+\maketitle
 \tableofcontents
 \newpage
 \section{Overview}
@@ -25,7 +26,7 @@ Some files are used by both the Database and the CGI layer, these are located in
 All the webpages are Xhtml 1.0 compliant visit ``http://w3.org'' for more details.
 
 \section{Database}
-This Section will explain the purpose of each `.c' file and what each function achieves.
+Data within the database is stored as [value]\%[value]\%[value]. The \% character is used as a delimiter between different data objects. This Section will explain the purpose of each `.c' file within the database and what each function achieves.
 \subsection{add.c}
 This file is responsible for adding to the database and saving objects to disk.
 
@@ -148,7 +149,7 @@ This is the main working part of the \verb|htmlEscape| function. It takes as arg
 \begin{description}
 \item[getLoanExists] returns true if a loan with the given id exists in the database.
 \item[getLoanUser] returns the \verb|userID| of the user that the album is/was loaned to.
-\item[getLoanAlbum] returns the \verb[albumID] of the album that is/was loaned out.
+\item[getLoanAlbum] returns the \verb|albumID| of the album that is/was loaned out.
 \item[getLoanTimeIn] returns the time that the loan started.
 \item[getLoanTimeOut] returns the time that the album was returned 
 \item[isLoanReturned] returns true if the album that the loan refers to has been returned.
@@ -173,5 +174,34 @@ This file is used when the program is fist initialized, it loads all the informa
 This is the main function of this file. It sets all the first variables to Null
 and then sequentially calls the other methods in this file, loading and checking each different entity.
 \subsubsection*{loadNextID}
-
+This function loads up the ID's for the various entities within the database, using the file pointed to by \verb|NEXTID_FILE_NAME|
+\subsubsection*{loadAllUsers}
+Similar to the \verb|loadNextID| this function loads all artists stored in the database into memory to be accessed by the cgi layer.
+\subsubsection*{loadAllAlbums}
+This function loads all the albums from the data files into the current working application.
+\subsubsection*{loadAllArtists}
+This function loads all the artists from the database files into the current working application.
+\subsubsection*{loadAllLoans}
+\label{loan}
+This function retrieves all loan information from the database to be accessed and modified by the cgi application.
+\subsubsection*{loadAllLoansReturned}
+This function does exactly the same as \verb|loadAllLoans| except it is for returned loans.
+\subsubsection*{Comment loading}
+These methods all work similarly to load the different types of comments from the database into working memory..
+\begin{itemize}
+\item{loadArtistComments}
+\item{loadAlbumComments}
+\item{loadUserComments}
+\end{itemize}
+\subsection{read_line.c}
+This file consists of one function that takes in a file and returns the first line of the file as an array of chars.
+\subsection{save.c}
+This file contains functions to save the various entities within the Musiclib program to disk.
+\subsubsection*{saveNextID}
+This function saves all the \verb|nextID|'s to file. Next ID's are the unique id value for each different entity that will be allocated if a new entity of that type is added to the database.
+\subsubsection*{Other Save Functions}
+All of the following functions write the information they are passed to the appropriate data file in the database.
+\begin{itemize}
+\item{saveUser}
+\end{itemize}
 \end{document}
