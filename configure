@@ -6,4 +6,5 @@ else
 	PREFIX=$1
 fi
 
+echo "configure: will install to $HOME/public_html/$PREFIX"
 cat main_vars.in |sed -e "s/%%PREFIX%%/$PREFIX/g" >main_vars
