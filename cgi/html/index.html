@@ -9,7 +9,7 @@
 
 <head>
 	<title>Library of Team44</title>
-	<!-- Changed by: Jeremy B Bush-King, 05-Aug-2003 -->
+	<!-- Changed by: Jeremy B Bush-King, 06-Aug-2003 -->
 	<meta name="description" content="Join the Penguin Posse!">
 	<meta name="keywords" content="penguin, posse">
 
@@ -71,40 +71,44 @@
 			<td width="20%" align="left">
 <!-- takes in the users name and the email and the boolean isLibrarian and name -->
 
-<form method="POST" action="./?page=user&func=add">
-<p><b>Add a User</b></p>
+<form method="POST" action="./?page=album&func=add">
+<p><b>Add a Album</b></p>
 <p>
-	<label for="name" title="New Users Name">Name of new user: </label>
+	<label for="title" title="Album Title">Album Name: </label>
 </p>
 <p>
-	<label for="user_name" title="New Users Name">UserCode: </label>
+	<label for="artist" title="Artist Name">Artist Name: </label>
+
 </p>
 <p>
-	<label for="email" title="Email">Email:</label>
+	<label for="albumId" title="albumId">Album ID:</label>
 </p> 
 <p>
-	<label for="isLibrarian" title="isLibrarian">Is the new user a Librarian?</label>
-</p>
+	<label for="artistId" title="artistId">Artist ID:</label>
+</p> 
+
 <p>
-  <label for="submit" title="addUser"></label>
-  <input type="submit" name="addUser" value="Add User" />
+  <label for="submit" title="addAlbum"></label>
+  <input type="submit" name="addAlbum" value="Add Album" />
 </p>
 
 <td width="70%" align="left">
 <br>
 	<p>
-	  <input type="text" id="user_name" user_name="user_name" />
+	  <input type="text" id="title" title="title" />
 	</p>
 	<p>
-	  <input type="text" id="user_code" user_name="user_code" />
+	  <input type="text" id="artist" title="artist" />
 	</p>
 	<p>
-	  <input type="text" id="email" email="email" />
+
+	  <input type="text" id="albumId" title="album Id" />
 	</p>
 	<p>
-	  <input type="checkbox" id="isLibrarian" />
+	  <input type="text" id="albumId" title="artist Id/>
 	</p>
 </table>
+
 				<br>
 			</td>
 
