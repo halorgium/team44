@@ -4,7 +4,7 @@
 #include <math.h>
 
 #include "../../shared/defines.h"
-#include "lib.h"
+#include "../../shared/lib.h"
 #include "save.h"
 
 /*functions dealing with saving database to disk*/

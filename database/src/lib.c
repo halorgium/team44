@@ -20,7 +20,7 @@
 
 #include "../../shared/defines.h"
 #include "../../shared/structs.h"
-#include "lib.h"
+#include "../../shared/lib.h"
 #include "save.h"
 
 /*-------------------------- functions ------------------------------------*/

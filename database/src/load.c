@@ -5,7 +5,7 @@
 #include "../../shared/defines.h"
 #include "../../shared/structs.h"
 #include "../../shared/read_line.h"
-#include "lib.h"
+#include "../../shared/lib.h"
 #include "load.h"
 
 int loadAllUsers(FILE *f);

@@ -1,5 +1,5 @@
 #include "../../shared/defines.h"
-#include "lib.h"
+#include "../../shared/lib.h"
 #include "load.h"
 #include "net.h"
 
