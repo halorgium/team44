@@ -1,3 +1,15 @@
+/*
+ *
+ * main.c
+ * ==========
+ * provides functions which deal with the main section in the cgi
+ * 
+*/
+
+
+/*===================== Preprocessor statements===========================*/
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -6,11 +18,25 @@
 #include "globals.h"
 #include "../shared/defines.h"
 
+
+/*======================Function Declarations=============================*/
+
+
 static void printLinks(FILE *);
 static void printHeader(FILE *);
 static void printFooter(FILE *);
 static void theRealWork(void);
 
+
+/*======================Function Definitions=============================*/
+
+/*
+ * Function: cgiMain
+ * Parameters: (none)
+ * Returns: int
+ *
+ * calls all of the appropriate functions
+ */
 int cgiMain() {
    
     _currUserLogon=E_NOUSER;
@@ -27,6 +53,15 @@ int cgiMain() {
     return 0;
 }
 
+/*
+ * Function: theRealWork
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * checks the user logged in correctly and displays all information that the user needs to see
+ * depending on whether they are a librarian or a standerd user.
+ * This is the dynamic section of the page
+ */
 static void theRealWork(void) {
     int result=0;
 
@@ -271,6 +306,15 @@ static void theRealWork(void) {
     }
 }
 
+
+/*
+ * Function: printLinks
+ * Parameters: FILE
+ * Returns: (void)
+ *
+ * Prints the links that are on the left hand side margin that let you orientate
+ * your way around the page.
+ */
 static void printLinks(FILE *output) {
     char *userCode=getUserCode(_currUserLogon);
 
@@ -318,6 +362,14 @@ static void printLinks(FILE *output) {
     free(userCode);
 }
 
+/*
+ * Function: printHeader
+ * Parameters: FILE
+ * Returns: (void)
+ *
+ * Prints the header of the page. IE the title bar of the page
+ * and sets the structure of the html source file
+ */
 static void printHeader(FILE *output) {
     cgiHeaderContentType("text/html");
 
@@ -363,6 +415,14 @@ static void printHeader(FILE *output) {
     fprintf(output, "  <tr>\n");
 }
 
+/*
+ * Function: printFooter
+ * Parameters: FILE
+ * Returns: (void)
+ *
+ * Prints the footer of the page. 
+ * and closes off the html source file
+ */
 static void printFooter(FILE *output) {
     fprintf(output, "  </tr>\n");
     fprintf(output, "    </tbody>\n");

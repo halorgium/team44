@@ -1,6 +1,13 @@
 /*
-  Deals with the login screen: displays text field where user enters their code
+ * login.c
+ * =========
+ * 
+ * Deals with the login screen: displays text field where user 
+ * enters their code
 */
+
+
+/*===================== Preprocessor statements===========================*/
 
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +15,16 @@
 #include "cgic.h"
 #include "globals.h"
 #include "../shared/defines.h"
+
+
+/*
+ * Function: printLogin
+ * Parameters: (none)
+ * Returns: (void)
+ *
+ * Displays the screen for logging in. Prints the html code to the cgi
+ * output stream
+ */
 
 void printLogin() {
   fprintf(cgiOut, "<table style=\"width:100%%; text-align: center;\">\n");
