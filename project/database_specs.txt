@@ -81,9 +81,9 @@ Database structure:
 -----------------------------
 
 User:
--userid/usercode
--isLibrarian (Boolean)
+-usercode
 -name
+-isLibrarian (Boolean)
 -email
 
 Album:
