@@ -1,12 +1,12 @@
 CFLAGS=-Wall -ansi -pedantic
 CC=gcc
 AR=ar
-OBJS=globals.o main.o login.o home.o contact.o user.o news.o ../../shared/read_line.o
+OBJS=contact.o globals.o home.o login.o main.o news.o user.o ../../shared/read_line.o
 LIBS=-L./ -lcgic
 
 INSTALL_DIR=$(HOME)/public_html/testweb
 
-all: libcgic.a ../bin/index.cgi
+all: ../bin/index.cgi
 
 libcgic.a: cgic.o cgic.h
 	rm -f libcgic.a
@@ -14,6 +14,17 @@ libcgic.a: cgic.o cgic.h
 
 ../bin/index.cgi: $(OBJS) libcgic.a globals.h
 	gcc $(OBJS) -o ../bin/index.cgi ${LIBS}
+
+cgic.c: cgic.h
+contact.c: globals.h ../../shared/structs.h ../../shared/defines.h
+globals.c: cgic.h globals.h ../../shared/structs.h ../../shared/defines.h
+home.c: cgic.h globals.h ../../shared/structs.h ../../shared/defines.h
+login.c: cgic.h globals.h ../../shared/structs.h ../../shared/defines.h
+main.c: cgic.h globals.h ../../shared/structs.h ../../shared/defines.h
+news.c: cgic.h globals.h ../../shared/structs.h ../../shared/defines.h
+user.c: cgic.h globals.h ../../shared/structs.h ../../shared/defines.h
+
+../../shared/read_line.o: 
 
 install: 
 	rm -fr $(INSTALL_DIR)
