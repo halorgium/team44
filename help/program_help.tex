@@ -33,7 +33,7 @@ This file is responsible for adding to the database and saving objects to disk.
  This function is a wrapper function that returns the current time of day based on the number of seconds since the Linux epoch 01/01/1970. It is used to record the dates and times of loans within the library.
 
 \subsubsection*{checkString}
- The checkString function takes in a string and makes sure that it is not null, and that it does not include and \% characters as these are bad for the database.
+ The checkString function takes in a string and makes sure that it is not null, that it does not begin with a space,  and does not contain any \% characters as these are bad for the database.
 
 \subsubsection*{addUser}
 This function takes in string values for the User's usercode, the User's name, the User's email address, and whether or not the user is a librarian.  These values are mapped to a ``userNode'' and then memory is allocated on disk for each field using \verb|malloc (3)|. This new information is then saved to disk using the \verb|saveUser| function.
@@ -73,13 +73,13 @@ This is the main working part of the \verb|htmlEscape| function. It takes as arg
 \item[getUser] returns a user from the database with the requested \verb|userID|. This function is not accessible outside of the database so outsiders cannot directly access or modify the data in the database. All the other User functions call this one in order to access the database information.
 \item[getUserExists] returns true if a user is present in the database
 \item[makeUserID] returns a hash value which is used as a \verb|userID|, calculated from the user's \verb|userCode|.
-\item[getUserCode] returns a \verb|userCode| based on a user's ID number.
-\item[getUserName] returns a user's name based on their ID Number.
-\item[getUserEmail] returns a user's email address based on their ID Number.
+\item[getUserCode] returns a \verb|userCode| given a user's ID number.
+\item[getUserName] returns a user's name give their ID Number.
+\item[getUserEmail] returns a user's email address given their ID Number.
 \item[isUserLibrarian] returns true if the selected ID Number represents a librarian.
-\item[getUsers] returns a list of all current users in the database.
+\item[getUsers] returns an array of all current users in the database.
 \item[getUsersCount] returns the total number of users in the database.
-\item[getUsersByType] returns a list of all the users in the database who are either Librarians or standard users.
+\item[getUsersByType] returns an array of all the users in the database who are either Librarians or standard users.
 \item[getUsersByTypeCount] returns the number of Librarians or standard users in the database.
 \end{description}
 
@@ -90,7 +90,7 @@ This is the main working part of the \verb|htmlEscape| function. It takes as arg
 \item[getAlbumTitle] returns the title of the album with the specified ID Number.
 \item[getAlbumArtist] returns the artist who made the album with the ID Number specified.
 \item[getAlbumCurrentLoan] returns the current \verb|loanID| if the album selected is on loan.
-\item[getAlbums] returns a list of all the albums currently present in the database.
+\item[getAlbums] returns an array of all the albums currently present in the database.
 \item[getAlbumsCount] returns the total number of albums that are currently in the database.
 \end{description}
 
@@ -99,7 +99,7 @@ This is the main working part of the \verb|htmlEscape| function. It takes as arg
 \item[getArtist] returns an artist from the database, if the correct artist ID is supplied. All other artist functions call this function.
 \item[getArtistExists] returns true if an artist with the given ID is present in the database.
 \item[getArtistName] returns the name of the artist with the given ID.
-\item[getArtists] returns a list of all the artists currently in the database.
+\item[getArtists] returns an array of all the artists currently in the database.
 \item[getArtistsCount] returns the number of artists currently present in the database.
 \item[getArtistAlbums] returns an array of \verb|albumID|'s of albums that this artist has composed.
 \item[getArtistAlbumsCount] returns the number of albums this artist has composed.
@@ -142,6 +142,22 @@ This is the main working part of the \verb|htmlEscape| function. It takes as arg
 \item[getArtistCommentsByUserCount] returns the total number of artist comments made by the specified user.
 \item[getArtistCommentsForArtist] returns an array of all the artist comments made about a specific artist.
 \item[getArtistCommentsForArtistCount] returns the number of artist comments made about the specified artist.
+\end{description}
+
+\subsubsection{Loan Functions}
+\begin{description}
+\item[getLoanExists] returns true if a loan with the given id exists in the database.
+\item[getLoanUser] returns the \verb|userID| of the user that the album is/was loaned to.
+\item[getLoanAlbum] returns the \verb[albumID] of the album that is/was loaned out.
+\item[getLoanTimeIn] returns the time that the loan started.
+\item[getLoanTimeOut] returns the time that the album was returned 
+\item[isLoanReturned] returns true if the album that the loan refers to has been returned.
+\item[getLoansByUser] returns either the loans that have been returned by the specified user, or the loans for albums that have not been returned by the user..
+\item[getLoansByUserCount] returns the number of returned or unreturned loans by the specific user.
+\item[getLoansByAlbum] returns an array of returned or unreturned loans relating to the \verb|albumID| specified. 
+\item[getLoansByAlbumCount] returns the number of returned or unreturned loans relating to the album.
+\item[setLoanReturned] marks the selected loan as returned, and supplies the time that it was returned at.
+
 \end{description}
 
 \end{document}
