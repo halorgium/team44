@@ -1,8 +1,22 @@
 #ifndef _DEFINES_H
-#define _DEFINES_H
+#define _DEFINES_H 1
 
-#define TRUE 0
-#define FALSE 1
+#define TRUE 1
+#define FALSE 0
 typedef int Boolean;
+
+/* Data limits */
+
+#define MAXSIZE_USERCODE 16
+#define MAXSIZE_USERNAME 50
+#define MAXSIZE_USEREMAIL 100
+
+#define MAXSIZE_ALBUMNAME 50
+
+#define MAXSIZE_ARTISTNAME 50
+
+#define MAXSIZE_USERCOMMENT 1000
+#define MAXSIZE_ARTISTCOMMENT 1000
+#define MAXSIZE_ALBUMCOMMENT 1000
 
 #endif

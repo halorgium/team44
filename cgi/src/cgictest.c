@@ -6,13 +6,25 @@ void printHeader();
 void printFooter();
 
 int cgiMain() {
+    int result=0;
+    
+    char userCode[MAXSIZE_USERCODE]={'\0'};
+    char pageName[MAXSIZE_PAGENAME]={'\0'};
+
 #if DEBUG
     /* Load a saved CGI scenario if we're debugging */
     cgiReadEnvironment("/home/boutell/public_html/capcgi.dat");
 #endif
     printHeader();
+
+    int result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
+    if(result != cgiFormSuccess) {
+	page="login";
+    }
+    int result = cgiFormStringNoNewlines("userCode", userCode, MAXSIZE_USERCODE);
     
-    fprintf(cgiOut, "Me");
+    
+    fprintf(cgiOut, "%s<br />", name);
     
 
 
@@ -59,7 +71,7 @@ void Name() {
     default:
 	fprintf(cgiOut, "Name fetched, unexpected result code: %d\n", result);
 	break;
-    }	
+    }
     fprintf(cgiOut, "Name: %s<BR>\n", name);
 }
 	

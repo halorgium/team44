@@ -5,7 +5,7 @@
 int cgiMain() {
 #if DEBUG
     /* Load a saved CGI scenario if we're debugging */
-    cgiReadEnvironment("/home/boutell/public_html/capcgi.dat");
+    cgiReadEnvironment("/home/cosc/student/tsm20/public/team44/enviro.dat");
 #endif
     cgiHeaderContentType("text/html");
     fprintf(cgiOut, "<HTML><HEAD>\n");
@@ -19,7 +19,7 @@ int cgiMain() {
     Color();
     Flavors();
     NonExButtons();
-    RadioButtons();
+    
     fprintf(cgiOut, "</BODY></HTML>\n");
     return 0;
 }

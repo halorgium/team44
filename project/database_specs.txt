@@ -82,7 +82,7 @@ Database structure:
 
 User:
 -userid/usercode
--usertype (std || lib)
+-isLibrarian (Boolean)
 -name
 -email
 
@@ -99,28 +99,25 @@ CommentUser:
 -commentid
 -ownerid
 -userid
--title??
 -body
 
 CommentArtist:
 -commentid
 -ownerid
 -artistid
--title??
 -body
 
 CommentAlbum:
 -commentid
 -ownerid
 -albumid
--title??
 -body
 
 Loan:
 -loanid
 -userid
 -albumid
--timestampin (better names)
--timestampout
--status (overdue || returned || on_loan)
+-timetake
+-timereturn
+-returned (Boolean)
 
