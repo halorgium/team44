@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.1 2003/09/25 14:30:35 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.2 2003/09/25 16:02:04 tsm20 Exp $
 
 CLEANOUT="releases"
    CVSIN=`cat CVS/Root`
@@ -24,6 +24,8 @@ CLEANDIR=musiclib-1.0
 rm -fr $CLEANDIR || exit
 mkdir $CLEANDIR || exit
 
+cp $MODULE/do_install.sh $CLEANDIR || exit
+cp $MODULE/main_vars $CLEANDIR || exit
 cp $MODULE/Makefile $CLEANDIR || exit
 cp -r $MODULE/src  $CLEANDIR || exit
 mkdir $CLEANDIR/help
