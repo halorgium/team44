@@ -1,0 +1,8 @@
+*.aux
+*.toc
+*.dvi
+*.log
+*.pdf
+*.ps
+program_help
+usr_help
