@@ -308,7 +308,7 @@ static void printAllUsersByType(Boolean isLib) {
     }
 }
 
-void printSpecificUser(int userid) {
+static void printSpecificUser(int userid) {
     fprintf(cgiOut, "<div class=\"head1\">View User [%d]</div>", userid);
 
     fprintf(cgiOut, "<table>\n");

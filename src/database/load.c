@@ -8,22 +8,21 @@
 #include "read_line.h"
 #include "globals.h"
 
-int loadNextID(FILE *f);
-int loadAllUsers(FILE *f);
-int loadAllArtists(FILE *f);
-int loadAllAlbums(FILE *f);
-int loadAllLoans(FILE *f);
-int loadAllLoansReturned(FILE *f);
+static int loadNextID(FILE *f);
+static int loadAllUsers(FILE *f);
+static int loadAllArtists(FILE *f);
+static int loadAllAlbums(FILE *f);
+static int loadAllLoans(FILE *f);
+static int loadAllLoansReturned(FILE *f);
+static int loadAlbumComments(FILE *f);
+static int loadArtistComments(FILE *f);
+static int loadUserComments(FILE *f);
 
-int loadAlbumComments(FILE *f);
-int loadArtistComments(FILE *f);
-int loadUserComments(FILE *f);
-
-Boolean databaseLoaded=FALSE;
+Boolean databaseLoaded = FALSE;
 
 /* ALL LOAD operations are performed only at initilisation*/
 int loadDatabase() {
-    FILE *InFile=NULL;
+    FILE *InFile = NULL;
 
     if(databaseLoaded) {
 	return DB_ALREADY_LOADED;
@@ -38,55 +37,55 @@ int loadDatabase() {
     firstArtistComment = NULL;
     firstLoan = NULL;
 
-    fprintf(stderr, "Start Load nextID\n");
+    /* Start Load nextID */
     InFile = fopen(DATA_LOCATION"/"NEXTID_FILE_NAME, "r");
     if(InFile == NULL) return NEXTID_LOAD_FAILURE;
     if(loadNextID(InFile)!=1) return NEXTID_LOAD_FAILURE;
     fclose(InFile);
     
-    fprintf(stderr, "Start Load Users\n");
+    /* Start Load Users */
     InFile = fopen(DATA_LOCATION"/"USER_FILE_NAME, "r");
     if(InFile == NULL) return USER_LOAD_FAILURE;
     if(loadAllUsers(InFile)!=1) return USER_LOAD_FAILURE;
     fclose(InFile);
     
-    fprintf(stderr, "Start Load Albums\n");
+    /* Start Load Albums */
     InFile = fopen(DATA_LOCATION"/"ALBUM_FILE_NAME, "r");
     if(InFile == NULL) return ALBUM_LOAD_FAILURE;
     if(loadAllAlbums(InFile)!=1) return ALBUM_LOAD_FAILURE;
     fclose(InFile);
 
-    fprintf(stderr, "Start Load Artists\n");
+    /* Start Load Artists */
     InFile = fopen(DATA_LOCATION"/"ARTIST_FILE_NAME, "r");
     if(InFile == NULL) return ARTIST_LOAD_FAILURE;
     if(loadAllArtists(InFile)!=1) return ARTIST_LOAD_FAILURE;
     fclose(InFile);
     
-    fprintf(stderr, "Start Load User Comments\n");
+    /* Start Load User Comments */
     InFile = fopen(DATA_LOCATION"/"USER_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return USR_COM_LOAD_FAILURE;
     if(loadUserComments(InFile)!=1) return USR_COM_LOAD_FAILURE;
     fclose(InFile);
 
-    fprintf(stderr, "Start Load Album Comments\n");
+    /* Start Load Album Comments */
     InFile = fopen(DATA_LOCATION"/"ALBUM_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return ALB_COM_LOAD_FAILURE;
     if(loadAlbumComments(InFile)!=1) return ALB_COM_LOAD_FAILURE;
     fclose(InFile);
 
-    fprintf(stderr, "Start Load Artist Comments\n");
+    /* Start Load Artist Comments */
     InFile = fopen(DATA_LOCATION"/"ARTIST_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return ART_COM_LOAD_FAILURE;
     if(loadArtistComments(InFile)!=1) return ART_COM_LOAD_FAILURE;
     fclose(InFile);
     
-    fprintf(stderr, "Start Load Loans\n");
+    /* Start Load Loans */
     InFile = fopen(DATA_LOCATION"/"LOAN_FILE_NAME, "r");
     if(InFile == NULL) return LOAN_LOAD_FAILURE;
     if(loadAllLoans(InFile)!=1) return LOAN_LOAD_FAILURE;
     fclose(InFile);
 
-    fprintf(stderr, "Start Load Loans Returned\n");
+    /* Start Load Loans Returned */
     InFile = fopen(DATA_LOCATION"/"LOANRET_FILE_NAME, "r");
     if(InFile == NULL) return LOANRET_LOAD_FAILURE;
     if(loadAllLoansReturned(InFile)!=1) return LOANRET_LOAD_FAILURE;
@@ -97,7 +96,7 @@ int loadDatabase() {
     return 1;
 }
 
-int loadNextID(FILE *file) {
+static int loadNextID(FILE *file) {
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -204,7 +203,7 @@ int loadNextID(FILE *file) {
     return 1;
 }
 
-int loadAllUsers(FILE *file){
+static int loadAllUsers(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -294,7 +293,7 @@ int loadAllUsers(FILE *file){
     return 1;
 }
 
-int loadAllAlbums(FILE *file){
+static int loadAllAlbums(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -362,7 +361,7 @@ int loadAllAlbums(FILE *file){
 
 }
 
-int loadAllArtists(FILE *file){
+static int loadAllArtists(FILE *file){
 
     char *line = NULL;
 
@@ -416,11 +415,9 @@ int loadAllArtists(FILE *file){
     }
 
     return 1;
-
-
 }
 
-int loadAllLoans(FILE *file){
+static int loadAllLoans(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -510,7 +507,7 @@ int loadAllLoans(FILE *file){
     return 1;
 }
 
-int loadAllLoansReturned(FILE *file){
+static int loadAllLoansReturned(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -562,8 +559,7 @@ int loadAllLoansReturned(FILE *file){
     return 1;
 }
 
-
-int loadUserComments(FILE *file){
+static int loadUserComments(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -647,7 +643,7 @@ int loadUserComments(FILE *file){
     return 1;
 }
 
-int loadAlbumComments(FILE *file){
+static int loadAlbumComments(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
@@ -729,10 +725,9 @@ int loadAlbumComments(FILE *file){
 /* 	free(line); */
     }
     return 1;
-
 }
 
-int loadArtistComments(FILE *file){
+static int loadArtistComments(FILE *file){
 
     char *line = NULL;
 

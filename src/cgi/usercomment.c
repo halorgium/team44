@@ -89,18 +89,42 @@ static int processAddForm(void) {
 
     result = cgiFormInteger("usrid", &userid, -1);
     if(result != cgiFormSuccess || userid == -1) {
-	return -1;
+	newUserCommentid = E_FORM;
     }
-    
-    result = cgiFormStringNoNewlines("combody", combody, MAXSIZE_USERCOMMENT);
-    if(result != cgiFormSuccess || combody == NULL) {
-	printf("no comment\n");
-	return -1;
+    else {
+	result = cgiFormStringNoNewlines("combody", combody, MAXSIZE_ALBUMCOMMENT);
+	if(result != cgiFormSuccess || combody == NULL) {
+	    newUserCommentid = E_INVALID_PARAM;
+	}
+	else {
+	    newUserCommentid=addUserComment(userid, _currUserLogon, combody);
+	}
     }
 
-    newUserCommentid=addUserComment(userid, _currUserLogon, combody);
     if(newUserCommentid < 0) {
-	return -1;
+	switch(newUserCommentid) {
+	case DB_NEXTID_ERROR:
+	    fprintf(cgiOut, "Database failure: ID allocation failed<br />\n");
+	    break;
+	case DB_SAVE_FAILURE:
+	    fprintf(cgiOut, "Database failure: User Comment save incomplete<br />\n");
+	    break;
+	case E_NOUSER:
+	    fprintf(cgiOut, "User [%d] does not exist<br />\n", userid);
+	    break;
+	case E_FORM:
+	    fprintf(cgiOut, "User not selected<br />\n");
+	    break;
+	case E_INVALID_PARAM:
+	    fprintf(cgiOut, "Comment body is invalid<br />\n");
+	    break;
+	case E_MALLOC_FAILED:
+	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	    break;
+	default:
+	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
+	    return E_UNKNOWN;
+	}
     }
     return newUserCommentid;
 }
@@ -340,7 +364,7 @@ static void printAllUserCommentsForUser(int userid) {
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
-void doShowUserComment(void) {
+static void doShowUserComment(void) {
     int result=0;
     int userid=0;
   

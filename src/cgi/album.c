@@ -238,7 +238,7 @@ static void doViewAlbum(void) {
     }
 }
 
-void printAllAlbums(void) {
+static void printAllAlbums(void) {
     int *allAlbums=NULL;
     int curr_id=0;
     int count=0;

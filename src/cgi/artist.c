@@ -231,7 +231,7 @@ static void printAllArtists(void) {
     }
 }
 
-void printSpecificArtist(int artistid) {
+static void printSpecificArtist(int artistid) {
     fprintf(cgiOut, "<div class=\"head1\">View Artist [%d]</div>", artistid);
 
     fprintf(cgiOut, "<table>\n");
