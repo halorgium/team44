@@ -6,7 +6,7 @@
 #include "../shared/defines.h"
 
 void printLogin() {
-  fprintf(cgiOut, "<table width=\"100%%\" style=\"text-align: center;\">\n");
+  fprintf(cgiOut, "<table style=\"width:100%%; text-align: center;\">\n");
   fprintf(cgiOut, "<tr>\n");
   fprintf(cgiOut, "<td>\n");
   fprintf(cgiOut, "<p>Please login to use the Music Library</p>\n");

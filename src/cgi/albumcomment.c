@@ -190,37 +190,36 @@ static void printAllAlbumCommentsByUser(int userid) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Album Comments</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
 	if(getAlbumCommentsByUserCount(userid) == 0) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>No album comments</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "No album comments\n");
 	}
-
-	curr_id=allAlbumComments[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
-	    fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getAlbumCommentAlbum(curr_id), _currUserLogon, getAlbumTitle(getAlbumCommentAlbum(curr_id)));
-	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "%s", getAlbumCommentBody(curr_id));
-	    fprintf(cgiOut, "</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allAlbumComments[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
+		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getAlbumCommentAlbum(curr_id), _currUserLogon, getAlbumTitle(getAlbumCommentAlbum(curr_id)));
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "%s", getAlbumCommentBody(curr_id));
+		fprintf(cgiOut, "</td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allAlbumComments[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
 	}
 	
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
 	free(allAlbumComments);
     }
 
@@ -241,37 +240,36 @@ static void printAllAlbumCommentsForAlbum(int albumid) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Album Comments</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
 	if(getAlbumCommentsForAlbumCount(albumid) == 0) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>No album comments</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "No album comments\n");
 	}
-
-	curr_id=allAlbumComments[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-	    fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getAlbumCommentOwner(curr_id), _currUserLogon, getUserName(getAlbumCommentOwner(curr_id)));
-	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "%s", getAlbumCommentBody(curr_id));
-	    fprintf(cgiOut, "</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allAlbumComments[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
+		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getAlbumCommentOwner(curr_id), _currUserLogon, getUserName(getAlbumCommentOwner(curr_id)));
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "%s", getAlbumCommentBody(curr_id));
+		fprintf(cgiOut, "</td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allAlbumComments[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
 	}
 	
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
 	free(allAlbumComments);
     }
 

@@ -108,6 +108,11 @@ static void printAddForm(void) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Artists</div>");
 	return;
     }
+    if(getArtistsCount() == 0) {
+	fprintf(cgiOut, "To be able to add an album, the database must contain an artist<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Artist]</a>\n", _currUserLogon);
+	return;
+    }
 
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
@@ -193,48 +198,53 @@ void printAllAlbums(void) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Albums</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<thead>\n");
-	fprintf(cgiOut, "  <tr>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Album Title</td>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Artist Name</td>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Status</td>\n");
-	fprintf(cgiOut, "  </tr>\n");
-	fprintf(cgiOut, "</thead>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tfoot>\n");
-	fprintf(cgiOut, "  <tr>\n");
-	fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"3\">&nbsp;</td>\n");
-	fprintf(cgiOut, "  </tr>\n");
-	fprintf(cgiOut, "</tfoot>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
-        curr_id=allAlbums[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
+	if(getAlbumsCount() == 0) {
+	    fprintf(cgiOut, "No albums\n");
+	}
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<thead>\n");
 	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getAlbumTitle(curr_id));
-	    fprintf(cgiOut, "    </td>\n");
-            fprintf(cgiOut, "    <td><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a></td>\n", getAlbumArtist(curr_id), _currUserLogon, getArtistName(getAlbumArtist(curr_id)));
-
-	    if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
-		fprintf(cgiOut, "    <td>On Loan</td>\n");
-	    }
-	    else {
-		fprintf(cgiOut, "    <td>In Library</td>\n");
-	    }
+	    fprintf(cgiOut, "    <td class=\"thead\">Album Title</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Artist Name</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Status</td>\n");
 	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	    fprintf(cgiOut, "</thead>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tfoot>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"3\">&nbsp;</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</tfoot>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allAlbums[count];
-        }
-
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getAlbumTitle(curr_id));
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "    <td><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a></td>\n", getAlbumArtist(curr_id), _currUserLogon, getArtistName(getAlbumArtist(curr_id)));
+		
+		if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
+		    fprintf(cgiOut, "    <td>On Loan</td>\n");
+		}
+		else {
+		    fprintf(cgiOut, "    <td>In Library</td>\n");
+		}
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allAlbums[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
+	}
+	
         free(allAlbums);
     }
 }

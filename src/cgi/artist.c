@@ -164,40 +164,45 @@ static void printAllArtists(void) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Artists</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<thead>\n");
-	fprintf(cgiOut, "  <tr>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Artist Name</td>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Album Count</td>\n");
-	fprintf(cgiOut, "  </tr>\n");
-	fprintf(cgiOut, "</thead>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tfoot>\n");
-	fprintf(cgiOut, "  <tr>\n");
-	fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"2\">&nbsp;</td>\n");
-	fprintf(cgiOut, "  </tr>\n");
-	fprintf(cgiOut, "</tfoot>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
-        curr_id=allArtists[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
+	if(getArtistsCount() == 0) {
+	    fprintf(cgiOut, "No artists\n");
+	}
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<thead>\n");
 	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getArtistName(curr_id));
-	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "    <td>%d</td>\n", getArtistAlbumsCount(curr_id));
+	    fprintf(cgiOut, "    <td class=\"thead\">Artist Name</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Album Count</td>\n");
 	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	    fprintf(cgiOut, "</thead>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tfoot>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"2\">&nbsp;</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</tfoot>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allArtists[count];
-        }
-
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getArtistName(curr_id));
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "    <td>%d</td>\n", getArtistAlbumsCount(curr_id));
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allArtists[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
+	}
+	
         free(allArtists);
     }
 }

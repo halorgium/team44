@@ -206,37 +206,36 @@ static void printAllUserCommentsByUser(int userid) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all User Comments</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
 	if(getUserCommentsByUserCount(userid) == 0) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>No user comments</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "No user comments\n");
 	}
-
-	curr_id=allUserComments[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
-	    fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getUserCommentUser(curr_id), _currUserLogon, getUserName(getUserCommentUser(curr_id)));
-	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "%s", getUserCommentBody(curr_id));
-	    fprintf(cgiOut, "</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allUserComments[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
+		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getUserCommentUser(curr_id), _currUserLogon, getUserName(getUserCommentUser(curr_id)));
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "%s", getUserCommentBody(curr_id));
+		fprintf(cgiOut, "</td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allUserComments[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
 	}
 	
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
 	free(allUserComments);
     }
 
@@ -257,37 +256,36 @@ static void printAllUserCommentsForUser(int userid) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all User Comments</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
 	if(getUserCommentsForUserCount(userid) == 0) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>No user comments</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "No user comments\n");
 	}
-
-	curr_id=allUserComments[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-	    fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getUserCommentOwner(curr_id), _currUserLogon, getUserName(getUserCommentOwner(curr_id)));
-	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "%s", getUserCommentBody(curr_id));
-	    fprintf(cgiOut, "</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allUserComments[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
+		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getUserCommentOwner(curr_id), _currUserLogon, getUserName(getUserCommentOwner(curr_id)));
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "%s", getUserCommentBody(curr_id));
+		fprintf(cgiOut, "</td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allUserComments[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
 	}
-	
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
+		    
 	free(allUserComments);
     }
 

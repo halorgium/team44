@@ -635,7 +635,7 @@ static cgiParseResultType getTempFileName(char *tfileName)
 		otherwise have allowed this). */
 	int outfd; 
 	strcpy(tfileName, cgicTempDir "/cgicXXXXXX");
-	outfd = mkstemp(tfileName);
+ 	outfd = -1;/*mkstemp(tfileName); */
 	if (outfd == -1) {
 		return cgiParseIO;
 	}

@@ -219,49 +219,54 @@ static void printAllUsers(void) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Users</div>");
     }
     else {
-	fprintf(cgiOut, "<table border=\"1\">\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<thead>\n");
-	fprintf(cgiOut, "  <tr>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">User Code</td>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">User Name</td>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Email Address</td>\n");
-	fprintf(cgiOut, "    <td class=\"thead\">Is Librarian?</td>\n");
-	fprintf(cgiOut, "  </tr>\n");
-	fprintf(cgiOut, "</thead>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tfoot>\n");
-	fprintf(cgiOut, "  <tr>\n");
-	fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"4\">&nbsp;</td>\n");
-	fprintf(cgiOut, "  </tr>\n");
-	fprintf(cgiOut, "</tfoot>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "<tbody>\n");
-
-        curr_id=allUsers[count];
-        while (curr_id != LAST_ID_IN_ARRAY) {
+	if(getUsersCount() == 0) {
+	    fprintf(cgiOut, "No users\n");
+	}
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<thead>\n");
 	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td>");
-	    userLink(curr_id, getUserCode(curr_id), cgiOut);
-	    fprintf(cgiOut, "    </td>\n");
-	    fprintf(cgiOut, "    <td>%s</td>\n", getUserName(curr_id));
-	    fprintf(cgiOut, "    <td>%s</td>\n", getUserEmail(curr_id));
-	    if(isUserLibrarian(curr_id) == TRUE) {
-		fprintf(cgiOut, "    <td>Yes</td>\n");
-	    }
-	    else {
-		fprintf(cgiOut, "    <td>No</td>\n");
-	    }
+	    fprintf(cgiOut, "    <td class=\"thead\">User Code</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">User Name</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Email Address</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Is Librarian?</td>\n");
 	    fprintf(cgiOut, "  </tr>\n");
-
-	    count++;
+	    fprintf(cgiOut, "</thead>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tfoot>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"4\">&nbsp;</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</tfoot>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+	    
 	    curr_id=allUsers[count];
-        }
-
-	fprintf(cgiOut, "</tbody>\n");
-	fprintf(cgiOut, "\n");
-	fprintf(cgiOut, "</table>\n");
-
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		userLink(curr_id, getUserCode(curr_id), cgiOut);
+		fprintf(cgiOut, "    </td>\n");
+		fprintf(cgiOut, "    <td>%s</td>\n", getUserName(curr_id));
+		fprintf(cgiOut, "    <td>%s</td>\n", getUserEmail(curr_id));
+		if(isUserLibrarian(curr_id) == TRUE) {
+		    fprintf(cgiOut, "    <td>Yes</td>\n");
+		}
+		else {
+		    fprintf(cgiOut, "    <td>No</td>\n");
+	    }
+		fprintf(cgiOut, "  </tr>\n");
+		
+		count++;
+		curr_id=allUsers[count];
+	    }
+	    
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
+	}
+	
         free(allUsers);
     }
 }

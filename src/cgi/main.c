@@ -40,8 +40,7 @@ static void theRealWork(void) {
     result=loadDatabase();
     if(result != DB_LOAD_SUCCESS) {
 	/* some problem with loading */
-	fprintf(cgiOut, "<td>Some DB Load problem</td>\n");
-	/* 	errorPage(CGI_ERR_DB); */
+	fprintf(cgiOut, "<td>Some DB Load problem</td>\n</tr>\n<tr>\n");
 	return;
     }
     
@@ -67,7 +66,7 @@ static void theRealWork(void) {
 	    if(result != cgiFormSuccess) {
 		/* Unsuccessful */
 		/* Display login */
-		fprintf(cgiOut, "<td>bad login</td></tr>\n<tr>\n");
+		fprintf(cgiOut, "<td>No such user</td></tr>\n<tr>\n");
 		strcpy(pageName, "login");
 	    }
 	    else {
@@ -75,7 +74,7 @@ static void theRealWork(void) {
 		int tempHash=makeUserID(userCode);
 		if(getUserExists(tempHash) == FALSE) {
 		    /* No such user */
-		    fprintf(cgiOut, "<td>No such user</td></tr><tr>\n");
+		    fprintf(cgiOut, "<td>No such user</td></tr>\n<tr>\n");
 		    strcpy(pageName, "login");
 		}
 		else {
@@ -90,7 +89,7 @@ static void theRealWork(void) {
 	/* Make sure logged in */
 	if(getUserExists(userHash) == FALSE) {
 	    /* UserHash invalid */
-	    fprintf(cgiOut, "<td>Bad hash : [%d]</td></tr><tr>\n", userHash);
+	    fprintf(cgiOut, "<td>Bad hash</td></tr>\n<tr>\n");
 	    strcpy(pageName, "login");
 	}
 	else {
