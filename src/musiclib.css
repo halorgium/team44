@@ -75,19 +75,20 @@ td#topspacerb {
 td#header { 
   height : 0px;
   padding : 0px 0px 0px 0px;
-  text-align : left;
+  text-align : center;
   vertical-align : middle;
   color : #FFFFFF;
-  background : #630707;
+  background : #045B01;
 }
 
 div#maintitle {
-  padding : 0px 0px 0px 0px;
+  padding : 20px 0px 0px 0px;
   font-size : 40px;
-  text-align : left;
+  text-align : center;
   vertical-align : middle;
   color : #FFFFFF;
-  background : #630707;
+  background : #045B01;
+  background-image : url(binary.png);
 }
 
 /* Links Styles */  
