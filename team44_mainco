@@ -1,17 +1,13 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.5 2003/05/12 06:02:39 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.6 2003/05/12 06:31:08 tsm20 Exp $
 
 CLEANOUT="/home/cosc/student/tsm20/team44clean"
 
 cd $CLEANOUT || exit
 
 echo "pwd="`pwd`
-#rm -fr casestudy
-#mkdir casestudy
-
-echo "Add execute perms for group (dirs)"
-chmod g+rwx `find $CLEANOUT -type d`
+rm -fr casestudy
 
 cvs -d /home/cosc/student/tsm20/team44cvs/ export -f -r HEAD casestudy
 
@@ -21,7 +17,7 @@ echo "Start perms "$CLEANOUT
 echo "Add rw for group (all files)"
 echo "Add x  for group (dirs and scripts)"
 chmod g+rwX `find $CLEANOUT`
-echo "Reset perms for other"
+echo "Remove perms for other"
 chmod o-rwx `find $CLEANOUT`
 
 # at this point: 
