@@ -1,0 +1,44 @@
+CGI Specs
+=======================================
+
+Std User functions: 
+---------------------------------------
+
+=>My Account
+=>My Loans
+  =>Return 'on loan' albums
+=>My Comments
+
+=>Logout
+
+Artist Stuff
+=>Search
+=>View All
+(With artists)
+  =>View Albums
+  =>View Comments
+  =>Add Comment
+
+Album Stuff
+=>Search
+=>View All
+(With albums)
+  =>View Comments
+  =>Add Comment
+
+Librarian functions: (+ Std User)
+--------------------------------------
+
+Artist Stuff
+=>Add Artist
+
+Album Stuff
+=>Add Album
+
+User Stuff
+=>Add User
+=>View Users
+(With users)
+  =>View Comments
+  =>Add Comment
+
