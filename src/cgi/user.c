@@ -286,13 +286,21 @@ static void printAllUsersByType(Boolean isLib) {
 	    curr_id=allUsers[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
 		if(isUserLibrarian(curr_id) == isLib) {
+		  char *userCode=getUserCode(curr_id);
+		  char *userName=getUserName(curr_id);
+		  char *userEmail=getUserEmail(curr_id);
+
 		    fprintf(cgiOut, "  <tr>\n");
 		    fprintf(cgiOut, "    <td>");
-		    userLink("", curr_id, getUserCode(curr_id), cgiOut);
+		    userLink("", curr_id, userCode, cgiOut);
 		    fprintf(cgiOut, "    </td>\n");
-		    fprintf(cgiOut, "    <td>%s</td>\n", getUserName(curr_id));
-		    fprintf(cgiOut, "    <td>%s</td>\n", getUserEmail(curr_id));
+		    fprintf(cgiOut, "    <td>%s</td>\n", userName);
+		    fprintf(cgiOut, "    <td>%s</td>\n", userEmail);
 		    fprintf(cgiOut, "  </tr>\n");
+
+		    free(userCode);
+		    free(userName);
+		    free(userEmail);
 		}
 		
 		count++;

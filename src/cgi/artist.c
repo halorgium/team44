@@ -212,15 +212,19 @@ static void printAllArtists(void) {
 	    
 	    curr_id=allArtists[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+	      char *artistName=getArtistName(curr_id);
+
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getArtistName(curr_id));
+		fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, artistName);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "    <td>%d</td>\n", getArtistAlbumsCount(curr_id));
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allArtists[count];
+
+		free(artistName);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");

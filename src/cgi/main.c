@@ -153,13 +153,14 @@ static void theRealWork(void) {
 }
 
 static void printLinks(FILE *output) {
+    char *userCode=getUserCode(_currUserLogon);
 
     fprintf(cgiOut, "<td class=\"linkholder\">\n");
     fprintf(cgiOut, "<!-- Start Links -->\n");
     fprintf(cgiOut, "<table class=\"links\">\n");
     fprintf(cgiOut, "  <tbody>\n");
 
-    fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as&nbsp;<b>%s</b></td>\n  </tr>\n", getUserCode(_currUserLogon));
+    fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as&nbsp;<b>%s</b></td>\n  </tr>\n", userCode);
     fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
 
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?hash=%d\">Home</a></td>\n  </tr>\n", _currUserLogon);
@@ -190,6 +191,8 @@ static void printLinks(FILE *output) {
     fprintf(output, "</table>\n");
     fprintf(output, "<!-- End Links -->\n");
     fprintf(output, "</td>\n");
+
+    free(userCode);
 }
 
 static void printHeader(FILE *output) {

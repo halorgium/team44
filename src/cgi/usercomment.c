@@ -65,12 +65,15 @@ static void doAddUserComment(void) {
 	int newuserCommentid=processAddForm();
 	if(newuserCommentid > 0) {
 	    /* User Comment added ok */
-	    const char *username=getUserName(getUserCommentUser(newuserCommentid));
+	  int commentUser=getUserCommentUser(newuserCommentid);
+	    char *username=getUserName(commentUser);
 	    
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View Info about %s]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon, username);
-	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View All Comments about %s]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon, username);
-	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Write another comment about %s]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View Info about %s]</a><br />\n", commentUser, _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View All Comments about %s]</a><br />\n", commentUser, _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Write another comment about %s]</a>\n", commentUser, _currUserLogon, username);
+
+	    free(username);
 	}
 	else {
 	    /* Some sort of failure */
@@ -394,18 +397,26 @@ static void doShowUserComment(void) {
 	}
     }
 
-    /* Will use userid */
-    fprintf(cgiOut, "<div class=\"head1\">Comments written by and written about %s</div>\n", getUserName(userid));
+    {
+      /* Will use userid */
+      char *userCode=getUserCode(userid);
+      char *userName=getUserName(userid);
 
-    fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">View Comments about <b>%s</b> (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsForUserCount(userid));
+      fprintf(cgiOut, "<div class=\"head1\">Comments written by and written about %s</div>\n", userName);
+      
+      fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">View Comments about <b>%s</b> (%d)</a></p>\n\n", userid, _currUserLogon, userCode, getUserCommentsForUserCount(userid));
+      
+      if(isUserLibrarian(userid) == TRUE) {
+	fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Users (%d)</a></p>\n\n", userid, _currUserLogon, userCode, getUserCommentsByUserCount(userid));
+      }
+      
+      fprintf(cgiOut, "<p><a href=\"./?page=albumcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Albums (%d)</a></p>\n\n", userid, _currUserLogon, userCode, getAlbumCommentsByUserCount(userid));
+      
+      fprintf(cgiOut, "<p><a href=\"./?page=artistcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Artists (%d)</a></p>\n\n", userid, _currUserLogon, userCode, getArtistCommentsByUserCount(userid));
+      
+      fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 
-    if(isUserLibrarian(userid) == TRUE) {
-	fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Users (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsByUserCount(userid));
+      free(userCode);
+      free(userName);
     }
-
-    fprintf(cgiOut, "<p><a href=\"./?page=albumcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Albums (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getAlbumCommentsByUserCount(userid));
-
-    fprintf(cgiOut, "<p><a href=\"./?page=artistcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Artists (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getArtistCommentsByUserCount(userid));
-
-    fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }

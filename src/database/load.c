@@ -419,6 +419,7 @@ static int loadAllLoans(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
+
 	loanNode_t *newLoan = NULL;
 	char *temp = line;
 	char *temp2 = NULL;

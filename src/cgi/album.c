@@ -276,11 +276,15 @@ static void printAllAlbums(void) {
 	    
 	    curr_id=allAlbums[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+	      char *albumTitle=getAlbumTitle(curr_id);
+	      int albumArtist=getAlbumArtist(curr_id);
+	      char *artistName=getArtistName(albumArtist);
+	      
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getAlbumTitle(curr_id));
+		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, albumTitle);
 		fprintf(cgiOut, "    </td>\n");
-		fprintf(cgiOut, "    <td><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a></td>\n", getAlbumArtist(curr_id), _currUserLogon, getArtistName(getAlbumArtist(curr_id)));
+		fprintf(cgiOut, "    <td><a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a></td>\n", albumArtist, _currUserLogon, artistName);
 		
 		if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
 		    fprintf(cgiOut, "    <td>On Loan</td>\n");
@@ -292,8 +296,11 @@ static void printAllAlbums(void) {
 		
 		count++;
 		curr_id=allAlbums[count];
+
+		free(albumTitle);
+		free(artistName);
 	    }
-	    
+
 	    fprintf(cgiOut, "</tbody>\n");
 	    fprintf(cgiOut, "\n");
 	    fprintf(cgiOut, "</table>\n");

@@ -19,9 +19,9 @@ int addLoanReturned(int);
 /* User */
 Boolean getUserExists(int);
 int makeUserID(const char *);
-const char *getUserCode(int);
-const char *getUserName(int);
-const char *getUserEmail(int);
+char *getUserCode(int);
+char *getUserName(int);
+char *getUserEmail(int);
 Boolean isUserLibrarian(int);
 
 int *getUsers(void);
@@ -32,7 +32,7 @@ int getUsersByTypeCount(Boolean);
 
 /* Album */
 Boolean getAlbumExists(int);
-const char *getAlbumTitle(int);
+char *getAlbumTitle(int);
 int getAlbumArtist(int);
 int getAlbumCurrentLoan(int);
 
@@ -41,7 +41,7 @@ int getAlbumsCount(void);
 
 /* Artist */
 Boolean getArtistExists(int);
-const char *getArtistName(int);
+char *getArtistName(int);
 
 int *getArtists(void);
 int getArtistsCount(void);
@@ -52,7 +52,7 @@ int getArtistAlbumsCount(int);
 Boolean getUserCommentExists(int);
 int getUserCommentUser(int);
 int getUserCommentOwner(int);
-const char *getUserCommentBody(int);
+char *getUserCommentBody(int);
 
 int *getUserCommentsByUser(int);
 int getUserCommentsByUserCount(int);
@@ -63,7 +63,7 @@ int getUserCommentsForUserCount(int);
 Boolean getAlbumCommentExists(int);
 int getAlbumCommentAlbum(int);
 int getAlbumCommentOwner(int);
-const char *getAlbumCommentBody(int);
+char *getAlbumCommentBody(int);
 
 int *getAlbumCommentsByUser(int);
 int getAlbumCommentsByUserCount(int);
@@ -74,7 +74,7 @@ int getAlbumCommentsForAlbumCount(int);
 Boolean getArtistCommentExists(int);
 int getArtistCommentArtist(int);
 int getArtistCommentOwner(int);
-const char *getArtistCommentBody(int);
+char *getArtistCommentBody(int);
 
 int *getArtistCommentsByUser(int);
 int getArtistCommentsByUserCount(int);

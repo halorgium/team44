@@ -143,7 +143,7 @@ int makeUserID(const char *userCode) {
     return id;
 }
 
-const char* getUserCode(int idNumber) {
+char* getUserCode(int idNumber) {
     userNode_t *a;
     a = getUser(idNumber);
     
@@ -153,7 +153,7 @@ const char* getUserCode(int idNumber) {
     return NULL;
 }
 
-const char* getUserName(int idNumber) {
+char* getUserName(int idNumber) {
     userNode_t *a;
     a = getUser(idNumber);
 
@@ -163,7 +163,7 @@ const char* getUserName(int idNumber) {
     return NULL;
 }
 
-const char* getUserEmail(int idNumber) {
+char* getUserEmail(int idNumber) {
     userNode_t *a;
     a = getUser(idNumber);
     
@@ -295,7 +295,7 @@ Boolean getAlbumExists(int idNumber) {
  * This function retrieves the title of an album with the specified id. 
  * It returns NULL if the album does not exist in the database.
  */
-const char* getAlbumTitle(int idNumber){
+char* getAlbumTitle(int idNumber){
     albumNode_t *a;
     a = getAlbum(idNumber);
     
@@ -321,16 +321,21 @@ int getAlbumArtist(int idNumber) {
 int getAlbumCurrentLoan(int idNumber){
     int i;
     int *albumLoans = NULL;
+    int toReturn=E_NOLOAN;
 
     albumLoans = getLoansByAlbum(idNumber, FALSE);
     if(albumLoans != NULL) {
 	/* search for a loan that is still not returned*/
 	for(i = 0; albumLoans[i] != LAST_ID_IN_ARRAY; i++) {
-	    if(isLoanReturned(albumLoans[i]) == FALSE) return albumLoans[i];
+	    if(isLoanReturned(albumLoans[i]) == FALSE) {
+	      toReturn=albumLoans[i];
+	    }
 	}
     }
+
+    free(albumLoans);
     
-    return E_NOLOAN;
+    return toReturn;
 }
 
 /* Function: getAllAlbums
@@ -406,7 +411,7 @@ Boolean getArtistExists(int idNumber) {
  * This function retrieves the name of an artist with the specified id. 
  * It returns NULL if the artistdoes not exist in the database.
  */
-const char* getArtistName(int idNumber){
+char* getArtistName(int idNumber){
     artistNode_t *a;
     a = getArtist(idNumber);
     
@@ -522,7 +527,7 @@ int getUserCommentOwner(int idNumber) {
     return E_NOUSRCOM;
 }
 
-const char *getUserCommentBody(int idNumber) {
+char *getUserCommentBody(int idNumber) {
     userCommentNode_t *a;
     a = getUserComment(idNumber);
     
@@ -637,7 +642,7 @@ int getAlbumCommentOwner(int idNumber) {
     return E_NOALBCOM;
 }
 
-const char *getAlbumCommentBody(int idNumber) {
+char *getAlbumCommentBody(int idNumber) {
     albumCommentNode_t *a;
     a = getAlbumComment(idNumber);
     
@@ -753,7 +758,7 @@ int getArtistCommentOwner(int idNumber) {
     return E_NOARTCOM;
 }
 
-const char *getArtistCommentBody(int idNumber) {
+char *getArtistCommentBody(int idNumber) {
     artistCommentNode_t *a;
     a = getArtistComment(idNumber);
     

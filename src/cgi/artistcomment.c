@@ -308,7 +308,11 @@ static void printAllArtistCommentsForArtist(int artistid) {
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing Artist Comments written about %s</div>", getArtistName(artistid));
+    char *artistName=getArtistName(artistid);
+
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Artist Comments written about %s</div>", artistName);
+
+    free(artistName);
 
     allArtistComments=getArtistCommentsForArtist(artistid);
 
@@ -326,19 +330,26 @@ static void printAllArtistCommentsForArtist(int artistid) {
 	    
 	    curr_id=allArtistComments[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+	      int commentOwner=getArtistCommentOwner(curr_id);
+		char* userName=getUserName(commentOwner);
+		char *commentBody=getArtistCommentBody(curr_id);
+
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-		userLink(" class=\"topper\"", getArtistCommentOwner(curr_id), getUserName(getArtistCommentOwner(curr_id)), cgiOut);
+		userLink(" class=\"topper\"", commentOwner, userName, cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "%s", getArtistCommentBody(curr_id));
+		fprintf(cgiOut, "%s", commentBody);
 		fprintf(cgiOut, "</td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allArtistComments[count];
+
+		free(userName);
+		free(commentBody);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");

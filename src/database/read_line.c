@@ -26,6 +26,7 @@ char *readLine(FILE *file){
 	    if (strlen(line) > 0) {
 		return line;
 	    }
+	    free(line);
 	    return NULL;
 	}
 
@@ -45,7 +46,7 @@ char *readLine(FILE *file){
 	if (strlen(line) + 1 == totSize) {
 	    int oldSize = totSize;
 	    totSize += CHUNK_SIZE;
-	    if ((line = realloc(line, totSize)) == 0) {
+	    if((line = realloc(line, totSize)) == 0) {
 		/* Realloc failed, free old memory */
 		free(line);
 		totSize = 0;
