@@ -9,9 +9,9 @@ int loadDatabase(void);
 int addUser(const char *, const char *, const char *, Boolean);
 int addAlbum(const char *, int);
 int addArtist(const char *);
-int addCommentUser(int, int, const char *);
-int addCommentAlbum(int, int, const char *);
-int addCommentArtist(int, int, const char *);
+int addUserComment(int, int, const char *);
+int addAlbumComment(int, int, const char *);
+int addArtistComment(int, int, const char *);
 int addLoan(int, int);
 int addLoanReturned(int);
 

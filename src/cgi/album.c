@@ -310,4 +310,9 @@ static void printSpecificAlbum(int albumid) {
 	fprintf(cgiOut, "<hr />\n");
 	fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&amp;hash=%d\">View albums borrowing history</a>\n", albumid, _currUserLogon);
     }
+
+    fprintf(cgiOut, "<hr />\n");
+
+    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;albumid=%d&amp;hash=%d\">View Comments written about Album</a>\n", albumid, _currUserLogon);
+    fprintf(cgiOut, "<br /><a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">Add Comment about this Album</a>\n", albumid, _currUserLogon);
 }

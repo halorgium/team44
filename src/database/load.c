@@ -562,6 +562,91 @@ int loadAllLoansReturned(FILE *file){
     return 1;
 }
 
+
+int loadUserComments(FILE *file){
+    char *line = NULL;
+
+    while((line = readLine(file)) != NULL ){
+
+	userCommentNode_t *newUserComment = NULL;
+	char *temp = line;
+	char *temp2 = NULL;
+	char *char2int =NULL;
+	
+	newUserComment = malloc(sizeof(userCommentNode_t));
+	if(newUserComment == NULL) return E_MALLOC_FAILED;
+	
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/*get userCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUserComment->ID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/*get userID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUserComment->userID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/*get owner */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUserComment->userOwner = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/*get body */
+	newUserComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(newUserComment->comment == NULL) return E_MALLOC_FAILED;
+
+	strncpy(newUserComment->comment, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newUserComment->comment[strlen(temp)-strlen(temp2)] = '\0';
+
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+
+	/* Everything OK */
+	
+	newUserComment->next = firstUserComment;   /*insert at front of list*/
+	firstUserComment = newUserComment;
+
+	/*free memory before reiteration*/
+/* 	free(line); */
+    }
+    return 1;
+}
+
 int loadAlbumComments(FILE *file){
     char *line = NULL;
 
@@ -576,56 +661,67 @@ int loadAlbumComments(FILE *file){
 	if(newAlbumComment == NULL) return E_MALLOC_FAILED;
 	
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get id out of file as char* */
+	/*get albumCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	/*make albumComment ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newAlbumComment->ID = atoi(char2int);
 	free(char2int);
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get id of album out of file as char* */
+	/*get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	/*make album ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newAlbumComment->albumID = atoi(char2int);
 	free(char2int);
-	
+
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get owner of comment out of file as char* */
+	/*get owner */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	/*make user ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newAlbumComment->userOwner = atoi(char2int);
 	free(char2int);
 
-	temp = temp2 + 1;  /*remove '%' char*/
-	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*now get emailaddress from last element in file*/
-	newAlbumComment->comment = malloc(sizeof(char)*(strlen(temp)+1));
+	/*get body */
+	newAlbumComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newAlbumComment->comment == NULL) return E_MALLOC_FAILED;
 
-	strcpy(newAlbumComment->comment, temp);
-						     
+	strncpy(newAlbumComment->comment, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newAlbumComment->comment[strlen(temp)-strlen(temp2)] = '\0';
+
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+
+	/* Everything OK */
+	
 	newAlbumComment->next = firstAlbumComment;   /*insert at front of list*/
 	firstAlbumComment = newAlbumComment;
 
@@ -651,132 +747,69 @@ int loadArtistComments(FILE *file){
 	if(newArtistComment == NULL) return E_MALLOC_FAILED;
 	
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get id out of file as char* */
+	/*get artistCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	/*make artistComment ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newArtistComment->ID = atoi(char2int);
 	free(char2int);
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get id of artist out of file as char* */
+	/*get artistID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	/*make artist ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newArtistComment->artistID = atoi(char2int);
 	free(char2int);
-	
+
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get owner of comment out of file as char* */
+	/*get owner */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	/*make user ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newArtistComment->userOwner = atoi(char2int);
 	free(char2int);
 
-	temp = temp2 + 1;  /*remove '%' char*/
-	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*now get comment from last element in file*/
-	newArtistComment->comment = malloc(sizeof(char)*(strlen(temp)+1));
+	/*get body */
+	newArtistComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newArtistComment->comment == NULL) return E_MALLOC_FAILED;
 
-	strcpy(newArtistComment->comment, temp);
+	strncpy(newArtistComment->comment, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newArtistComment->comment[strlen(temp)-strlen(temp2)] = '\0';
+
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+
+	/* Everything OK */
 						     
 	newArtistComment->next = firstArtistComment;   /*insert at front of list*/
 	firstArtistComment = newArtistComment;
-
-	/*free memory before reiteration*/
-/* 	free(line); */
-    }
-    return 1;
-}
-
-int loadUserComments(FILE *file){
-
-    char *line = NULL;
-
-    while((line = readLine(file)) != NULL ){
-
-	userCommentNode_t *newUserComment = NULL;
-	char *temp = line;
-	char *temp2 = NULL;
-	char *char2int =NULL;
-	
-	newUserComment = malloc(sizeof(userCommentNode_t));
-	if(newUserComment == NULL) return E_MALLOC_FAILED;
-	
-	temp2 = strchr(temp, '%');
-
-	/*get id out of file as char* */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	/*make userComment ID */
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	newUserComment->ID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-
-	/*get comment user(not author) from file*/
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	/*make user ID */
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	newUserComment->userID = atoi(char2int);
-	free(char2int);
-	
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-
-	/*get owner of comment out of file as char* */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	/*make user ID */
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	newUserComment->userOwner = atoi(char2int);
-	free(char2int);
-	
-	temp = temp2 + 1;  /*remove '%' char*/
-	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
-
-	/*now get comment from last element in file*/
-	newUserComment->comment = malloc(sizeof(char)*(strlen(temp)+1));
-	if(newUserComment->comment == NULL) return E_MALLOC_FAILED;
-
-	strcpy(newUserComment->comment, temp);
-						     
-	newUserComment->next = firstUserComment;   /*insert at front of list*/
-	firstUserComment = newUserComment;
 
 	/*free memory before reiteration*/
 /* 	free(line); */

@@ -245,7 +245,7 @@ int addArtist(const char *name){
  * Blank comment titles and bodies are allowed to be added 
  */
 
-int addUserComment(int userID, int owner, char* body){
+int addUserComment(int userID, int owner, const char* body){
   userCommentNode_t *newCommentNode = NULL;
     
     if(body == NULL){/**null param  check**/
@@ -296,7 +296,7 @@ int addUserComment(int userID, int owner, char* body){
     return _nextUserCommentID-1;    /*return and increment id*/
 }/* end addCommentUser() */
 
-int addAlbumComment(int albumID, int owner, char *body){
+int addAlbumComment(int albumID, int owner, const char *body){
     albumCommentNode_t *newCommentNode = NULL;
     
     /**null param  check**/
@@ -353,7 +353,7 @@ int addAlbumComment(int albumID, int owner, char *body){
     return _nextAlbumCommentID-1;    /*return and increment id*/
 }/* end addCommentAlbum() */
 
-int addArtistComment(int artistID, int owner, char *body){
+int addArtistComment(int artistID, int owner, const char *body){
     artistCommentNode_t *newCommentNode = NULL;
 
     /**null param  check**/

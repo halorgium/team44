@@ -300,6 +300,14 @@ void printSpecificUser(int userid) {
 
     fprintf(cgiOut, "<hr />\n");
 
-    fprintf(cgiOut, "You have <b>%d</b> albums on loan<br />\n", getLoansByUserCount(userid, FALSE));
+    fprintf(cgiOut, "User has <b>%d</b> albums on loan<br />\n", getLoansByUserCount(userid, FALSE));
     fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&amp;hash=%d\">View users borrowing history</a>\n", userid, _currUserLogon);
+
+    fprintf(cgiOut, "<hr />\n");
+
+    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;userid=%d&amp;hash=%d\">View Comments written by/about user</a>\n", userid, _currUserLogon);
+
+    if(isUserLibrarian(_currUserLogon) == TRUE) {
+      fprintf(cgiOut, "<br /><a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&amp;hash=%d\">Add Comment about this user</a>\n", userid, _currUserLogon);
+    }
 }

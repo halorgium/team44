@@ -4,7 +4,7 @@
 #include "../shared/lib.h"
 #include "../shared/defines.h"
 
-#define MAXSIZE_PAGENAME 10
+#define MAXSIZE_PAGENAME 14
 
 int _currUserLogon;
 
@@ -18,6 +18,9 @@ void printContact(void);
 void printUser(void);
 void printArtist(void);
 void printAlbum(void);
+void printUserComment(void);
+void printAlbumComment(void);
+void printArtistComment(void);
 void printLoan(void);
 
 #endif

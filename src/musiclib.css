@@ -162,6 +162,16 @@ td.field {
   font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
+td.topper { 
+  color : #000000;
+  background : #C0C0C0;
+}
+
+a.topper { 
+  color : #3333CC;
+  background : #C0C0C0;
+}
+
 div.head1 {
   font-size : 20px;
   font-weight : bold;

@@ -639,7 +639,7 @@ int getUserCommentsForUserCount(int idNumber) {
     /**counts num of artists in list,*/
     /*I assume this is faster than calling realloc at every node**/
     for(a = firstUserComment; a != NULL; a=a->next) {
-	if(a->userOwner == idNumber) size++;
+	if(a->userID == idNumber) size++;
     }
 
     return size;
@@ -747,7 +747,7 @@ int getAlbumCommentsForAlbumCount(int idNumber) {
     /**counts num of artists in list,*/
     /*I assume this is faster than calling realloc at every node**/
     for(a = firstAlbumComment; a != NULL; a=a->next) {
-	if(a->userOwner == idNumber) size++;
+	if(a->albumID == idNumber) size++;
     }
 
     return size;
@@ -864,7 +864,7 @@ int getArtistCommentsForArtistCount(int idNumber) {
     /**counts num of artists in list,*/
     /*I assume this is faster than calling realloc at every node**/
     for(a = firstArtistComment; a != NULL; a=a->next) {
-	if(a->userOwner == idNumber) size++;
+	if(a->artistID == idNumber) size++;
     }
 
     return size;

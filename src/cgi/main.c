@@ -126,19 +126,24 @@ static void theRealWork(void) {
 	    printContact();
 	}
 	else if(strncmp(pageName, "user", MAXSIZE_PAGENAME) == 0) {
-	    /* Something about a user */
 	    printUser();
 	}
-	else if(strncmp(pageName, "artist", MAXSIZE_PAGENAME) == 0) {
-	    /* Something about a artist */
-	    printArtist();
-	}
 	else if(strncmp(pageName, "album", MAXSIZE_PAGENAME) == 0) {
-	    /* Something about a album */
 	    printAlbum();
 	}
+	else if(strncmp(pageName, "artist", MAXSIZE_PAGENAME) == 0) {
+	    printArtist();
+	}
+	else if(strncmp(pageName, "usercomment", MAXSIZE_PAGENAME) == 0) {
+	    printUserComment();
+	}
+	else if(strncmp(pageName, "albumcomment", MAXSIZE_PAGENAME) == 0) {
+	    printAlbumComment();
+	}
+	else if(strncmp(pageName, "artistcomment", MAXSIZE_PAGENAME) == 0) {
+	    printArtistComment();
+	}
 	else if(strncmp(pageName, "loan", MAXSIZE_PAGENAME) == 0) {
-	    /* Something about a loan */
 	    printLoan();
 	}
 	else {
@@ -168,7 +173,7 @@ static void printLinks(FILE *output) {
     fprintf(output, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">My&nbsp;Account</a></td>\n  </tr>\n", _currUserLogon, _currUserLogon);
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=loan&amp;func=view&amp;userid=%d&amp;hash=%d\">My&nbsp;Borrowing&nbsp;History</a></td>\n  </tr>\n", _currUserLogon, _currUserLogon);
-    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=comments&amp;func=user&amp;userid=%d&amp;hash=%d\">My&nbsp;Comments</a></td>\n  </tr>\n", _currUserLogon, _currUserLogon);
+    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=usercomment&amp;userid=%d&amp;hash=%d\">My&nbsp;Comments</a></td>\n  </tr>\n", _currUserLogon, _currUserLogon);
     fprintf(output, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=artist&amp;hash=%d\">View&nbsp;All&nbsp;Artists</a></td>\n  </tr>\n", _currUserLogon);
     if(isUserLibrarian(_currUserLogon) == TRUE) {
@@ -194,8 +199,8 @@ static void printHeader(FILE *output) {
 
     fprintf(output, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
     fprintf(output, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n");
-/*     fprintf(output, " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"); */
-    fprintf(output, " \"http://cosc344:31000/public/xhtml1-20020801/DTD/xhtml1-strict.dtd\">\n");
+    fprintf(output, " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
+/*     fprintf(output, " \"http://cosc344:31000/public/xhtml1-20020801/DTD/xhtml1-strict.dtd\">\n"); */
     fprintf(output, "<html>\n");
     fprintf(output, "  <head>\n");
     fprintf(output, "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />\n");
