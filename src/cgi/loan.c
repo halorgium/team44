@@ -254,6 +254,7 @@ static void printAllLoansByUser(int userid) {
     
   fprintf(cgiOut, "Previous Loans: <br />\n");    
   printLoansByUser(userid, TRUE);
+    fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
 static void printLoansByUser(int userid, Boolean isReturned) {
@@ -357,6 +358,7 @@ static void printLoansByUser(int userid, Boolean isReturned) {
 
     free(allLoans);
   }
+
 }
 
 static void printAllLoansByAlbum(int albumid) {
@@ -369,6 +371,7 @@ static void printAllLoansByAlbum(int albumid) {
 
   fprintf(cgiOut, "Previous Loans: <br />\n");
   printLoansByAlbum(albumid, TRUE);
+    fprintf(cgiOut, "<hr /><a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">Back to Album page</a>\n", albumid, _currUserLogon);
 }
 
 static void printLoansByAlbum(int albumid, Boolean isReturned) {
@@ -468,5 +471,5 @@ static void printLoansByAlbum(int albumid, Boolean isReturned) {
 
     free(allLoans);
   }
-    
+
 }
