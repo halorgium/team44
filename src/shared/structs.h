@@ -4,7 +4,8 @@
 #include "defines.h"
 
 /* structure which holds a user and links next user in list*/
-typedef struct userNode{ 
+typedef struct userNode{
+    int ID;               /*unique id based on usercode*/
     char *userCode;   /*unique user name*/
     char *userName;
     char *emailAddress;

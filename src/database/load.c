@@ -57,6 +57,7 @@ int loadAllUsers(FILE *file){
 	userNode_t *newUser = NULL;
 	char *temp = line;
 	char *temp2 = NULL;
+	char *char2int = NULL;
 	
 	newUser = malloc(sizeof(userNode_t));
 	if(newUser == NULL) return E_MALLOC_FAILED;
@@ -78,9 +79,9 @@ int loadAllUsers(FILE *file){
 	newUser->userName = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->userName == NULL) return E_MALLOC_FAILED;
 
-	strncpy(newUser->userName, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	newUser->userName[strlen(temp)-strlen(temp2)] = '\0';
+	/*get Id from file, malloc temp char which holds id*/
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
@@ -88,9 +89,20 @@ int loadAllUsers(FILE *file){
 	/*get isLibrarian Boolean out of file, if char ==1 (49) then true*/
 	if(((int) temp[0]) == 49) newUser->isLibrarian = TRUE;
 	else newUser->isLibrarian = FALSE;
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+
+	/*get ID*/
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	
-	/*quick check to test file integrity*/
-	if((strlen(temp)-strlen(temp2)) != 1 ) return LOAD_FAILURE;
+	newUser->ID =  atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/

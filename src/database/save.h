@@ -6,7 +6,7 @@
 /*int saveDatabase();*/
 
 /*int  saveAllUsers();*/
-int saveUser(const char *name, const char* userCode, const char *email, Boolean bool);
+int saveUser(const char *name, const char* userCode, const char *email, Boolean bool, int ID);
 
 /*int  saveAllAlbums();*/
 int saveAlbum(const char* title, const int artistID, int ID);

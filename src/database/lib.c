@@ -1304,6 +1304,30 @@ int *getAllLoansByStatus(int isReturned){
 
 
 
+char *getUserCodeFromID(int ID){
 
+    userNode_t *u; 
+    
+    /**find comment id in list, assumes unsorted list**/
+    for(u = firstuser; u != NULL; u=u->next){
+	if(u->ID == ID){
+	    return u->userCode;
+ 	} 
+    }
+    return NULL;
+}
+
+int getUserIDFromUserCode(char *userCode){
+    int id = 0;
+    int i;
+    int len = strlen(userCode);
+
+    for(i = 0; i < len; i++){
+
+	id = id + (userCode[i] * (31^(len-1-i)));
+    }
+
+    return id;
+}
 
 /*-------------------- end musiclib.c ---------------------------------*/

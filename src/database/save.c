@@ -11,17 +11,20 @@
 /* int saveDatabase(void){} */
 
 /* int  saveAllUsers(){}; */
-int saveUser(const char *name, const char* userCode, const char *email, Boolean bool){
+int saveUser(const char *name, const char* userCode, const char *email, Boolean bool, int ID){
     int check;
+    int IDLen;
     char *line = NULL;
     FILE *userFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "rw");
 
-    line = malloc(sizeof(char)*(strlen(name)+strlen(userCode)+strlen(email)+1+3)+1);
+    IDLen = floor(log10(ID)) + 1;
+    
+    line = malloc(sizeof(char)*(strlen(name)+strlen(userCode)+strlen(email)+IDLen+1+4)+1);
     if(line == NULL) return E_MALLOC_FAILED;
 
-    sprintf(line, "%s\%%%s\%%%d\%%%s\n", name, userCode, bool, email);
+    sprintf(line, "%s\%%%s\%%%d\%%%d\%%%s\n", name, userCode, bool, ID, email);
 
-    printf("%s",line);
+    printf("%s",line);/*see what it did  (remove)*/
 
     check =  saveLine(userFile, line);
     free(line);

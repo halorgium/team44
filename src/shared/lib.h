@@ -45,5 +45,5 @@ int *getAlbumCommentsByAlbumID(int ID);
 int *getAllLoansByStatus(int isReturned);
 
 char *getUserCodeFromID(int ID);
-int getUserIDFromUserCode(char *userCode);
+int getUserID(char *userCode);
 #endif
