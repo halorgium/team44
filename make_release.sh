@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.2 2003/09/25 16:02:04 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.3 2003/09/26 00:12:46 tsm20 Exp $
 
 CLEANOUT="releases"
    CVSIN=`cat CVS/Root`
@@ -38,3 +38,6 @@ cp -r $MODULE/var $CLEANDIR || exit
 rm -f $CLEANDIR.tar.gz
 
 tar zcvf $CLEANDIR.tar.gz $CLEANDIR
+
+rm -fr $CLEANDIR
+rm -fr $MODULE
