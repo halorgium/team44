@@ -237,7 +237,7 @@ static int loadNextID(FILE *file) {
 	/*end of line test*/
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    return DB_LOAD_FAILURE;
 	}
@@ -378,7 +378,7 @@ static int loadAllUsers(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newUser->emailAddress);
 	    free(newUser->userName);
@@ -484,7 +484,7 @@ static int loadAllAlbums(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newAlbum->title);
     	    free(newAlbum);
@@ -565,7 +565,7 @@ static int loadAllArtists(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newArtist->name);
 	    free(newArtist);
@@ -694,7 +694,7 @@ static int loadUserComments(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newUserComment->comment);
 	    free(newUserComment);
@@ -822,7 +822,7 @@ static int loadAlbumComments(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newAlbumComment);
 	    free(newAlbumComment->comment);
@@ -952,7 +952,7 @@ static int loadArtistComments(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newArtistComment);
 	    free(newArtistComment->comment);
@@ -1083,7 +1083,7 @@ static int loadAllLoans(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    free(newLoan);
 	    return DB_LOAD_FAILURE;
@@ -1162,7 +1162,7 @@ static int loadAllLoansReturned(FILE *file){
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) {
+	if(temp2 != NULL) {
 	    free(line);
 	    return DB_LOAD_FAILURE;
 	}
