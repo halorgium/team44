@@ -6,7 +6,8 @@
 /* structure which holds a user and links next user in list*/
 typedef struct userNode{ 
     /*int ID;*/
-    char *userName;   /*unique user name*/
+    char *userCode;   /*unique user name*/
+    char *userName;
     char *emailAddress;
     Boolean isLibrarian;       /* FALSE-standard, TRUE-librarian*/
     /*history (loans) */
@@ -42,7 +43,7 @@ typedef struct artistCommentNode{
     
     char *userOwner;
     char *comment;
-    struct commentNode *next;
+    struct artistCommentNode *next;
 }artistCommentNode_t;
 
 /* structure which holds a comment about an album  and links to next comment in list*/
@@ -52,7 +53,7 @@ typedef struct albumCommentNode{
     
     char *userOwner;
     char *comment;
-    struct commentNode *next;
+    struct albumCommentNode *next;
 }albumCommentNode_t;
 
 /* structure which holds a comment about a user and links to next comment in list*/
@@ -62,19 +63,19 @@ typedef struct userCommentNode{
     
     char *userOwner;
     char *comment;
-    struct commentNode *next;
+    struct userCommentNode *next;
 }userCommentNode_t;
 
 
 /*struct to hold loans - may not be needed*/
-typedef struct loan{
+typedef struct loanNode{
     int ID;
     int albumID;
     char *userName;
     /*no need for status boolean - recorded in album*/
     /*time in and tyime out*/
     
-    struct loan *next;
+    struct loanNode *next;
 }loan_t;
 
 #endif
