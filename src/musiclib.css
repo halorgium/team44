@@ -32,16 +32,16 @@ body {
   background : #FFFFFF;
 }
 
-table.spacer { <
+table.spacer { 
   background : #C0C0C0;
-  padding : 0px;
   width : 100%;
+  padding : 0px 0px 0px 0px;
   font-size : 1px;
 }
 
 td.spacer { 
   background : #C0C0C0;
-  padding : 0px;
+  padding : 0px 0px 0px 0px;
   font-size : 1px;
 }
 
@@ -60,12 +60,14 @@ table#container {
 tr#topspacera { 
   height: 0px;
   font-size: 0px;
+  padding : 0px 0px 0px 0px;
   background : #000000;
 }
 
 td#topspacerb { 
   font-size : 0px;
   background : #000000;
+  padding : 0px 0px 0px 0px;
 }
 
 /* Header Styles */
@@ -73,18 +75,10 @@ td#topspacerb {
 
 td#header { 
   height : 0px;
+  padding : 0px 0px 0px 0px;
   text-align : center;
   vertical-align : middle;
-  background : #3333FF;
-}
-
-table#header {
-  padding: 10px 20px 5px 20px;
-  font-size: 28px;
-  width : 100%;
-  color : #FFFFFF;
-  background : #3333FF;
-  margin : 0px 0px 0px 0px;
+  background : #630707;
 }
 
 div#maintitle {
@@ -92,7 +86,7 @@ div#maintitle {
   font-size : 40px;
   text-align : center;
   color : #FFFFFF;
-  background : #3333FF;
+  background : #630707;
   vertical-align : middle;
 }
 
