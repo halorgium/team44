@@ -1,20 +1,26 @@
-int saveLine(FILE *file, char *line);
+#ifndef _SAVE_H_
+#define _SAVE_H_
 
-int saveDatabase();
+#include "../../shared/defines.h"
 
-int  saveAllUsers();
-int saveUser(const char *name, const char* userCode, const char *email, const Boolean bool);
+/*int saveDatabase();*/
 
-int  saveAllAlbums();
-int saveAlbum(const char* title, const Boolean bool, const int artistID, int ID);
+/*int  saveAllUsers();*/
+int saveUser(const char *name, const char* userCode, const char *email, Boolean bool);
 
-int  saveAllArtists();
-int saveArtist();
+/*int  saveAllAlbums();*/
+int saveAlbum(const char* title, const int artistID, int ID);
 
-int  saveAllLoans();
-int saveLoan();
+/*int  saveAllArtists();*/
+int saveArtist(char *name, int ID);
 
-int  saveAllComments();
+/*int  saveAllLoans();*/
+int saveLoan(int ID, int albumID, char *user, int time, int isReturned);
+
+/*int  saveAllComments();*/
 int saveCommentArtist(char *owner, char *body, int ID, int artistID);
 int saveCommentAlbum(char *owner, char *body, int ID, int albumID);
-int saveCommentUser(char *owner, char *body, int ID, char *userName);
+int saveCommentUser(char *owner, char *body, int ID, char *userCode);
+int saveLine(FILE *file, char *line);
+
+#endif

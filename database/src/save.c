@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
 
 #include "lib.h"
@@ -7,13 +8,13 @@
 #include "../../shared/defines.h"
 
 /*functions dealing with saving database to disk*/
-int saveDatabase(void){}
+/* int saveDatabase(void){} */
 
-int  saveAllUsers(){};
-int saveUser(const char *name, char* userCode, const char *email, const Boolean bool){
+/* int  saveAllUsers(){}; */
+int saveUser(const char *name, const char* userCode, const char *email, Boolean bool){
     int check;
     char *line = NULL;
-    FILE userFile = = fopen(strcat(SOURCE_LOCATION, USERS_FILE_NAME), "rw");
+    FILE *userFile = fopen(strcat(SOURCE_LOCATION, USERS_FILE_NAME), "rw");
 
     line = malloc(sizeof(char)*(strlen(name)+strlen(userCode)+strlen(email)+1+3)+1);
     if(line == NULL) return E_MALLOC_FAILED;
@@ -27,14 +28,20 @@ int saveUser(const char *name, char* userCode, const char *email, const Boolean 
     return check;
 }
 
-int  saveAllAlbums(){};
+/* int  saveAllAlbums(){}; */
 int saveAlbum(const char* title, const int artistID, int ID){
     char *line = NULL;
     int check;
-    FILE albumFile = = fopen(strcat(SOURCE_LOCATION, ALBUMS_FILE_NAME), "rw");
+    int artIDLen;
+    int IDLen;
+    FILE *albumFile = fopen(strcat(SOURCE_LOCATION, ALBUMS_FILE_NAME), "rw");
+
+   /* find how many characters the ints are*/
+    artIDLen = floor(log10(artistID));
+    IDLen = floor(log10(ID));
 
     /*get memory for the line that will be saved*/
-    line = malloc(sizeof(char)*(strlen(title)+floor(log10(artistID))+floor(log10(ID))+2)+1);
+    line = malloc(sizeof(char)*(strlen(title)+artIDLen+IDLen+2)+1);
     if(line == NULL) return E_MALLOC_FAILED;
 
     sprintf(line, "%d\%%%s\%%%d\n", ID, title, artistID);
@@ -46,15 +53,15 @@ int saveAlbum(const char* title, const int artistID, int ID){
     return check;
 }
 
-int  saveAllArtists(){};
+/* int  saveAllArtists(){}; */
 int saveArtist(char *name, int ID){
 
     char *line = NULL;
     int check;
-    FILE file = = fopen(strcat(SOURCE_LOCATION, ARTISTS_FILE_NAME), "rw");
+    FILE *file = fopen(strcat(SOURCE_LOCATION, ARTISTS_FILE_NAME), "rw");
 
     /*get memory for the line that will be saved*/
-    line = malloc(sizeof(char)*(strlen(name)+floor(log10(ID))+1)+1);
+    line = malloc(sizeof(char)*(strlen(name)+floor(log10(ID)+1)+1)+1);
     if(line == NULL) return E_MALLOC_FAILED;
 
     sprintf(line, "%d\%%%s\n", ID, name);
@@ -66,15 +73,25 @@ int saveArtist(char *name, int ID){
     return check;
 }
 
-int  saveAllLoans(){}
+/* int  saveAllLoans(){} */
 int saveLoan(int ID, int albumID, char *user, int time, Boolean isReturned){
 
     char *line = NULL;
     int check;
-    FILE file = = fopen(strcat(SOURCE_LOCATION, LOANS_FILE_NAME), "rw");
+    /*length of ints (how many chars)*/
+    int timeLen;
+    int albIDLen;
+    int IDLen;
+    int boolLen = 1;
+    FILE *file = fopen(strcat(SOURCE_LOCATION, LOANS_FILE_NAME), "rw");
+
+    /*find log base 10, then round down*/
+    timeLen = floor(log10(time)) + 1;
+    albIDLen = floor(log10(albumID)) + 1;
+    IDLen = floor(log10(ID)) + 1; 
 
     /*get memory for the line that will be saved*/
-    line = malloc(sizeof(char)*(strlen(user)+floor(log10(albumID))+floor(log10(ID))+floor(log10(time))+1+4)+1);
+    line = malloc(sizeof(char)*(strlen(user)+timeLen+albIDLen+IDLen+boolLen+4)+1);
     if(line == NULL) return E_MALLOC_FAILED;
 
     sprintf(line, "%d\%%%d\%%%s\%%%d\%%%d\n", ID, albumID, user, time, isReturned);
@@ -86,14 +103,81 @@ int saveLoan(int ID, int albumID, char *user, int time, Boolean isReturned){
     return check;
 }
 
-int  saveAllComments(){};
-int saveCommentArtist(char *owner, char *body, int ID, int artistID){};
-int saveCommentAlbum(char *owner, char *body, int ID, int albumID){};
-int saveCommentUser(char *owner, char *body, int ID, char *user){};
+/* int  saveAllComments(){}; */
+int saveCommentArtist(char *owner, char *body, int ID, int artistID){
 
+    char *line = NULL;
+    int check;
+    /*length of ints (how many chars)*/
+    int artIDLen;
+    int IDLen;
+    FILE *file = fopen(strcat(SOURCE_LOCATION, ARTIST_COMMENTS_FILE_NAME), "rw");
 
+    /*find log base 10, then round down*/
+    artIDLen = floor(log10(artistID))+1;
+    IDLen = floor(log10(ID))+1; 
 
-int saveCommentUser(char *owner, char *body, int ID, char *userName){};
+    /*get memory for the line that will be saved*/
+    line = malloc(sizeof(char)*(strlen(body)+strlen(owner)+artIDLen+IDLen+3)+1);
+    if(line == NULL) return E_MALLOC_FAILED;
+
+    sprintf(line, "%d\%%%d\%%%s\%%%s\n", ID, artistID, owner, body);
+
+    printf("%s",line);
+
+    check = saveLine(file, line);
+    free(line);
+    return check;
+}
+int saveCommentAlbum(char *owner, char *body, int ID, int albumID){
+
+    char *line = NULL;
+    int check;
+    /*length of ints (how many chars)*/
+    int albIDLen;
+    int IDLen;
+    FILE *file = fopen(strcat(SOURCE_LOCATION, ALBUM_COMMENTS_FILE_NAME), "rw");
+
+    /*find log base 10, then round down*/
+    albIDLen = floor(log10(albumID)) + 1;
+    IDLen = floor(log10(ID)) + 1; 
+
+    /*get memory for the line that will be saved*/
+    line = malloc(sizeof(char)*(strlen(body)+strlen(owner)+albIDLen+IDLen+3)+1);
+    if(line == NULL) return E_MALLOC_FAILED;
+
+    sprintf(line, "%d\%%%d\%%%s\%%%s\n", ID, albumID, owner, body);
+
+    printf("%s",line);
+
+    check = saveLine(file, line);
+    free(line);
+    return check;
+}
+int saveCommentUser(char *owner, char *body, int ID, char *userCode){
+
+    char *line = NULL;
+    int check;
+    /*length of ints (how many chars)*/
+    int IDLen;
+    FILE *file = fopen(strcat(SOURCE_LOCATION, USER_COMMENTS_FILE_NAME), "rw");
+
+    /*find log base 10, then round down*/
+    IDLen = floor(log10(ID)) + 1; 
+
+    /*get memory for the line that will be saved*/
+    line = malloc(sizeof(char)*(strlen(body)+strlen(owner)+strlen(userCode)+IDLen+3)+1);
+    if(line == NULL) return E_MALLOC_FAILED;
+
+    sprintf(line, "%d\%%%s\%%%s\%%%s\n", ID, userCode, owner, body);
+
+    printf("%s",line);
+
+    check = saveLine(file, line);
+    free(line);
+    return check;
+}
+
 
 int saveLine(FILE *file, char *line){
 

@@ -33,6 +33,7 @@ typedef int Boolean;
 #define ART_COM_LOAD_FAILURE -12
 #define ALB_COM_LOAD_FAILURE -13
 #define USR_COM_LOAD_FAILURE -14
+#define LOAD_FAILURE -15 
 
 
 #endif

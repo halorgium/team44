@@ -23,6 +23,7 @@
 #include "lib.h"
 #include "load.h"
 #include "../../shared/read_line.h"
+#include "save.h"
 
 
 
@@ -75,7 +76,7 @@ int addAlbum(const char *title, const int artistID){
 
     /*created in memory so now needs to be saved*/
     /*an errror id should be created*/
-    if(saveAlbum(title, TRUE, artistID, newAlbumNode->ID)==0) return SAVE_FAILURE;
+    if(saveAlbum(title, artistID, newAlbumNode->ID)==0) return SAVE_FAILURE;
     
     
     return nextAlbumID++;    /*return id then increment  CHANGE*/
@@ -172,7 +173,7 @@ int addUser(const char* name, const char *userCode, const char* email, const Boo
 
 
 
-int addCommentArtist(char *owner, const char* body, int artistID){
+int addCommentArtist(char *owner, char *body, int artistID){
     
     artistCommentNode_t *newCommentNode = NULL;
     artistNode_t *a;   /*pointers used to check album and user id's**/
@@ -248,7 +249,7 @@ int addCommentArtist(char *owner, const char* body, int artistID){
 }/* end addCommentArtist() */
 
 
-int addCommentAlbum(char *owner, const char* body, int albumID){
+int addCommentAlbum(char *owner, char* body, int albumID){
     
     albumCommentNode_t *newCommentNode = NULL;
     albumNode_t *a;   /*pointers used to check album and user id's**/
@@ -322,7 +323,7 @@ int addCommentAlbum(char *owner, const char* body, int albumID){
 
 /*------------------------------------------------*/
 
-int addCommentUser(char *owner, const char* body, char *user){
+int addCommentUser(char *owner, char* body, char *user){
     
     userCommentNode_t *newCommentNode = NULL;
                /*pointers used to check album and user id's**/

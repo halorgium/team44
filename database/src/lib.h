@@ -1,4 +1,7 @@
+#ifndef _LIB_H_
+#define _LIB_H_ 2
 
+#include "../../shared/structs.h"
 #define SOURCE_LOCATION "../var/"
 #define ALBUMS_FILE_NAME "albums"
 #define ARTISTS_FILE_NAME "artists"
@@ -30,9 +33,9 @@ static int nextLoanID = 400;
 /* lib.c */
 int addAlbum(const char *title, const int artistID);
 int addUser(const char *, const char *, const char *, const Boolean);
-int addCommentArtist(char *, const char *, int);
-int addCommentAlbum(char *, const char *, int);
-int addCommentUser(char *owner, const char *body, char *user);
+int addCommentArtist(char *, char *, int);
+int addCommentAlbum(char *, char *, int);
+int addCommentUser(char *owner, char *body, char *user);
 const char *getAlbumTitle(int idNumber);
 const char *getUserName(char *usercode);
 const char *getUserEmail(char *code);
@@ -43,3 +46,5 @@ int *getAllAlbums(void);
 /* int *getCommentsByAlbumID(int albumID); */
 /* int *getCommentsByUserID(int userID); */
 /* int *getCommentsByAlbumAndUserID(int albumID, int userID); */
+
+#endif

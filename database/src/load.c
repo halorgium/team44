@@ -21,13 +21,13 @@ int  loadDatabase(){
     FILE *loanInFile = fopen(strcat(SOURCE_LOCATION, LOANS_FILE_NAME), "r");
     FILE *userInFile = fopen(strcat(SOURCE_LOCATION, USERS_FILE_NAME), "r");
 
-    if(loadAllUsers(userInFile)!=1) return LOAD_FAILURE;
-    if(loadAllArtists(artistInFile)!=1) return LOAD_FAILURE;
-    if(loadAllAlbums(albumInFile)!=1) return LOAD_FAILURE;
-    if(loadAllLoans(loanInFile)!=1) return LOAD_FAILURE;
-    if(loadArtistsComments(art_comInFile)!=1) return LOAD_FAILURE;
-    if(loadAlbumComments(alb_comInFile)!=1) return LOAD_FAILURE;
-    if(loadUserComments(usr_comInFile)!=1) return LOAD_FAILURE;
+    if(loadAllUsers(userInFile)!=1) return USER_LOAD_FAILURE;
+    if(loadAllArtists(artistInFile)!=1) return ARTIST_LOAD_FAILURE;
+    if(loadAllAlbums(albumInFile)!=1) return ALBUM_LOAD_FAILURE;
+    if(loadAllLoans(loanInFile)!=1) return LOAN_LOAD_FAILURE;
+    if(loadArtistComments(art_comInFile)!=1) return ART_COM_LOAD_FAILURE;
+    if(loadAlbumComments(alb_comInFile)!=1) return ALB_COM_LOAD_FAILURE;
+    if(loadUserComments(usr_comInFile)!=1) return USR_COM_LOAD_FAILURE;
 
     return 1;
 }
