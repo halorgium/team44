@@ -8,8 +8,6 @@ INSTALL_DIR=$(HOME)/public_html/testweb
 all: libcgic.a ../bin/cgictest.cgi ../bin/capture.cgi
 
 libcgic.a: cgic.o cgic.h
-	rm -fr ../bin
-	mkdir ../bin
 	rm -f libcgic.a
 	$(AR) rc libcgic.a cgic.o
 

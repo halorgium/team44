@@ -2,16 +2,6 @@
 #include "cgic.h"
 #include "../../shared/structs.h"
 
-void Name();
-void Address();
-void Hungry();
-void Temperature();
-void Frogs();
-void Color();
-void Flavors();
-void NonExButtons();
-void RadioButtons();
-
 void printHeader();
 void printFooter();
 
@@ -35,17 +25,16 @@ void printHeader() {
     fprintf(cgiOut, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
     fprintf(cgiOut, "<html>\n");
     fprintf(cgiOut, "<head>\n");
-    fprintf(cgiOut, "<TITLE>cgic test</TITLE></HEAD>\n");
-    fprintf(cgiOut, "<BODY><H1>cgic test</H1>\n");
-    fprintf(cgiOut, "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />");
-    fprintf(cgiOut, "<link rel=\"stylesheet\" type=\"text/css\" href=\"/musiclib.css\" />");
-    fprintf(cgiOut, "<link rel=\"made\" href=\"mailto:c204g18@cosc.canterbury.ac.nz\" />");
-    fprintf(cgiOut, "</head>");
-    fprintf(cgiOut, "<body>");
+    fprintf(cgiOut, "<title>Music Library of Team44</title>\n");
+    fprintf(cgiOut, "<meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n");
+    fprintf(cgiOut, "<link rel=\"stylesheet\" type=\"text/css\" href=\"/musiclib.css\" />\n");
+    fprintf(cgiOut, "<link rel=\"made\" href=\"mailto:c204g18@cosc.canterbury.ac.nz\" />\n");
+    fprintf(cgiOut, "</head>\n");
+    fprintf(cgiOut, "<body>\n\n");
 }
 
 void printFooter() {
-    fprintf(cgiOut, "</body></html>\n");
+    fprintf(cgiOut, "\n</body>\n</html>\n");
 }
 
 void Name() {
