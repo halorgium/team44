@@ -5,6 +5,8 @@
 int startNetworkServer() {
     /* Start network listener */
     fprintf(stderr, "Start network listener\n");
+
+    while(1){}
     
     sleep(10);
     
