@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "cgic.h"
-#include "../../structs.h"
+#include "../../shared/structs.h"
 
 int cgiMain() {
 #if DEBUG
@@ -23,4 +23,10 @@ int cgiMain() {
     fprintf(cgiOut, "</BODY></HTML>\n");
     return 0;
 }
+
+void replaceUserName(char *userName, FILE *inStream){
+    /*SoFar :(*/
+    char *ch = fgets(userName, 150, inStream);
+}
+		     
 
