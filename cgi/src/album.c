@@ -154,11 +154,11 @@ static void doViewAlbum(void) {
   }
 
   if(albumid == -1) {
-    /* print all artists */
+    /* print all albums */
     printAllAlbums();
   }
   else {
-    /* print specific artist */
+    /* print specific album */
     printSpecificAlbum(albumid);
   }
 }

@@ -19,6 +19,9 @@ typedef int Boolean;
 #define MAXSIZE_ARTISTCOMMENT 1000
 #define MAXSIZE_ALBUMCOMMENT 1000
 
+#define LOAN_ACTIVE 201
+#define LOAN_INACTIVE 202
+
 #define E_INVALID_PARAM -1
 #define E_MALLOC_FAILED -2
 #define E_NOALBUM -3
