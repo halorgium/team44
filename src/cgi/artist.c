@@ -83,6 +83,7 @@ static int processAddForm(void) {
     }
 
     newArtistid=addArtist(artname);
+    printf("%d\n", newArtistid);
     if(newArtistid < 0) {
 	return -1;
     }
