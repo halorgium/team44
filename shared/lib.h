@@ -31,7 +31,7 @@ int *getLoansByUserCode(char *userCode);
 int *getLoansByAlbumID(int ID);
 int *getAllCurrentLoans(void);
 int *getAllReturnedLoans(void);
-int *getLoansByUserCodeAndStatus(char * userCode, Boolean isReturned);
+int *getLoansByUserCodeAndStatus(char * userCode, int isReturned);
 int isAlbumOnLoan(int albumID);
 userCommentNode_t *getUserComment(int commentID);
 int *getUserCommentsByOwner(char *owner);
@@ -42,6 +42,7 @@ int *getArtistCommentsByOwner(char *owner);
 albumCommentNode_t *getAlbumComment(int commentID);
 int *getAlbumCommentsByOwner(char *owner);
 int *getAlbumCommentsByAlbumID(int ID);
+int *getAllLoansByStatus(int isReturned);
 
 
 #endif

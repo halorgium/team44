@@ -1005,7 +1005,7 @@ int *getAllReturnedLoans(void){
 }
 
 
-int *getLoansByUserCodeAndStatus(char *userCode, Boolean isReturned){
+int *getLoansByUserCodeAndStatus(char *userCode, int isReturned){
 
     int arraySize = 0;
     int *loansByUser = 0;
@@ -1049,15 +1049,17 @@ int *getLoansByUserCodeAndStatus(char *userCode, Boolean isReturned){
 int isAlbumOnLoan(int albumID){
 
     int i;
-    int *albumLoans = 0;
+    int *albumLoans = NULL;
 
     albumLoans = getLoansByAlbumID(albumID);
+    if(albumLoans == NULL)
 
 /* search for a loan that is still not returned*/
     for(i = 0; albumLoans[i] != LAST_ID_IN_ARRAY; i++){
 	if(getLoan(albumLoans[i])->isReturned == FALSE)
 	    return albumLoans[i];
     }
+    return -1;
 }
 
 
@@ -1075,8 +1077,62 @@ userCommentNode_t *getUserComment(int commentID){
 }
 
 
-int *getUserCommentsByOwner(char *owner){}
-int *getUserCommentsByUserCode(char *userCode){}
+int *getUserCommentsByOwner(char *owner){
+
+    int size = 0;
+    int *commentsArray = NULL;
+    userCommentNode_t *com;
+    
+   /*allocate mem for 1st element in array*/ 
+    commentsArray = (int*) malloc(sizeof(int));
+    if(commentsArray == NULL) return NULL;
+
+    for(com = firstAlbumComment; com != NULL; com=com->next){
+	if(strcmp(com->userOwner, owner) == 0){
+	     /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(commentsArray, sizeof(int)*(size+2)) == NULL){
+		free(commentsArray);
+		return NULL;
+	    }
+	    /*add to array*/
+	    commentsArray[size++] = com->ID;
+	}
+
+    }
+    /*end array*/
+    commentsArray[size] = LAST_ID_IN_ARRAY;
+    return commentsArray;
+}
+
+/*returns array of usercomments*/
+int *getUserCommentsByUserCode(char *userCode){
+
+    int size = 0;
+    int *commentsArray = NULL;
+    userCommentNode_t *com;
+    
+   /*allocate mem for 1st element in array*/ 
+    commentsArray = (int*) malloc(sizeof(int));
+    if(commentsArray == NULL) return NULL;
+
+    for(com = firstAlbumComment; com != NULL; com=com->next){
+	if(strcmp(com->user, userCode) == 0){
+	     /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(commentsArray, sizeof(int)*(size+2)) == NULL){
+		free(commentsArray);
+		return NULL;
+	    }
+	    /*add to array*/
+	    commentsArray[size++] = com->ID;
+	}
+
+    }
+    /*end array*/
+    commentsArray[size] = LAST_ID_IN_ARRAY;
+    return commentsArray;
+}
+
+/*returns pointer to comment */
 artistCommentNode_t *getArtistComment(int commentID){
 
     artistCommentNode_t *c; 
@@ -1089,8 +1145,65 @@ artistCommentNode_t *getArtistComment(int commentID){
     }
     return NULL;
 }
-int *getArtistCommentsByArtistID(int ID){}
-int *getArtistCommentsByOwner(char *owner){}
+
+/*returns array of artist comments id's*/
+int *getArtistCommentsByArtistID(int ID){
+
+    int size = 0;
+    int *commentsArray = NULL;
+    artistCommentNode_t *com;
+    
+   /*allocate mem for 1st element in array*/ 
+    commentsArray = (int*) malloc(sizeof(int));
+    if(commentsArray == NULL) return NULL;
+
+    for(com = firstAlbumComment; com != NULL; com=com->next){
+	if(com->albumID, ID){
+	     /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(commentsArray, sizeof(int)*(size+2)) == NULL){
+		free(commentsArray);
+		return NULL;
+	    }
+	    /*add to array*/
+	    commentsArray[size++] = com->ID;
+	}
+
+    }
+    /*end array*/
+    commentsArray[size] = LAST_ID_IN_ARRAY;
+    return commentsArray;
+}
+
+
+/*returns array of comment id's*/
+int *getArtistCommentsByOwner(char *owner){
+
+    int size = 0;
+    int *commentsArray = NULL;
+    artistCommentNode_t *com;
+    
+   /*allocate mem for 1st element in array*/ 
+    commentsArray = (int*) malloc(sizeof(int));
+    if(commentsArray == NULL) return NULL;
+
+    for(com = firstAlbumComment; com != NULL; com=com->next){
+	if(strcmp(com->userOwner, owner) == 0){
+	     /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(commentsArray, sizeof(int)*(size+2)) == NULL){
+		free(commentsArray);
+		return NULL;
+	    }
+	    /*add to array*/
+	    commentsArray[size++] = com->ID;
+	}
+
+    }
+    /*terminate array*/
+    commentsArray[size] = LAST_ID_IN_ARRAY;
+    return commentsArray;
+}
+
+
 albumCommentNode_t *getAlbumComment(int commentID){
 
     albumCommentNode_t *c; 
@@ -1103,10 +1216,64 @@ albumCommentNode_t *getAlbumComment(int commentID){
     }
     return NULL;
 }
-int *getAlbumCommentsByOwner(char *owner){}
-int *getAlbumCommentsByAlbumID(int ID){}
 
-int *getAllLoansByStatus(Boolean isReturned){
+/*returns array of ids  , or NULL*/
+int *getAlbumCommentsByOwner(char *owner){
+
+    int size = 0;
+    int *commentsArray = NULL;
+    albumCommentNode_t *com;
+    
+   /*allocate mem for 1st element in array*/ 
+    commentsArray = (int*) malloc(sizeof(int));
+    if(commentsArray == NULL) return NULL;
+
+    for(com = firstAlbumComment; com != NULL; com=com->next){
+	if(strcmp(com->userOwner, owner) == 0){
+	     /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(commentsArray, sizeof(int)*(size+2)) == NULL){
+		free(commentsArray);
+		return NULL;
+	    }
+	    /*add to array*/
+	    commentsArray[size++] = com->ID;
+	}
+
+    }
+    /*end array*/
+    commentsArray[size] = LAST_ID_IN_ARRAY;
+    return commentsArray;
+}
+
+/*returns array of ids terminated by LAST_ID...*/
+int *getAlbumCommentsByAlbumID(int ID){
+
+    int size = 0;
+    int *commentsArray = NULL;
+    albumCommentNode_t *com;
+    
+   /*allocate mem for 1st element in array*/ 
+    commentsArray = (int*) malloc(sizeof(int));
+    if(commentsArray == NULL) return NULL;
+
+    for(com = firstAlbumComment; com != NULL; com=com->next){
+	if(com->albumID, ID){
+	     /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(commentsArray, sizeof(int)*(size+2)) == NULL){
+		free(commentsArray);
+		return NULL;
+	    }
+	    /*add to array*/
+	    commentsArray[size++] = com->ID;
+	}
+
+    }
+    /*end array*/
+    commentsArray[size] = LAST_ID_IN_ARRAY;
+    return commentsArray;
+}
+
+int *getAllLoansByStatus(int isReturned){
 
     int arraySize = 0; 
     int *loansArray = 0; /*new array to be returned*/ 
@@ -1117,7 +1284,7 @@ int *getAllLoansByStatus(Boolean isReturned){
     if(loansArray == NULL) return NULL;
     
      /*loops through array and reallocates memory when it finds loans,*/ 
-    /* with that UserID and adds them to array*/ 
+    /* that are 'isreturned'*/ 
     for(l = firstLoan; l != NULL; l=l->next){
 	if(l->isReturned == isReturned){
 	    /*reallocates mem for array and checks for mem error*/ 
