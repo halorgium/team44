@@ -1,4 +1,4 @@
-CGI_FILES="src/index.cgi src/musiclib.css src/1px.gif src/.htaccess src/logo.png"
+CGI_FILES="src/index.cgi src/musiclib.css src/1px.gif src/.htaccess src/logo.png src/binary.png"
 DB_FILES="var/nextid var/user var/album var/artist var/usrcom var/albcom var/artcom var/loan var/loanret var/.htaccess"
 
 INSTALL_DIR="$HOME/public_html/%%PREFIX%%"
