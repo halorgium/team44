@@ -41,7 +41,7 @@ void printArtist(void) {
 
 static void doAddArtist(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
@@ -58,7 +58,7 @@ static void doAddArtist(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding) {
+    if(isAdding == TRUE) {
 	/* The curr data is ready for processing */
 	int newartistid=processAddForm();
 	if(newartistid > 0) {

@@ -42,7 +42,7 @@ void printUser(void) {
 
 static void doAddUser(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     /* Check privileges of current user */
     if(isUserLibrarian(_currUserLogon) == FALSE) {
@@ -59,7 +59,7 @@ static void doAddUser(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding) {
+    if(isAdding == TRUE) {
 	/* The curr data is ready for processing */
 	int newuserid=processAddForm();
 	if(newuserid > 0) {

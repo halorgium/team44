@@ -39,7 +39,7 @@ void printArtistComment(void) {
 
 static void doAddArtistComment(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     fprintf(cgiOut, "<div class=\"head1\">Adding New Artist Comment</div>\n");
 
@@ -50,7 +50,7 @@ static void doAddArtistComment(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding) {
+    if(isAdding == TRUE) {
 	/* The curr data is ready for processing */
 	int newartistCommentid=processAddForm();
 	if(newartistCommentid > 0) {

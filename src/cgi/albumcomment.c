@@ -50,7 +50,7 @@ static void doAddAlbumComment(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding) {
+    if(isAdding == TRUE) {
 	/* The curr data is ready for processing */
 	int newalbumCommentid=processAddForm();
 	if(newalbumCommentid > 0) {

@@ -43,7 +43,7 @@ void printUserComment(void) {
 
 static void doAddUserComment(void) {
     int result=0;
-    Boolean isAdding=-1;
+    Boolean isAdding=FALSE;
 
     fprintf(cgiOut, "<div class=\"head1\">Adding New User Comment</div>\n");
 
@@ -60,7 +60,7 @@ static void doAddUserComment(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding) {
+    if(isAdding == TRUE) {
 	/* The curr data is ready for processing */
 	int newuserCommentid=processAddForm();
 	if(newuserCommentid > 0) {

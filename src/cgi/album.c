@@ -63,7 +63,7 @@ static void doAddAlbum(void) {
 	isAdding=FALSE;
     }
 
-    if(isAdding) {
+    if(isAdding == TRUE) {
 	/* The curr data is ready for processing */
 	int newalbumid=processAddForm();
 	if(newalbumid > 0) {
