@@ -40,7 +40,7 @@ static void theRealWork(void) {
     result=loadDatabase();
     if(result != DB_LOAD_SUCCESS) {
 	/* some problem with loading */
-	fprintf(cgiOut, "<td>Some DB Load problem</td>\n</tr>\n<tr>\n");
+	fprintf(cgiOut, "<td>Some DB Load problem [%d]</td>\n</tr>\n<tr>\n", result);
 	return;
     }
     
