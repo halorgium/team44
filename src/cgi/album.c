@@ -62,7 +62,8 @@ static void doAddAlbum(void) {
 	if(newalbumid != -1) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a>", newalbumid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a><br />\n", newalbumid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Add another Album]</a>", newalbumid, _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */

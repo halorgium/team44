@@ -178,7 +178,7 @@ static void doViewUserComment(void) {
 		printAllUserCommentsByUser(owner);
 	    }
 	    else {
-		fprintf(cgiOut, "You can not view the User Comments written by User [%d]\n", owner);
+		fprintf(cgiOut, "You can not view the User Comments by User [%d]\n", owner);
 	    }
 	}
     }
@@ -189,7 +189,7 @@ static void doViewUserComment(void) {
 	    printAllUserCommentsForUser(userid);
 	}
 	else {
-	    fprintf(cgiOut, "You can not view the User Comments written about User [%d]\n", userid);
+	    fprintf(cgiOut, "You can not view the User Comments about User [%d]\n", userid);
 	}
     }
 }
@@ -249,7 +249,7 @@ static void printAllUserCommentsForUser(int userid) {
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing User Comments written about %s</div>", getUserName(userid));
+    fprintf(cgiOut, "<div class=\"head1\">Viewing User Comments about %s</div>", getUserName(userid));
 
     allUserComments=getUserCommentsForUser(userid);
 
@@ -309,7 +309,7 @@ void doShowUserComment(void) {
   else {
     /* Check privileges */
     if(userid != _currUserLogon && isUserLibrarian(_currUserLogon) == FALSE) {
-      fprintf(cgiOut, "You can not view info about Comments written by/about User [%d]\n", userid);
+      fprintf(cgiOut, "You can not view info about Comments by/about User [%d]\n", userid);
       return;
     }
   }
@@ -317,15 +317,15 @@ void doShowUserComment(void) {
   /* Will use userid */
   fprintf(cgiOut, "<div class=\"head1\">Comments written by and written about %s</div>\n", getUserName(userid));
 
-  fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">View Comments written about <b>%s</b> (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsForUserCount(userid));
+  fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&amp;hash=%d\">View Comments about <b>%s</b> (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsForUserCount(userid));
 
   if(isUserLibrarian(userid) == TRUE) {
-	fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Users (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsByUserCount(userid));
+	fprintf(cgiOut, "<p><a href=\"./?page=usercomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has about Users (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getUserCommentsByUserCount(userid));
   }
 
-  fprintf(cgiOut, "<p><a href=\"./?page=albumcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Albums (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getAlbumCommentsByUserCount(userid));
+  fprintf(cgiOut, "<p><a href=\"./?page=albumcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has about Albums (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getAlbumCommentsByUserCount(userid));
 
-  fprintf(cgiOut, "<p><a href=\"./?page=artistcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has written about Artists (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getArtistCommentsByUserCount(userid));
+  fprintf(cgiOut, "<p><a href=\"./?page=artistcomment&amp;func=view&amp;owner=%d&amp;hash=%d\">View Comments <b>%s</b> has bout Artists (%d)</a></p>\n\n", userid, _currUserLogon, getUserCode(userid), getArtistCommentsByUserCount(userid));
 
   fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }

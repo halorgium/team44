@@ -64,7 +64,8 @@ static void doAddUser(void) {
 	if(newuserid != -1) {
 	    /* User added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">[View User]</a>", newuserid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">[View User]</a><br />\n", newuserid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;func=add&amp;userid=%d&amp;hash=%d\">[Add another User]</a>", newuserid, _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */

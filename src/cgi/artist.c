@@ -63,7 +63,8 @@ static void doAddArtist(void) {
 	if(newartistid != -1) {
 	    /* Artist added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a>", newartistid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a><br />\n", newartistid, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add another Artist]</a>", newartistid, _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */
