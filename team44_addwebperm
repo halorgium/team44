@@ -1,8 +1,8 @@
 #!/bin/sh
 F=`id -nu`;
 echo "Set you to be editing .htpasswd file with cvs"
-cvs edit .htpasswd
+cvs edit web/.htpasswd
 echo "Going to add web pass for "$F;
-htpasswd -d .htpasswd $F
+htpasswd -d web/.htpasswd $F
 echo "if successful commit the changes"
 
