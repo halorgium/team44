@@ -3,12 +3,13 @@ AR=ar
 CFLAGS=-ansi -Wall -pedantic
 LIBS=-Lcgi/ -lcgic -lm
 
+SHARED_OBJS=shared/shared.o
 CGI_OBJS=cgi/cgic.o cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/album.o cgi/artist.o cgi/usercomment.o cgi/albumcomment.o cgi/artistcomment.o cgi/loan.o
 DATABASE_OBJS=database/get.o database/load.o database/save.o database/add.o database/read_line.o
 
 CGI_H=cgi/cgic.h cgi/globals.h shared/defines.h
 
-OBJS=$(CGI_OBJS) $(DATABASE_OBJS)
+OBJS=$(SHARED_OBJS) $(CGI_OBJS) $(DATABASE_OBJS)
 
 all: index.cgi
 
@@ -19,6 +20,8 @@ clean:
 	rm -f index.cgi cgi/libcgic.a $(OBJS)
 
 # Shared
+shared/shared.c: shared/lib.h
+
 shared/lib.h: shared/defines.h
 
 # CGI

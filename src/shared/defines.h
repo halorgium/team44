@@ -5,6 +5,9 @@
 
 #define DATA_LOCATION "./var"
 
+/* This defines the substitution for new-lines (\n) in comments */
+#define NEWLINE_SUBST 7
+
 #define TRUE 1
 #define FALSE 0
 typedef int Boolean;
@@ -19,9 +22,9 @@ typedef int Boolean;
 
 #define MAXLEN_ARTISTNAME 50
 
-#define MAXSIZE_USERCOMMENT 200
-#define MAXSIZE_ARTISTCOMMENT 200
-#define MAXSIZE_ALBUMCOMMENT 200
+#define MAXLEN_USERCOMMENT 1000
+#define MAXLEN_ARTISTCOMMENT 1000
+#define MAXLEN_ALBUMCOMMENT 1000
 
 /* Error codes */
 

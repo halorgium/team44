@@ -8,6 +8,15 @@ int loadDatabase(void);
 /* This method checks whether the string is acceptable */
 Boolean checkString2(char *);
 
+/* This function turns a string lowercase */
+char *toLowerCase(char *);
+
+/* These functions replace chars with chars/strings
+ * Frees the old string */
+char *replaceCharWithString(char *, char, const char *);
+char *replaceCharWithChar(char *, char, char);
+
+
 /* Add methods */
 int addUser(const char *, const char *, const char *, Boolean);
 int addAlbum(const char *, int);
