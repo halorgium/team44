@@ -3,6 +3,7 @@ include main_vars
 all: cgi_all
 
 clean:
+	rm -f main_vars
 	@(cd src; make clean)
 	@(cd help; make clean)
 

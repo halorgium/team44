@@ -3,7 +3,7 @@
 
 a {
   color : #3333CC;
-  background : #FFFFFF;
+  background : #EEEEEE;
   text-decoration : none;
 }
 
@@ -20,7 +20,7 @@ body, td {
   font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
-td { 
+td {
   padding : 2px 5px 2px 5px;
   margin : 0px 0px 0px 0px;
 }
@@ -162,6 +162,7 @@ td#bodycontent {
   width : 100%;
   text-align : left;
   vertical-align : top;
+  background : #EEEEEE;
 }
 
 td.describe { 
