@@ -138,8 +138,11 @@ static int processReturnForm(void) {
 		int userID = getLoanUser(loanid);
 		char *name = getUserName(userID);
 		
-		fprintf(cgiOut, "You cannot return this album; It is already on loan to ");
-		userLink("", userID, name, cgiOut);
+		fprintf(cgiOut, "You cannot return this album; It is already on loan");
+	       	if(isUserLibrarian(_currUserLogon) == TRUE) {
+			fprintf(cgiOut, " to ");
+			userLink("", userID, name, cgiOut);
+		}
 		fprintf(cgiOut, "<br />\n");
 
 		free(name);
