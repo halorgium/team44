@@ -39,55 +39,55 @@ int loadDatabase() {
     firstLoan = NULL;
 
     fprintf(stderr, "Start Load nextID\n");
-    InFile = fopen(SOURCE_LOCATION""NEXTID_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"NEXTID_FILE_NAME, "r");
     if(InFile == NULL) return NEXTID_LOAD_FAILURE;
     if(loadNextID(InFile)!=1) return NEXTID_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load Users\n");
-    InFile = fopen(SOURCE_LOCATION""USER_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"USER_FILE_NAME, "r");
     if(InFile == NULL) return USER_LOAD_FAILURE;
     if(loadAllUsers(InFile)!=1) return USER_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load Albums\n");
-    InFile = fopen(SOURCE_LOCATION""ALBUM_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"ALBUM_FILE_NAME, "r");
     if(InFile == NULL) return ALBUM_LOAD_FAILURE;
     if(loadAllAlbums(InFile)!=1) return ALBUM_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Artists\n");
-    InFile = fopen(SOURCE_LOCATION""ARTIST_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"ARTIST_FILE_NAME, "r");
     if(InFile == NULL) return ARTIST_LOAD_FAILURE;
     if(loadAllArtists(InFile)!=1) return ARTIST_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load User Comments\n");
-    InFile = fopen(SOURCE_LOCATION""USER_COMMENT_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"USER_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return USR_COM_LOAD_FAILURE;
     if(loadUserComments(InFile)!=1) return USR_COM_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Album Comments\n");
-    InFile = fopen(SOURCE_LOCATION""ALBUM_COMMENT_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"ALBUM_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return ALB_COM_LOAD_FAILURE;
     if(loadAlbumComments(InFile)!=1) return ALB_COM_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Artist Comments\n");
-    InFile = fopen(SOURCE_LOCATION""ARTIST_COMMENT_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"ARTIST_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return ART_COM_LOAD_FAILURE;
     if(loadArtistComments(InFile)!=1) return ART_COM_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load Loans\n");
-    InFile = fopen(SOURCE_LOCATION""LOAN_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"LOAN_FILE_NAME, "r");
     if(InFile == NULL) return LOAN_LOAD_FAILURE;
     if(loadAllLoans(InFile)!=1) return LOAN_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Loans Returned\n");
-    InFile = fopen(SOURCE_LOCATION""LOANRET_FILE_NAME, "r");
+    InFile = fopen(DATA_LOCATION"/"LOANRET_FILE_NAME, "r");
     if(InFile == NULL) return LOANRET_LOAD_FAILURE;
     if(loadAllLoansReturned(InFile)!=1) return LOANRET_LOAD_FAILURE;
     fclose(InFile);

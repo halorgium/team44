@@ -4,8 +4,6 @@
 #include "../shared/lib.h"
 #include "../shared/defines.h"
 
-#define HTML_SRC_ROOT "."
-
 #define MAXSIZE_PAGENAME 10
 
 int _currUserLogon;

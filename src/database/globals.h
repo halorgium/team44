@@ -5,11 +5,10 @@
 
 #include "structs.h"
 
-#define SOURCE_LOCATION "./var/"
 #define NEXTID_FILE_NAME "nextid"
-#define USER_FILE_NAME "users"
-#define ALBUM_FILE_NAME "albums"
-#define ARTIST_FILE_NAME "artists"
+#define USER_FILE_NAME "user"
+#define ALBUM_FILE_NAME "album"
+#define ARTIST_FILE_NAME "artist"
 #define USER_COMMENT_FILE_NAME "usrcom"
 #define ALBUM_COMMENT_FILE_NAME "albcom"
 #define ARTIST_COMMENT_FILE_NAME "artcom"

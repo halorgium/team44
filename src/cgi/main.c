@@ -194,7 +194,8 @@ static void printHeader(FILE *output) {
 
     fprintf(output, "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
     fprintf(output, "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n");
-    fprintf(output, " \"http://cosc344:31000/public/downloads/html/dtds/xhtml1-strict.dtd\">\n");
+/*     fprintf(output, " \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"); */
+    fprintf(output, " \"http://cosc344:31000/public/xhtml1-20020801/DTD/xhtml1-strict.dtd\">\n");
     fprintf(output, "<html>\n");
     fprintf(output, "  <head>\n");
     fprintf(output, "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\" />\n");
@@ -213,7 +214,7 @@ static void printHeader(FILE *output) {
     fprintf(output, "  <tr>\n");
     fprintf(output, "<td id=\"header\" colspan=\"2\">\n");
     fprintf(output, "<!-- Start Header -->\n");
-    fprintf(output, "  <div id=\"maintitle\">!! Team44 Music Library !!</div>\n");
+    fprintf(output, "  <div id=\"maintitle\"><img src=\"logo.png\" alt=\"Team44 Music Library\" /></div>\n");
     fprintf(output, "<!-- End Header -->\n");
     fprintf(output, "</td>\n");
     fprintf(output, "  </tr>\n");

@@ -91,7 +91,7 @@ static int processAddForm(void) {
 } 
 
 static void printAddForm(void) {
-    fprintf(cgiOut, "<form method=\"post\" action=\"./\">\n");
+    fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
     fprintf(cgiOut, "<tbody>\n");
     fprintf(cgiOut, "  <tr class=\"hidden\">\n");

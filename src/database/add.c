@@ -20,6 +20,27 @@ static long getctime(void) {
     return tv->tv_sec;
 }
 
+static int checkString(const char *string) {
+    char *temp=NULL;
+    
+    if(string == NULL) {
+	return -1;
+    }
+    if(string[0] == '\0' || string[0] == '%') {
+	return -1;
+    }
+    if(strchr(string, "%") != NULL) {
+	return -1;
+    }
+    temp=strchr(string, "<");
+    while(temp != NULL) {
+	/* Contains '<' */
+	
+
+	temp=strchr(string, "<");
+    }
+}
+
 /* Function: addUser
  * Params:  char* name, char* email
  * Returns: int.

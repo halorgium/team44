@@ -6,14 +6,14 @@ LIBS=-Lcgi/ -lcgic -lm
 ##############################################
 # Object files
 
-CGI_OBJS=cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o
+CGI_OBJS=cgi/cgic.o cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o
 DATABASE_OBJS=database/get.o database/load.o database/save.o database/add.o database/read_line.o
 
 OBJS=$(CGI_OBJS) $(DATABASE_OBJS)
 
-CGI_FILES=index.cgi musiclib.css 1px.gif .htaccess
-DB_FILES=../var/nextid ../var/users ../var/albums ../var/artists ../var/usrcom ../var/albcom ../var/artcom ../var/loan ../var/loanret ../var/.htaccess
-DEPENDS=$(CGIL_FILES) $(DB_FILES)
+CGI_FILES=index.cgi musiclib.css 1px.gif .htaccess logo.png
+DB_FILES=../var/nextid ../var/user ../var/album ../var/artist ../var/usrcom ../var/albcom ../var/artcom ../var/loan ../var/loanret ../var/.htaccess
+DEPENDS=$(CGI_FILES) $(DB_FILES)
 
 INSTALL_DIR=$(HOME)/public_html/testweb
 
@@ -52,7 +52,6 @@ database/save.o: shared/defines.h database/globals.h database/save.h
 database/add.o: shared/defines.h database/structs.h database/globals.h database/save.h
 database/read_line.o: database/read_line.h
 
-
 database/globals.h: database/structs.h
 database/save.h: shared/defines.h
 database/structs.h: shared/defines.h
@@ -72,14 +71,15 @@ index.cgi: $(OBJS) cgi/libcgic.a
 ##############################################
 # Installation
 
-install: $(DPECNDS)
-	rm -fr $(INSTALL_DIR)
+install: install-cgi
+#	rm -fr $(INSTALL_DIR)
 
-	mkdir $(INSTALL_DIR)
-	mkdir $(INSTALL_DIR)/var
-
+install-cgi: $(CGI_FILES)
+#	mkdir $(INSTALL_DIR)
 	cp $(CGI_FILES) $(INSTALL_DIR)
-	cp $(DB_FILES) $(INSTALL_DIR)/var
-
 	chmod -R o+rX $(INSTALL_DIR)
+
+install-db: $(DB_FILES)
+	mkdir $(INSTALL_DIR)/var
+	cp $(DB_FILES) $(INSTALL_DIR)/var
 	chmod u+w $(INSTALL_DIR)/var/*

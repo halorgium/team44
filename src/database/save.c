@@ -10,7 +10,7 @@
 /*functions dealing with saving database to disk*/
 
 int saveNextID(void) {
-    FILE *outFile = fopen(SOURCE_LOCATION""NEXTID_FILE_NAME, "w");
+    FILE *outFile = fopen(DATA_LOCATION"/"NEXTID_FILE_NAME, "w");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%d%%%d%%%d%%\n", _nextAlbumID, _nextArtistID, _nextUserCommentID, _nextAlbumCommentID, _nextArtistCommentID, _nextLoanID);
@@ -19,7 +19,7 @@ int saveNextID(void) {
 }
 
 int saveUser(int ID, const char *userCode, const char* userName, const char *emailAddress, Boolean isLibrarian){
-    FILE *outFile = fopen(SOURCE_LOCATION""USER_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"USER_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%s%%%s%%%s%%%d%%\n", ID, userCode, userName, emailAddress, isLibrarian);
@@ -28,7 +28,7 @@ int saveUser(int ID, const char *userCode, const char* userName, const char *ema
 }
 
 int saveAlbum(int ID, const char* title, const int artistID){
-    FILE *outFile = fopen(SOURCE_LOCATION""ALBUM_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"ALBUM_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%s%%%d%%\n", ID, title, artistID);
@@ -37,7 +37,7 @@ int saveAlbum(int ID, const char* title, const int artistID){
 }
 
 int saveArtist(int ID, const char *name){
-    FILE *outFile = fopen(SOURCE_LOCATION""ARTIST_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"ARTIST_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%s%%\n", ID, name);
@@ -46,7 +46,7 @@ int saveArtist(int ID, const char *name){
 }
 
 int saveUserComment(int ID, int userID, int owner, const char *body){
-    FILE *outFile = fopen(SOURCE_LOCATION""USER_COMMENT_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"USER_COMMENT_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%s%%\n", ID, userID, owner, body);
@@ -55,7 +55,7 @@ int saveUserComment(int ID, int userID, int owner, const char *body){
 }
 
 int saveAlbumComment(int ID, int albumID, int owner, const char *body){
-    FILE *outFile = fopen(SOURCE_LOCATION""ALBUM_COMMENT_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"ALBUM_COMMENT_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%s%%\n", ID, albumID, owner, body);
@@ -64,7 +64,7 @@ int saveAlbumComment(int ID, int albumID, int owner, const char *body){
 }
 
 int saveArtistComment(int ID, int artistID, int owner, const char *body){
-    FILE *outFile = fopen(SOURCE_LOCATION""ARTIST_COMMENT_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"ARTIST_COMMENT_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%d%%%d%%%s%%\n", ID, artistID, owner, body);
@@ -73,7 +73,7 @@ int saveArtistComment(int ID, int artistID, int owner, const char *body){
 }
 
 int saveLoan(int ID, int albumID, int userID, long timeIn){
-    FILE *outFile = fopen(SOURCE_LOCATION""LOAN_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"LOAN_FILE_NAME, "a");
 
     if(outFile == NULL) {
 	return DB_SAVE_FAILURE;
@@ -84,7 +84,7 @@ int saveLoan(int ID, int albumID, int userID, long timeIn){
 }
 
 int saveLoanReturned(int loanID, long timeOut){
-    FILE *outFile = fopen(SOURCE_LOCATION""LOANRET_FILE_NAME, "a");
+    FILE *outFile = fopen(DATA_LOCATION"/"LOANRET_FILE_NAME, "a");
 
     if(outFile == NULL) return DB_SAVE_FAILURE;
     fprintf(outFile, "%d%%%ld%%\n", loanID, timeOut);

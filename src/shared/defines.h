@@ -1,6 +1,10 @@
 #ifndef _DEFINES_H
 #define _DEFINES_H 1
 
+/* File locations */
+
+#define DATA_LOCATION "./var"
+
 #define TRUE 1
 #define FALSE 0
 typedef int Boolean;
@@ -18,6 +22,8 @@ typedef int Boolean;
 #define MAXSIZE_USERCOMMENT 1000
 #define MAXSIZE_ARTISTCOMMENT 1000
 #define MAXSIZE_ALBUMCOMMENT 1000
+
+/* Error codes */
 
 #define E_INVALID_PARAM -1
 #define E_MALLOC_FAILED -2
