@@ -1,5 +1,5 @@
 /*
-  Deals with the login screen: displays test field where user enters their code
+  Deals with the login screen: displays text field where user enters their code
 */
 
 #include <stdio.h>
