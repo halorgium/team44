@@ -16,11 +16,31 @@ body, td {
     font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
+td { 
+    padding : 0px;
+    margin : 0px;
+}
+
 body {
     padding : 0px;
     margin : 0px;
     color : #000000;
     background : #FFFFFF;
+}
+
+table.spacer { 
+    background : #C0C0C0;
+    width : 100%;
+    font-size : 0px;
+}
+
+td.spacer { 
+    background : #C0C0C0;
+    font-size : 0px;
+}
+
+div#hiddenlink { 
+    display: none;
 }
 
 /* Container Styles */
@@ -34,11 +54,12 @@ table#container {
 tr#topspacera { 
     height: 0px;
     font-size: 0px;
+    background : #000000;
 }
 
 td#topspacerb { 
     font-size : 0px;
-    background : #0000FF;
+    background : #000000;
 }
 
 /* Header Styles */
@@ -48,10 +69,7 @@ td#header {
     height : 0px;
     text-align : center;
     vertical-align : middle;
-}
-
-div#hiddenlink { 
-    display: none;
+    background : #3333FF;
 }
 
 table#header {
@@ -59,38 +77,48 @@ table#header {
     font-size: 28px;
     width : 100%;
     color : #FFFFFF;
-    background : #000000;
+    background : #3333FF;
     margin : 0px 0px 0px 0px;
 }
 
 div#maintitle {
+    padding : 20px 0px 20px 0px;
     font-size : 40px;
     text-align : center;
     color : #FFFFFF;
-    background : #000000;
+    background : #3333FF;
     vertical-align : middle;
 }
 
 /* Links Styles */  
 /*--------------*/
 
+td.linkholder {
+    padding : 10px 0px 10px 0px;
+    background : #6699FF;
+}
+
 table.links {
-  
-    text-align : center;
-    padding : 10px 20px 15px 20px;
     font-size : 14px;
     color : #FFFFFF;
-    background : #000000;
+    background : #6699FF;
 }
 
 td.link { 
+    padding : 0px 20px 0px 20px;
+    color : #FFFF33;
+    background : #6699FF;
+}
+
+td.username { 
+    padding : 0px 20px 0px 20px;
     color : #000000;
-    background : #000000;
+    background :#6699FF;
 }
 
 a.buttonref {
-    color : #CCCCCC;
-    background : #000000;
+    color : #000033;
+    background : #6699FF;
     text-decoration : none;
 }
 

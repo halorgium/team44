@@ -2,8 +2,10 @@
 ./?page=news%News%
 ./?page=contact%Contact&nbsp;Us%
 ./?page=logout%Logout%
+%%
 ./?page=user%My&nbsp;Account%
 ./?page=user&amp;func=loan%My&nbsp;Loans%
 ./?page=comments&amp;func=user%My&nbsp;Comments%
+%%
 ./?page=artist%View&nbsp;All&nbsp;Artists%
 ./?page=album%View&nbsp;All&nbsp;Albums%
