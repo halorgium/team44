@@ -17,87 +17,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "../../shared/defines.h"
+#include "../../shared/structs.h"
 #include "lib.h"
-
-/*------------------------ structures and variables ------------------*/
-
-#define TRUE 0
-#define FALSE 1
-typedef int Boolean;
-
-/* structure which holds a user and links next user in list*/
-typedef struct userNode{ 
-    /*int ID;*/
-    char *userName;   /*unique user name*/
-    char *emailAddress;
-    Boolean isLibrarian;       /* FALSE-standard, TRUE-librarian*/
-    /*history (loans) */
-    /*comments*/
-    struct userNode *next;
-}userNode_t;
-
-/*struct to hold an artist*/
-typedef struct artistNode{
-    int ID;
-    char *name;
-    /*maybe comments about artist??*/
-    struct artistNode *next;
-}artistNode_t;
-
-/* structure which holds an album and links to next album in list */
-typedef struct albumNode{
-    int ID;
-    char *title;
-    Boolean isAvailable;   /*TRUE-available*/
-    int artistID;
-
-    /*may have comments about album or loan histroy*/
-    
-    struct albumNode* next;
-}albumNode_t;
-
-
-/* structure which holds a comment about an artist and links to next comment in list*/
-typedef struct artistCommentNode{
-    int ID;
-    int artistID;
-    
-    char *userOwner;
-    char *comment;
-    struct commentNode *next;
-}artistCommentNode_t;
-
-/* structure which holds a comment about an album  and links to next comment in list*/
-typedef struct albumCommentNode{
-    int ID;
-    int albumID;
-    
-    char *userOwner;
-    char *comment;
-    struct commentNode *next;
-}albumCommentNode_t;
-
-/* structure which holds a comment about a user and links to next comment in list*/
-typedef struct userCommentNode{
-    int ID;
-    char *user;
-    
-    char *userOwner;
-    char *comment;
-    struct commentNode *next;
-}userCommentNode_t;
-
-
-/*struct to hold loans - may not be needed*/
-typedef struct loan{
-    int ID;
-    int albumID;
-    char *userName;
-    /*no need for status boolean - recorded in album*/
-    /*time in and tyime out*/
-    
-    struct loan *next;
-}loan_t;
 
 
 
@@ -130,12 +52,12 @@ static int nextLoanID = 400;
  * than 0.
  * Blank album titles and artist are allowed to be added 
  */
-int addAlbum(const char* title, const int artistID){
+int addAlbum(const char *title, const int artistID){
     
     albumNode_t *newAlbumNode = NULL;
     
     /*checks whether argument pointers are NULL */
-    if(title == NULL || artist == NULL ){
+    if(title == NULL || artistID <0 ){
 	return E_INVALID_PARAM;
     }
     
@@ -155,8 +77,7 @@ int addAlbum(const char* title, const int artistID){
     
     /*copy the param strings into the newAlbum, set ID*/
     strcpy(newAlbumNode->title, title);
-    newAlbumNode->isAvailable = TRUE;
-    newAlbumNode->artistID = artist;
+    newAlbumNode->artistID = artistID;
     /* album is being created for first time - unique id should be created*/
     newAlbumNode->ID = nextAlbumID;  /*this needs changing*/
     
@@ -165,7 +86,7 @@ int addAlbum(const char* title, const int artistID){
 
     /*created in memory so now needs to be saved*/
     /*an errror id should be created*/
-    if(saveAlbum(title, TRUE, artistID, newAlbumNode->ID)==0) return -10;
+    if(saveAlbum(title, TRUE, artistID, newAlbumNode->ID)==0) return SAVE_FAILURE;
     
     
     return nextAlbumID++;    /*return id then increment  CHANGE*/
@@ -184,19 +105,19 @@ int addAlbum(const char* title, const int artistID){
  * 
  * Blank user names and emails are allowed to be added 
  */
-int addUser(const char* name, const char* email, const Boolean bool){
+int addUser(const char* name, const char *userCode, const char* email, const Boolean bool){
     userNode_t *newUserNode = NULL;
     userNode_t *u = NULL;
 
     /* check for NULL params*/
-    if(name == NULL || email == NULL ){ 
+    if(name == NULL || email == NULL|| userCode == NULL ){ 
 	return E_INVALID_PARAM;
     }
 
 /*there needs to ba a uniqueness check, may be faster way of doing it*/
     u = firstUser;
     for(;u!=NULL; u=u->next){
-	if(strcmp(u->userName, name)== 0) return -12;
+	if(strcmp(u->userName, userCode)== 0) return ALREADY_ADDED;
     }
     
     
@@ -221,10 +142,19 @@ int addUser(const char* name, const char* email, const Boolean bool){
 	return E_MALLOC_FAILED;
     }
 
+    /*allocates memory for the newuser's userCOde*/
+    newUserNode->userCode = (char*) malloc(sizeof(char)*(strlen(userCode)+1));
+    if(newUserNode->userCode == NULL){ /*pointer is null - malloc failure*/
+	free(newUserNode->userName);  /*free the memory before returning error*/
+	free(newUserNode->userCode);
+	free(newUserNode);
+	return E_MALLOC_FAILED;
+    }
+
     /*copy param strings into newUsers fields, sets ID*/
-    strcpy(newUserNode->name, name); 
+    strcpy(newUserNode->userName, name); 
     strcpy(newUserNode->emailAddress, email);
-    /* newUserNode->ID = nextUserID;*/
+    strcpy(newUserNode->userCode, userCode);
     newUserNode->isLibrarian = bool;
     
     newUserNode->next = firstUser;   /*insert at front of list*/
@@ -232,9 +162,9 @@ int addUser(const char* name, const char* email, const Boolean bool){
 
     /*now its in mem, so save to disk*/
     /*may also add history and loans (NULL, NULL)*/
-    if(saveUser(name, email, bool)!=0)return -11;
+    if(saveUser(name, userCode, email, bool)!=0)return SAVE_FAILURE;
     
-    return nextUserID++;    /*return then increment id*/
+    return 1;    /*return then increment id*/
 } /* end addUser()*/
 
 
@@ -292,7 +222,7 @@ int addCommentArtist(char *owner, const char* body, int artistID){
     }
     
     /*allocates memory for newComment*/
-    newCommentNode = (artistcommentNode_t*) malloc(sizeof(artistCommentNode_t));
+    newCommentNode = (artistCommentNode_t*) malloc(sizeof(artistCommentNode_t));
     if(newCommentNode == NULL){        /*malloc failure?*/
 	return E_MALLOC_FAILED;
     }
@@ -314,16 +244,16 @@ int addCommentArtist(char *owner, const char* body, int artistID){
 
     /*set comment fields and id fields*/
     strcpy(newCommentNode->userOwner, owner);
-    strcpy(newCommentNode->commentBody, body);
+    strcpy(newCommentNode->comment, body);
     newCommentNode->artistID = artistID;
     /*id setting may change*/
     newCommentNode->ID = nextCommentID;
     
     /*insert new node at front of list*/
-    newCommentNode->next = firstComment;   
-    firstComment = newCommentNode;
+    newCommentNode->next = firstArtistComment;   
+    firstArtistComment = newCommentNode;
 
-    if(saveCommentArtist(owner, body, newCommentNode->ID, artsitID)!=0) return -15;
+    if(saveCommentArtist(owner, body, newCommentNode->ID, artistID)!=0) return SAVE_FAILURE;
     
     return nextCommentID++;    /*return and increment id*/
 }/* end addCommentArtist() */
@@ -331,11 +261,11 @@ int addCommentArtist(char *owner, const char* body, int artistID){
 
 int addCommentAlbum(char *owner, const char* body, int albumID){
     
-    commentNode_t *newCommentNode = NULL;
+    albumCommentNode_t *newCommentNode = NULL;
     albumNode_t *a;   /*pointers used to check album and user id's**/
     userNode_t *u;
     
-    if(title == NULL || body == NULL || albumID < 1){/**null param  check**/
+    if(owner == NULL || body == NULL || albumID < 1){/**null param  check**/
 	return E_INVALID_PARAM;
 
     }
@@ -356,7 +286,7 @@ int addCommentAlbum(char *owner, const char* body, int albumID){
 	return E_NOUSER;
     }
     /**find user in user list, assumes unsorted**/
-    for(; strcmp(u->userOwner, owner)!=0 ; u=u->next){
+    for(; strcmp(u->userCode, owner)!=0 ; u=u->next){
 	if(u->next==NULL){
 	    return E_NOUSER;
 	}
@@ -392,11 +322,11 @@ int addCommentAlbum(char *owner, const char* body, int albumID){
     newCommentNode->ID = nextCommentID;
     
     /*insert new node at front of list*/
-    newCommentNode->next = firstComment;   
-    firstComment = newCommentNode;
+    newCommentNode->next = firstAlbumComment;   
+    firstAlbumComment = newCommentNode;
 
     /*save to disk*/
-    if(saveCommentAlbum(owner, body, newCommentNode->ID, albumID)!=0) return -16;
+    if(saveCommentAlbum(owner, body, newCommentNode->ID, albumID)!=0) return SAVE_FAILURE;
     
     return nextCommentID++;    /*return and increment id*/
 }/* end addCommentAlbum() */
@@ -405,7 +335,7 @@ int addCommentAlbum(char *owner, const char* body, int albumID){
 
 int addCommentUser(char *owner, const char* body, char *user){
     
-    commentNode_t *newCommentNode = NULL;
+    userCommentNode_t *newCommentNode = NULL;
                /*pointers used to check album and user id's**/
     userNode_t *u;
     
@@ -414,12 +344,12 @@ int addCommentUser(char *owner, const char* body, char *user){
 
     }
     u=firstUser;  /*test to see if any albums are in database*/
-    if(a==NULL){
+    if(u==NULL){
 	return E_NOALBUM;
     }
     /**find owner in  list, assumes unsorted list**/
-    for(; strcmp(u->name, owner)!=0; u=u->next){
-	if(a->next==NULL){
+    for(; strcmp(u->userCode, owner)!=0; u=u->next){
+	if(u->next==NULL){
 	    return E_NOUSER;
 	}
     }
@@ -429,7 +359,7 @@ int addCommentUser(char *owner, const char* body, char *user){
 	return E_NOUSER;
     }
     /**find user in user list, assumes unsorted**/
-    for(; strcmp(u->name, user)!=0; u=u->next){
+    for(; strcmp(u->userCode, user)!=0; u=u->next){
 	if(u->next==NULL){
 	    return E_NOUSER;
 	}
@@ -464,14 +394,16 @@ int addCommentUser(char *owner, const char* body, char *user){
     newCommentNode->ID = nextCommentID;
     
     /*insert new node at front of list*/
-    newCommentNode->next = firstComment;   
-    firstComment = newCommentNode;
+    newCommentNode->next = firstUserComment;   
+    firstUserComment = newCommentNode;
 
-    if(saveCommentUser
+    /*save to disk return error if not worked*/
+    if(saveCommentUser(owner, body, newCommentNode->ID, user)!=0) return SAVE_FAILURE;
     
     return nextCommentID++;    /*return and increment id*/
 }/* end addCommentUser() */
 
+/*------------------------------------------------______*/
 
 /* Function: getAlbumTitle
  * Params:  int idNumber
@@ -493,24 +425,7 @@ const char* getAlbumTitle(int idNumber){
 }/*end getAlbumTitle()*/
 
 
-/* Function: getAlbumArtist
- * Params:  int idNumber
- * Returns: char*.
- *
- * This function retrieves the artist of an album with the specified id. 
- * It returns NULL if the album does not exist in the database.
- */
-const char* getAlbumArtist(int idNumber){
-    albumNode_t *a;
-    
-    /**find album id in list, assumes unsorted list**/
-    for(a = firstAlbum; a != NULL; a=a->next){
-	if(a->ID == idNumber){
-	    return a->artist;
-	}
-    }
-    return NULL;
-}/*end getAlbumArtist()*/
+
 
 
 /* Function: getUserName
@@ -520,13 +435,13 @@ const char* getAlbumArtist(int idNumber){
  * This function retrieves the name of a user with the specified id. 
  * It returns NULL if the user does not exist in the database.
  */
-const char* getUserName(int idNumber){
+const char* getUserName(char *userCode){
     userNode_t *u;
     
     /**find user id in user list, assumes unsorted list*/
     for(u = firstUser; u != NULL; u=u->next){
-	if(u->ID == idNumber){
-	    return u->name;
+	if(strcmp(u->userCode, userCode)==0){
+	    return u->userName;
 	}
     }
     return NULL;
@@ -540,12 +455,12 @@ const char* getUserName(int idNumber){
  * This function retrieves the email address of a user with the specified id. 
  * It returns NULL if the user does not exist in the database.
  */
-const char* getUserEmail(int idNumber){
+const char* getUserEmail(char *code){
     userNode_t *u;
     
     /**find user id in list,then return the users emailAdress*/
     for(u = firstUser; u != NULL; u=u->next){
-	if(u->ID == idNumber){
+	if(strcmp(u->userCode, code)==0){
 	    return u->emailAddress;
 	}
     }
@@ -553,24 +468,7 @@ const char* getUserEmail(int idNumber){
 }/*end getUserEmail() */
 
 
-/* Function: getCommentTitle
- * Params:  int commentID
- * Returns: char*.
- *
- * This function retrieves the title of a comment with the specified id. 
- * It returns NULL if the comment does not exist in the database.
- */
-const char* getCommentTitle(int commentID){
-    commentNode_t *c;
-    
-    /**find comment id in list, assumes unsorted list**/
-    for(c = firstComment; c != NULL; c=c->next){
-	if(c->ID == commentID){
-	    return c->commentTitle;
-	}
-    }
-    return NULL;
-}/*end getCommentTitle()*/
+
 
 
 /* Function: getCommentBody
@@ -581,14 +479,32 @@ const char* getCommentTitle(int commentID){
  * It returns NULL if the comment does not exist in the database.
  */
 const char* getCommentBody(int commentID){
-    commentNode_t *c;
+
+    artistCommentNode_t *c;
+    userCommentNode_t *u;
+    albumCommentNode_t *a;
     
-    /**find comment id in list, then return body**/
-    for(c = firstComment; c != NULL; c=c->next){
+    /**find comment id in artist list, assumes unsorted list**/
+    for(c = firstArtistComment; c != NULL; c=c->next){
 	if(c->ID == commentID){
-	    return c->commentBody;
+	    return c->comment;
 	}
     }
+
+    /**find comment id in user list, assumes unsorted list**/
+    for(u = firstUserComment; u != NULL; u=u->next){
+	if(u->ID == commentID){
+	    return u->comment;
+	}
+    }
+
+    /**find comment id in album list, assumes unsorted list**/
+    for(a = firstAlbumComment; a != NULL; a=a->next){
+	if(a->ID == commentID){
+	    return a->comment;
+	}
+    }
+    
     return NULL;
 }/** end getCommentBody()*/
 
@@ -648,31 +564,31 @@ int* getAllAlbums(){
  *
  * a memory allocation failure returns NULL.
  */
-int* getAllUsers(){
+/* char** getAllUsers(){ */
     
-    int size = 0;    /**number of users in list**/
-    int *userArray = 0;  /*array of users to be returned*/
-    userNode_t *u;
+   /*  int size = 0; */    /**number of users in list**/
+/*     char *userArray[size];*/  /*array of users to be returned*/ 
+/*     userNode_t *u; */
     
     /**count number of users in list,*/
     /*I assume this is faster than calling realloc at every node**/
-    for(u = firstUser; u != NULL; u=u->next){
-	size++;
-    }
+/*     for(u = firstUser; u != NULL; u=u->next){ */
+/* 	size++; */
+/*     } */
 
  /*mallocs memory for array and goes back through list, adding id's to array*/
-    userArray = (int*) malloc(sizeof(int)*(size+1));
-    if(userArray == NULL){
-	return NULL;
-    }
+/*     userArray = (char*) malloc(sizeof(char)*(size+1)); */
+/*     if(userArray == NULL){ */
+/* 	return NULL; */
+/*     } */
     
-    for(u=firstUser, size=0; u != NULL; u=u->next){
-	userArray[size++] = u->ID;
-    }
+/*     for(u=firstUser, size=0; u != NULL; u=u->next){ */
+/* 	strcpy(userArray[size++], u->userCode); */
+/*     } */
     
-    userArray[size] = LAST_ID_IN_ARRAY;
-    return userArray;
-}/* end getAllUsers()*/
+/*     userArray[size] = NULL; */
+/*     return userArray; */
+/*}*//* end getAllUsers()*/
 
 
 /* Function: getAllComments
@@ -689,34 +605,34 @@ int* getAllUsers(){
  *
  * If a memory allocation failure occurs then NULL is returned
  */
-int* getAllComments(){
+/* int* getAllComments(){ */
     
-    int size = 0; /**counter used to find number of albums in list**/
-    int *commentArray = 0;
-    commentNode_t *c;
-    
-    /*counts number of comments in list.*/
-    /*I assume this is faster than calling realloc at every node**/
-    for(c = firstComment; c != NULL; c=c->next){
-	size++;
-    }
+/*     int size = 0; *//**counter used to find number of albums in list**/ 
+/*     int *commentArray = 0; */
+/*     commentNode_t *c; */
+   
+     /*counts number of comments in list.*/ 
+     /*I assume this is faster than calling realloc at every node**/ 
+/*     for(c = firstComment; c != NULL; c=c->next){ */
+/* 	size++; */
+/*     } */
 
- /*mallocs memory for array and goes back through list, adding id's to array*/
-    commentArray = (int*) malloc(sizeof(int)*(size+1));
-    if(commentArray == NULL){
-	return NULL;
-    }
+  /*mallocs memory for array and goes back through list, adding id's to array*/ 
+/*     commentArray = (int*) malloc(sizeof(int)*(size+1)); */
+/*     if(commentArray == NULL){ */
+/* 	return NULL; */
+/*     } */
     
-    for(c=firstComment, size=0; c != NULL; c=c->next){
-	commentArray[size++] = c->ID;
-    }
+/*     for(c=firstComment, size=0; c != NULL; c=c->next){ */
+/* 	commentArray[size++] = c->ID; */
+/*     } */
     
-    commentArray[size] = LAST_ID_IN_ARRAY;
-    return commentArray;
-} /*end getAllComments()*/
+/*     commentArray[size] = LAST_ID_IN_ARRAY; */
+/*     return commentArray; */
+/* } *//*end getAllComments()*/ 
 
 
-/* Function: getCommentsByAlbumID
+/*Function: getCommentsByAlbumID
  * Params:  int albumID
  * Returns: int*.
  *
@@ -730,122 +646,124 @@ int* getAllComments(){
  * if malloc fails then NULL is returned.
  *
  */
-int* getCommentsByAlbumID(int albumID){
+/* int* getCommentsByAlbumID(int albumID){ */
     
-    int arraySize = 0;
-    int *albumCommentsArray = 0;
-    commentNode_t *c;
+/*     int arraySize = 0; */
+/*     int *albumCommentsArray = 0; */
+/*     commentNode_t *c; */
 
-    /*mallocs the first element of array to be returned*/
-    albumCommentsArray = (int*) malloc(sizeof(int));
-    if(albumCommentsArray == NULL){
-	return NULL;
-    }
+     /*mallocs the first element of array to be returned*/ 
+/*     albumCommentsArray = (int*) malloc(sizeof(int)); */
+/*     if(albumCommentsArray == NULL){ */
+/* 	return NULL; */
+/*     } */
     
-    /*loops through array, reallocating memory when finding album comments,*/
-      /*adding comments to array**/
-    for(c = firstComment; c != NULL; c=c->next){
-	if(c->albumID == albumID){
-	    /*reallocate memory for array and check for error*/
-	    if(realloc(albumCommentsArray, sizeof(int)*(arraySize+2)) == NULL){
-		free(albumCommentsArray);
-		return NULL;
-	    }
-	    albumCommentsArray[arraySize++] = c->ID; /*add comment to array*/
-	}
-    }
+     /*loops through array, reallocating memory when finding album comments,*/ 
+      /*adding comments to array**/ 
+/*     for(c = firstComment; c != NULL; c=c->next){ */
+/* 	if(c->albumID == albumID){ */
+	    /*reallocate memory for array and check for error*/ 
+/* 	    if(realloc(albumCommentsArray, sizeof(int)*(arraySize+2)) == NULL){ */
+/* 		free(albumCommentsArray); */
+/* 		return NULL; */
+/* 	    } */
+/* 	    albumCommentsArray[arraySize++] = c->ID; *//*add comment to array*/ 
+/* 	} */
+/*     } */
     
-    albumCommentsArray[arraySize] = LAST_ID_IN_ARRAY;
-    return albumCommentsArray;
-} /*end getCommentsByAlbumID()*/
+/*     albumCommentsArray[arraySize] = LAST_ID_IN_ARRAY; */
+/*     return albumCommentsArray; */
+/* }*/ /*end getCommentsByAlbumID()*/ 
 
 
-/* Function: getCommentsByUserID
- * Params:  int userID
- * Returns: int*.
- *
- * This function returns an array of comment IDs written by a particular
- * user. This array should be freed by the caller function. See the
- * description for getAllComments() for the structure of the array.
- *
- * If the user does not exist, then an array containing
- * only LAST_ID_IN_ARRAY is returned.
+ /* Function: getCommentsByUserID 
+  * Params:  int userID
+  * Returns: int*.
+  *
+  * This function returns an array of comment IDs written by a particular
+  * user. This array should be freed by the caller function. See the
+  * description for getAllComments() for the structure of the array.
+  *
+ *  If the user does not exist, then an array containing
+ *  only LAST_ID_IN_ARRAY is returned.
+ *  
+ * if  malloc fails then Null is returned.
+ */ 
+/* int* getCommentsByUserID(int userID){ */
+    
+/*     int arraySize = 0; */
+/*     int *userCommentsArray = 0; *//*new array to be returned*/ 
+/*     commentNode_t *c; */
+
+   /*allocate mem for 1st element in array*/ 
+/*     userCommentsArray = (int*) malloc(sizeof(int)); */
+/*     if(userCommentsArray == NULL){ */
+/* 	return NULL; */
+/*     } */
+    
+     /*loops through array and reallocates memory when it finds comments,*/ 
+    /* with that userID and adds them to array*/ 
+/*     for(c = firstComment; c != NULL; c=c->next){ */
+/* 	if(c->userID == userID){ */
+	    /*reallocates mem for array and checks for mem error*/ 
+/* 	    if(realloc(userCommentsArray, sizeof(int)*(arraySize+2)) == NULL){ */
+/* 		free(userCommentsArray); */
+/* 		return NULL; */
+/* 	    } */
+ 	    /*add comment to array and increment size*/ 
+/* 	    userCommentsArray[arraySize++] = c->ID; */
+/* 	} */
+/*     } */
+    
+/*     userCommentsArray[arraySize] = LAST_ID_IN_ARRAY; */
+/*     return userCommentsArray; */
+/* } *//*end getCommentByUserID()*/ 
+
+
+/*Function: getCommentsByAlbumAndUserID
+ * Params:  int albumID, int userID 
+ * Returns: int*. 
  * 
- * if malloc fails then Null is returned.
- */
-int* getCommentsByUserID(int userID){
-    
-    int arraySize = 0;
-    int *userCommentsArray = 0; /*new array to be returned*/
-    commentNode_t *c;
-
-    /*allocate mem for 1st element in array*/
-    userCommentsArray = (int*) malloc(sizeof(int));
-    if(userCommentsArray == NULL){
-	return NULL;
-    }
-    
-    /*loops through array and reallocates memory when it finds comments,*/
-    /* with that userID and adds them to array*/
-    for(c = firstComment; c != NULL; c=c->next){
-	if(c->userID == userID){
-	    /*reallocates mem for array and checks for mem error*/
-	    if(realloc(userCommentsArray, sizeof(int)*(arraySize+2)) == NULL){
-		free(userCommentsArray);
-		return NULL;
-	    }
-	    /*add comment to array and increment size*/
-	    userCommentsArray[arraySize++] = c->ID;
-	}
-    }
-    
-    userCommentsArray[arraySize] = LAST_ID_IN_ARRAY;
-    return userCommentsArray;
-} /*end getCommentByUserID()*/
-
-
-/* Function: getCommentsByAlbumAndUserID
- * Params:  int albumID, int userID
- * Returns: int*.
- *
- * This function returns an array of comment IDs that relate to a
- * particular album and are written by a particular person. This array
+ * This function returns an array of comment IDs that relate to a 
+ * particular album and are written by a particular person. This array 
  * should be freed by the caller function. See the description for
- * getAllComments() for the structure of the array.
- *
- * If the user or album do not exist, then an array
- * containing only LAST_ID_IN_ARRAY is returned.
- *
+ * getAllComments() for the structure of the array. 
+ * 
+ * If the user or album do not exist, then an array 
+ * containing only LAST_ID_IN_ARRAY is returned. 
+ * 
  * if malloc fails then NULL is returned.
+ *
  */
-int* getCommentsByAlbumAndUserID(int albumID, int userID){
+ 
+/* int* getCommentsByAlbumAndUserID(int albumID, int userID){ */
     
-    int arraySize = 0;
-    int *UACArray = 0;    /**User and Album Comments array**/
-    commentNode_t *c;    /*temporary pointer*/
+/*     int arraySize = 0; */
+/*     int *UACArray = 0;  */  /**User and Album Comments array**/ 
+/*     commentNode_t *c;   */ /*temporary pointer*/
 
-    /*allocates memory for the first element in the array*/
-    UACArray = (int*) malloc(sizeof(int));
-    if(UACArray == NULL){
-	return NULL;   /*malloc check*/
-    }
+    /*allocates memory for the first element in the array*/ 
+/*     UACArray = (int*) malloc(sizeof(int)); */
+/*     if(UACArray == NULL){ */
+/* 	return NULL;  */ /*malloc check*/ 
+/*     } */
     
-    /**loops through comment list reallocating memory to UACArray if needed*/
-    for(c = firstComment; c != NULL; c=c->next){
-	/*are ID's in comment!?*/
-	if(c->userID == userID && c->albumID == albumID){
-	    /*realloc always keeps array 1 bigger than no. of elements*/
-	    if(realloc(UACArray, sizeof(int)*(arraySize+2)) == NULL){ 
-		free(UACArray);
-		return NULL;
-	    }
-	    UACArray[arraySize++] = c->ID;
-	}/*end if*/
-    }
+   /**loops through comment list reallocating memory to UACArray if needed*/ 
+/*     for(c = firstComment; c != NULL; c=c->next){ */
+	/*are ID's in comment!?*/ 
+/* 	if(c->userID == userID && c->albumID == albumID){ */
+	    /*realloc always keeps array 1 bigger than no. of elements*/ 
+/* 	    if(realloc(UACArray, sizeof(int)*(arraySize+2)) == NULL){  */
+/* 		free(UACArray); */
+/* 		return NULL; */
+/* 	    } */
+/* 	    UACArray[arraySize++] = c->ID; */
+/* 	}end if*/ 
+/*     } */
     
-    UACArray[arraySize] = LAST_ID_IN_ARRAY;
-    return UACArray;
-} /*end getcommentsByAlbumAndUserID()*/
+/*     UACArray[arraySize] = LAST_ID_IN_ARRAY; */
+/*     return UACArray; */
+/* }*/ /*end getcommentsByAlbumAndUserID()*/ 
 
 
 
@@ -854,47 +772,10 @@ int* getCommentsByAlbumAndUserID(int albumID, int userID){
    main only handles one call from the cgi at a time (tasks will
    have to be queued)
 */
-static int main(int arg, char **args){
+int main(int arg, char **args){
     return 1;
 }
 
-/* ALL LOAD operations are performed only at initilisation*/
-int  loadDatabase(){};
-
-int loadAllUsers(){};
-int loadUser(const *char name){};
-
-int loadAllAlbums(){};
-int loadAlbum(const int ID){};
-
-int loadAllArtists(){};
-int loadArtist(const int ID);
-
-int loadAllLoans(){};
-int loadLoan(const int ID){};
-
-int loadAllComments(){};
-int loadComment(const int ID){};
-
-/*functions dealing with saving database to disk*/
-int saveDatabase(){};
-
-int  saveAllUsers(){};
-int saveUser(const char *name, const char *email, const Boolean bool){};
-
-int  saveAllAlbums(){};
-int saveAlbum(const char* title, const Boolean bool, const int artistID, int ID){};
-
-int  saveAllArtists(){};
-int saveArtist(){};
-
-int  saveAllLoans(){};
-int saveLoan(){};
-
-int  saveAllComments(){};
-int saveCommentArtist(char *owner, char *body, int ID, int artistID){};
- int saveCommentAlbum(char *owner, char *body, int ID, int albumID){};
- int saveCommentUser(char *owner, char *body, int ID, char *userName){};
 
 
 
@@ -902,6 +783,6 @@ int saveCommentArtist(char *owner, char *body, int ID, int artistID){};
 
 
 
-
+ 
 
 /*-------------------- end musiclib.c ---------------------------------*/
