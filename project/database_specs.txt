@@ -1,0 +1,68 @@
+Database Specs
+=============================
+
+The conversation??
+
+1 : CGI sends say hello msg
+2 : DB responds with auth?
+3 : for each bit needed
+{
+  a : CGI sends requests for data
+  b : DB responds with the data
+}
+4 : CGI sends goodbye msg
+5 : DB responds with OK
+
+------------------------------
+
+Send packet (CGI=>DB)
+
+-Auth (Later?)
+-Function (see below)
+-Length??
+-Arguments for the function
+
+------------------------------
+
+Response packet (DB=>CGI)
+
+-Auth (Later?)
+-Function
+-Length??
+-Data requested
+
+------------------------------
+
+Database functions:
+
+addUser
+getUser
+-by userid/usercode
+-by name
+-by email
+
+addComment
+getComment
+-by commentid
+-by userid
+-by subjectid && commenttype
+-by title || body
+
+addArtist
+getArtist
+-by artistid
+-by name
+
+addAlbum
+getAlbum
+-by albumid
+-by artistid
+-by name
+
+addLoan
+getLoan
+-by loanid
+-by userid
+-by albumid
+-by status??
+
