@@ -7,6 +7,6 @@ int loadAllAlbums(FILE *f);
 int loadAllLoans(FILE *f);
 /*int loadLoan(const int ID);*/
 int loadAlbumComments(FILE *f);
-int loadArtistsComments(FILE *f);
+int loadArtistComments(FILE *f);
 int loadUserComments(FILE *f);
 
