@@ -7,13 +7,14 @@
 
 #define SOURCE_LOCATION "./var/"
 #define NEXTID_FILE_NAME "nextid"
-#define USERS_FILE_NAME "users"
-#define ALBUMS_FILE_NAME "albums"
-#define ARTISTS_FILE_NAME "artists"
-#define USER_COMMENTS_FILE_NAME "usrcom"
-#define ALBUM_COMMENTS_FILE_NAME "albcom"
-#define ARTIST_COMMENTS_FILE_NAME "artcom"
-#define LOANS_FILE_NAME "loan"
+#define USER_FILE_NAME "users"
+#define ALBUM_FILE_NAME "albums"
+#define ARTIST_FILE_NAME "artists"
+#define USER_COMMENT_FILE_NAME "usrcom"
+#define ALBUM_COMMENT_FILE_NAME "albcom"
+#define ARTIST_COMMENT_FILE_NAME "artcom"
+#define LOAN_FILE_NAME "loan"
+#define LOANRET_FILE_NAME "loanret"
 
 /*all are  pointers to the first node in the 3 lists*/
 userNode_t *firstUser;

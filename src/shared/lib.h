@@ -90,4 +90,6 @@ int getLoansByUserCount(int);
 int *getLoansByAlbum(int);
 int getLoansByAlbumCount(int);
 
+int setLoanReturned(int, int);
+
 #endif

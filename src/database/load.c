@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "../shared/defines.h"
+#include "../shared/lib.h"
 #include "structs.h"
 #include "read_line.h"
 #include "globals.h"
@@ -12,6 +13,8 @@ int loadAllUsers(FILE *f);
 int loadAllArtists(FILE *f);
 int loadAllAlbums(FILE *f);
 int loadAllLoans(FILE *f);
+int loadAllLoansReturned(FILE *f);
+
 int loadAlbumComments(FILE *f);
 int loadArtistComments(FILE *f);
 int loadUserComments(FILE *f);
@@ -42,46 +45,54 @@ int loadDatabase() {
     fclose(InFile);
     
     fprintf(stderr, "Start Load Users\n");
-    InFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""USER_FILE_NAME, "r");
     if(InFile == NULL) return USER_LOAD_FAILURE;
     if(loadAllUsers(InFile)!=1) return USER_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load Albums\n");
-    InFile = fopen(SOURCE_LOCATION""ALBUMS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""ALBUM_FILE_NAME, "r");
     if(InFile == NULL) return ALBUM_LOAD_FAILURE;
     if(loadAllAlbums(InFile)!=1) return ALBUM_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Artists\n");
-    InFile = fopen(SOURCE_LOCATION""ARTISTS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""ARTIST_FILE_NAME, "r");
     if(InFile == NULL) return ARTIST_LOAD_FAILURE;
     if(loadAllArtists(InFile)!=1) return ARTIST_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load User Comments\n");
-    InFile = fopen(SOURCE_LOCATION""USER_COMMENTS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""USER_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return USR_COM_LOAD_FAILURE;
     if(loadUserComments(InFile)!=1) return USR_COM_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Album Comments\n");
-    InFile = fopen(SOURCE_LOCATION""ALBUM_COMMENTS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""ALBUM_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return ALB_COM_LOAD_FAILURE;
     if(loadAlbumComments(InFile)!=1) return ALB_COM_LOAD_FAILURE;
     fclose(InFile);
 
     fprintf(stderr, "Start Load Artist Comments\n");
-    InFile = fopen(SOURCE_LOCATION""ARTIST_COMMENTS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""ARTIST_COMMENT_FILE_NAME, "r");
     if(InFile == NULL) return ART_COM_LOAD_FAILURE;
     if(loadArtistComments(InFile)!=1) return ART_COM_LOAD_FAILURE;
     fclose(InFile);
     
     fprintf(stderr, "Start Load Loans\n");
-    InFile = fopen(SOURCE_LOCATION""LOANS_FILE_NAME, "r");
+    InFile = fopen(SOURCE_LOCATION""LOAN_FILE_NAME, "r");
     if(InFile == NULL) return LOAN_LOAD_FAILURE;
     if(loadAllLoans(InFile)!=1) return LOAN_LOAD_FAILURE;
     fclose(InFile);
+
+    fprintf(stderr, "Start Load Loans Returned\n");
+    InFile = fopen(SOURCE_LOCATION""LOANRET_FILE_NAME, "r");
+    if(InFile == NULL) return LOANRET_LOAD_FAILURE;
+    if(loadAllLoansReturned(InFile)!=1) return LOANRET_LOAD_FAILURE;
+    fclose(InFile);
+
+    databaseLoaded=TRUE;
     
     return 1;
 }
@@ -341,7 +352,6 @@ int loadAllAlbums(FILE *file){
     return 1;
 
 }
-/*int loadAlbum(const int ID);*/
 
 int loadAllArtists(FILE *file){
 
@@ -400,7 +410,6 @@ int loadAllArtists(FILE *file){
 
 
 }
-/*int loadArtist(const int ID);*/
 
 int loadAllLoans(FILE *file){
     char *line = NULL;
@@ -473,6 +482,48 @@ int loadAllLoans(FILE *file){
 	newLoan->timeStampIn = atoi(char2int);
 	free(char2int);
 
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+
+	/* Everything OK */
+
+	newLoan->timeStampOut = -1;
+	newLoan->isReturned = FALSE;
+	
+	newLoan->next = firstLoan;   /*insert at front of list*/
+	firstLoan = newLoan;
+	
+    	/*free memory before reiteration*/
+/* 	free(line); */
+    }
+
+    return 1;
+}
+
+int loadAllLoansReturned(FILE *file){
+    char *line = NULL;
+
+    while((line = readLine(file)) != NULL ){
+	int tempLoanID=-1;
+	int tempTimeOut=-1;
+	char *temp = line;
+	char *temp2 = NULL;
+	char *char2int =NULL;
+	
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/*get loanID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	tempLoanID = atoi(char2int);
+
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
 	if(temp2 == NULL) return DB_LOAD_FAILURE;
@@ -485,26 +536,15 @@ int loadAllLoans(FILE *file){
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	
-	newLoan->timeStampOut = atoi(char2int);
-	free(char2int);
+	tempTimeOut = atoi(char2int);
 
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/* get isLibrarian [Boolean] */
-	/* if char == '1' then true*/
-	if(temp[0] == '1') newLoan->isReturned = TRUE;
-	else newLoan->isReturned = FALSE;
-	
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
 	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
 
 	/* Everything OK */
 	
-	newLoan->next = firstLoan;   /*insert at front of list*/
-	firstLoan = newLoan;
+	setLoanReturned(tempLoanID, tempTimeOut);
 	
     	/*free memory before reiteration*/
 /* 	free(line); */
@@ -512,8 +552,6 @@ int loadAllLoans(FILE *file){
 
     return 1;
 }
-/*int loadLoan(const int ID);*/
-
 
 int loadAlbumComments(FILE *file){
     char *line = NULL;
@@ -662,6 +700,7 @@ int loadArtistComments(FILE *file){
     }
     return 1;
 }
+
 int loadUserComments(FILE *file){
 
     char *line = NULL;
@@ -735,5 +774,3 @@ int loadUserComments(FILE *file){
     }
     return 1;
 }
-
-/*char **stringLoader(char *string){}*/

@@ -1,12 +1,24 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 #include "../shared/defines.h"
 #include "../shared/lib.h"
 #include "structs.h"
 #include "globals.h"
 #include "save.h"
+
+static long getctime(void) {
+    struct timeval *tv=malloc(sizeof(struct timeval));
+    int suc=gettimeofday(tv, NULL);
+    
+    if(suc != 0) {
+	return -1;
+    }
+
+    return tv->tv_sec;
+}
 
 /* Function: addUser
  * Params:  char* name, char* email
@@ -67,16 +79,20 @@ int addUser(const char *userCode, const char* name, const char* email, Boolean i
     strcpy(newUserNode->userCode, userCode);
     strcpy(newUserNode->userName, name);
     strcpy(newUserNode->emailAddress, email);
-    newUserNode->isLibrarian = isLib;
+    if(isLib == TRUE) {
+	newUserNode->isLibrarian = TRUE;
+    }
+    else {
+	newUserNode->isLibrarian = FALSE;
+    }
     
     newUserNode->next = firstUser;   /*insert at front of list*/
     firstUser = newUserNode;
 
     /*now its in mem, so save to disk*/
-    /*may also add history and loans (NULL, NULL)*/
-    if(saveUser(makeUserID(userCode), userCode, name, email, isLib)!=0)return DB_SAVE_FAILURE;
-    
-    return 1;    /*return then increment id*/
+    if(saveUser(newUserNode->ID, userCode, name, email, newUserNode->isLibrarian) < 0) return DB_SAVE_FAILURE;
+   
+    return newUserNode->ID;
 }
 /* end addUser()*/
 
@@ -129,7 +145,7 @@ int addAlbum(const char *title, int artistID){
 
     /*created in memory so now needs to be saved*/
     /*an errror id should be created*/
-    if(saveAlbum(newAlbumNode->ID, title, artistID)==0) return DB_SAVE_FAILURE;
+    if(saveAlbum(newAlbumNode->ID, title, artistID) < 0) return DB_SAVE_FAILURE;
     
     return _nextAlbumID++;    /*return id then increment */
 }
@@ -223,7 +239,7 @@ int addUserComment(int userID, int owner, char* body){
     firstUserComment = newCommentNode;
 
     /*save to disk return error if not worked*/
-    if(saveUserComment(newCommentNode->ID, userID, owner, body)!=0) return DB_SAVE_FAILURE;
+    if(saveUserComment(newCommentNode->ID, userID, owner, body) < 0) return DB_SAVE_FAILURE;
     
     return _nextUserCommentID++;    /*return and increment id*/
 }/* end addCommentUser() */
@@ -272,7 +288,7 @@ int addAlbumComment(int albumID, int owner, char *body){
     firstAlbumComment = newCommentNode;
 
     /*save to disk*/
-    if(saveAlbumComment(newCommentNode->ID, albumID, owner, body)!=0) return DB_SAVE_FAILURE;
+    if(saveAlbumComment(newCommentNode->ID, albumID, owner, body) < 0) return DB_SAVE_FAILURE;
     
     return _nextAlbumCommentID++;    /*return and increment id*/
 }/* end addCommentAlbum() */
@@ -319,13 +335,13 @@ int addArtistComment(int artistID, int owner, char *body){
     newCommentNode->next = firstArtistComment;   
     firstArtistComment = newCommentNode;
 
-    if(saveArtistComment(newCommentNode->ID, artistID, owner, body)!=0) return DB_SAVE_FAILURE;
+    if(saveArtistComment(newCommentNode->ID, artistID, owner, body) < 0) return DB_SAVE_FAILURE;
     
     return _nextArtistCommentID++;    /*return and increment id*/
 }/* end addCommentArtist() */
 
 int addLoan(int userID, int albumID){
-    
+    long tempTime=-1;   
     loanNode_t *newLoanNode = NULL;
     
     /*checks whether user existsL */
@@ -344,8 +360,14 @@ int addLoan(int userID, int albumID){
     
     newLoanNode->userID = userID;
     newLoanNode->albumID = albumID;
-    newLoanNode->timeStampIn = 99999;  /*change*/
-    newLoanNode->timeStampOut = 99999;  /*change*/
+
+    tempTime=getctime();
+    if(tempTime == -1) {
+	return DB_BAD_TIME;
+    }
+
+    newLoanNode->timeStampIn = tempTime;
+    newLoanNode->timeStampOut = -1;
     newLoanNode->isReturned = FALSE;
     
     /* loan is being created for first time - unique id should be created*/
@@ -355,8 +377,29 @@ int addLoan(int userID, int albumID){
     firstLoan = newLoanNode;
 
     /*created in memory so now needs to be saved*/
-    if(saveLoan(newLoanNode->ID, albumID, userID, newLoanNode->timeStampIn, newLoanNode->timeStampOut, FALSE) < 0)
-	return DB_SAVE_FAILURE;
+    if(saveLoan(newLoanNode->ID, albumID, userID, newLoanNode->timeStampIn) < 0) return DB_SAVE_FAILURE;
     
     return _nextLoanID++;    /*return id then increment  CHANGE*/    
+}
+
+int addLoanReturned(int loanID){
+    long tempTime=-1;
+    
+    /*checks whether user existsL */
+    if(getLoanExists(loanID) == FALSE) {
+      return E_NOLOAN;
+    }
+
+    tempTime = getctime();
+    if(tempTime == -1) {
+	return DB_BAD_TIME;
+    }
+    
+    setLoanReturned(loanID, tempTime);
+    
+    /*created in memory so now needs to be saved*/
+    if(saveLoanReturned(loanID, tempTime) < 0)
+	return DB_SAVE_FAILURE;
+    
+    return 1; 
 }

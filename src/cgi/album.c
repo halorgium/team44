@@ -56,7 +56,7 @@ static void doAddAlbum(void) {
 	int newalbumid=processAddForm();
 	if(newalbumid != -1) {
 	    /* Album added ok */
-	    fprintf(cgiOut, "Adding successful\n");
+	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a>", newalbumid, _currUserLogon);
 	}
 	else {
@@ -72,7 +72,26 @@ static void doAddAlbum(void) {
 }
 
 static int processAddForm(void) {
-    return -1;
+    int result=0;
+    int newAlbumid=-1;
+    char *albtitle=malloc(sizeof(char)*MAXSIZE_ALBUMTITLE);
+    int artistid=-1;
+
+    result = cgiFormStringNoNewlines("albtitle", albtitle, MAXSIZE_ARTISTNAME);
+    if(result != cgiFormSuccess || albtitle == NULL) {
+	return -1;
+    }
+
+    result = cgiFormInteger("artistid", &artistid, -1);
+    if(result != cgiFormSuccess || artistid == -1) {
+	return -1;
+    }
+
+    newAlbumid=addAlbum(albtitle, artistid);
+    if(newAlbumid < 0) {
+	return -1;
+    }
+    return newAlbumid;
 } 
 
 static void printAddForm(void) {
@@ -97,17 +116,17 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"title\" title=\"Album Title\">Album Title: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"albtitle\" title=\"Album Title\">Album Title: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"title\" name=\"title\" size=\"%d\"/></td>\n", MAXSIZE_ALBUMTITLE);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"albtitle\" name=\"albtitle\" size=\"%d\"/></td>\n", MAXSIZE_ALBUMTITLE);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artist\" title=\"Artist Name\">Artist Name: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artistid\" title=\"Artist Name\">Artist Name: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"field\">\n");
-    fprintf(cgiOut, "<select id=\"artist\" name=\"artist\" size=\"5\">\n");
+    fprintf(cgiOut, "<select id=\"artistid\" name=\"artistid\" size=\"5\">\n");
 
     curr_id=allArtists[count];
     while (curr_id != LAST_ID_IN_ARRAY) {
@@ -151,8 +170,8 @@ static void doViewAlbum(void) {
 	printAllAlbums();
     }
     else {
-      /* print specific album */
-      printSpecificAlbum(albumid);
+	/* print specific album */
+	printSpecificAlbum(albumid);
     }
 }
 
@@ -196,10 +215,10 @@ void printAllAlbums(void) {
 	    fprintf(cgiOut, "    <td>%s</td>\n", getArtistName(getAlbumArtist(curr_id)));
 
 	    if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
-	      fprintf(cgiOut, "    <td>On Loan</td>\n");
+		fprintf(cgiOut, "    <td>On Loan</td>\n");
 	    }
 	    else {
-	      fprintf(cgiOut, "    <td>In Library</td>\n");
+		fprintf(cgiOut, "    <td>In Library</td>\n");
 	    }
 	    fprintf(cgiOut, "  </tr>\n");
 
@@ -247,9 +266,12 @@ static void printSpecificAlbum(int albumid) {
 	    tempUserID=getLoanUser(currLoan);
 	    fprintf(cgiOut, "Album is on loan ");
 	    if(isUserLibrarian(_currUserLogon) == TRUE) {
-	      fprintf(cgiOut, "to <b>");
-	      userLink(tempUserID, getUserName(tempUserID), cgiOut);
-	      fprintf(cgiOut, "</b>\n");
+		fprintf(cgiOut, "to <b>");
+		userLink(tempUserID, getUserName(tempUserID), cgiOut);
+		fprintf(cgiOut, "</b><br />\n");
+		fprintf(cgiOut, "[Taken at ");
+		printTime(getLoanTimeIn(currLoan), cgiOut);
+		fprintf(cgiOut, "]\n");
 	    }
 
 	    if(tempUserID == _currUserLogon) {
@@ -282,7 +304,7 @@ static void printSpecificAlbum(int albumid) {
     }
 
     if(isUserLibrarian(_currUserLogon) == TRUE) {
-      fprintf(cgiOut, "<hr />\n");
-      fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&amp;hash=%d\">View albums borrowing history</a>\n", albumid, _currUserLogon);
+	fprintf(cgiOut, "<hr />\n");
+	fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&amp;hash=%d\">View albums borrowing history</a>\n", albumid, _currUserLogon);
     }
 }

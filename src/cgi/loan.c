@@ -26,8 +26,8 @@ void printLoan(void) {
     result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
     if(result != cgiFormSuccess || func == NULL) {
 	/* Some sort of failure */
-      fprintf(cgiOut, "Invalid request\n");
-      return;
+	fprintf(cgiOut, "Invalid request\n");
+	return;
     }
 
     if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
@@ -43,8 +43,8 @@ void printLoan(void) {
 	doViewLoan();
     }
     else {
-      /* Invalid function */
-      fprintf(cgiOut, "Invalid request\n");
+	/* Invalid function */
+	fprintf(cgiOut, "Invalid request\n");
     }
 }
 
@@ -145,8 +145,8 @@ static void doReturnLoan(void) {
     /* if adding field is set */
     result=cgiFormIntegerBounded("returning", &isReturning, FALSE, TRUE, FALSE);
     if(result != cgiFormSuccess || isReturning == FALSE) {
-      /* Some sort of failure */
-      fprintf(cgiOut, "Invalid request\n");
+	/* Some sort of failure */
+	fprintf(cgiOut, "Invalid request\n");
     }
 
     if(isReturning) {
@@ -164,7 +164,7 @@ static void doReturnLoan(void) {
 }
 
 static int processReturnForm(void) {
-  return -1;
+    return -1;
 }
 
 static void doViewLoan(void) {
@@ -175,34 +175,34 @@ static void doViewLoan(void) {
     /* check for userid field */
     result = cgiFormInteger("userid", &userid, -1);
     if(result != cgiFormSuccess || userid == -1) {
-      /* Some sort of failure */
-      /* Check for albumid field */
-      result = cgiFormInteger("albumid", &albumid, -1);
-      if(result != cgiFormSuccess || albumid == -1) {
-	/* Nothing specified */
-	fprintf(cgiOut, "No id specified\n");
-	return;
-      }
-      else {
-	/* Check privileges */
-	if(isUserLibrarian(_currUserLogon) == TRUE) {
-	  /* Will use albumid */
-	  printAllLoansByAlbum(albumid);
+	/* Some sort of failure */
+	/* Check for albumid field */
+	result = cgiFormInteger("albumid", &albumid, -1);
+	if(result != cgiFormSuccess || albumid == -1) {
+	    /* Nothing specified */
+	    fprintf(cgiOut, "No id specified\n");
+	    return;
 	}
 	else {
-	  fprintf(cgiOut, "You can not view the borrowing history of the Album [%d]\n", albumid);
+	    /* Check privileges */
+	    if(isUserLibrarian(_currUserLogon) == TRUE) {
+		/* Will use albumid */
+		printAllLoansByAlbum(albumid);
+	    }
+	    else {
+		fprintf(cgiOut, "You can not view the borrowing history of the Album [%d]\n", albumid);
+	    }
 	}
-      }
     }
     else {
-      /* Check privileges */
-      if(userid == _currUserLogon || isUserLibrarian(_currUserLogon) == TRUE) {
-	/* Will use userid */
-	printAllLoansByUser(userid);
-      }
-      else {
-	  fprintf(cgiOut, "You can not view the borrowing history of the User [%d]\n", userid);
-      }
+	/* Check privileges */
+	if(userid == _currUserLogon || isUserLibrarian(_currUserLogon) == TRUE) {
+	    /* Will use userid */
+	    printAllLoansByUser(userid);
+	}
+	else {
+	    fprintf(cgiOut, "You can not view the borrowing history of the User [%d]\n", userid);
+	}
     }
 }
 
@@ -256,8 +256,20 @@ static void printAllLoansByUser(int userid) {
 	    else {
 		fprintf(cgiOut, "    <td>Returned</td>\n");
 	    }
-	    fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeIn(curr_id));
-	    fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeOut(curr_id));
+
+	    fprintf(cgiOut, "    <td>");
+	    printTime(getLoanTimeIn(curr_id), cgiOut);
+	    fprintf(cgiOut, "</td>\n");
+
+	    if(getLoanTimeOut(curr_id) == -1) {
+		fprintf(cgiOut, "    <td>N/A</td>\n");
+	    }
+	    else {
+		fprintf(cgiOut, "    <td>");
+		printTime(getLoanTimeOut(curr_id), cgiOut);
+		fprintf(cgiOut, "</td>\n");
+	    }
+
 	    fprintf(cgiOut, "  </tr>\n");
 
 	    count++;
@@ -273,69 +285,81 @@ static void printAllLoansByUser(int userid) {
 }
 
 static void printAllLoansByAlbum(int albumid) {
-      /* view borrowing history */
-	int *allLoans=NULL;
-	int curr_id=0;
-	int count=0;
+    /* view borrowing history */
+    int *allLoans=NULL;
+    int curr_id=0;
+    int count=0;
 	
-	fprintf(cgiOut, "<div class=\"head1\">Borrowing History for %s</div>", getAlbumTitle(albumid));
+    fprintf(cgiOut, "<div class=\"head1\">Borrowing History for %s</div>", getAlbumTitle(albumid));
 
-	allLoans=getLoansByAlbum(albumid);
+    allLoans=getLoansByAlbum(albumid);
 
-	if(allLoans == NULL) {
-	    fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Loans</div>");
+    if(allLoans == NULL) {
+	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Loans</div>");
+    }
+    else {
+	fprintf(cgiOut, "<table border=\"1\">\n");
+	fprintf(cgiOut, "\n");
+	fprintf(cgiOut, "<thead>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"thead\">User Name</td>\n");
+	fprintf(cgiOut, "    <td class=\"thead\">Status</td>\n");
+	fprintf(cgiOut, "    <td class=\"thead\">Start</td>\n");
+	fprintf(cgiOut, "    <td class=\"thead\">End</td>\n");
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "</thead>\n");
+	fprintf(cgiOut, "\n");
+	fprintf(cgiOut, "<tfoot>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"4\">&nbsp;</td>\n");
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "</tfoot>\n");
+	fprintf(cgiOut, "\n");
+	fprintf(cgiOut, "<tbody>\n");
+
+	if(getLoansByAlbumCount(albumid) == 0) {
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
 	}
-	else {
-	    fprintf(cgiOut, "<table border=\"1\">\n");
-	    fprintf(cgiOut, "\n");
-	    fprintf(cgiOut, "<thead>\n");
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td class=\"thead\">User Name</td>\n");
-	    fprintf(cgiOut, "    <td class=\"thead\">Status</td>\n");
-	    fprintf(cgiOut, "    <td class=\"thead\">Start</td>\n");
-	    fprintf(cgiOut, "    <td class=\"thead\">End</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-	    fprintf(cgiOut, "</thead>\n");
-	    fprintf(cgiOut, "\n");
-	    fprintf(cgiOut, "<tfoot>\n");
-	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"4\">&nbsp;</td>\n");
-	    fprintf(cgiOut, "  </tr>\n");
-	    fprintf(cgiOut, "</tfoot>\n");
-	    fprintf(cgiOut, "\n");
-	    fprintf(cgiOut, "<tbody>\n");
 
-	    if(getLoansByAlbumCount(albumid) == 0) {
-		fprintf(cgiOut, "  <tr>\n");
-		fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
-		fprintf(cgiOut, "  </tr>\n");
+	curr_id=allLoans[count];
+	while (curr_id != LAST_ID_IN_ARRAY) {
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td>");
+	    userLink(getLoanUser(curr_id), getUserName(getLoanUser(curr_id)), cgiOut);
+	    fprintf(cgiOut, "    </td>\n");
+	    if(isLoanReturned(curr_id) == FALSE) {
+		fprintf(cgiOut, "    <td>On Loan</td>\n");
 	    }
+	    else {
+		fprintf(cgiOut, "    <td>Returned</td>\n");
+	    }
+	    
+	    fprintf(cgiOut, "    <td>");
+	    printTime(getLoanTimeIn(curr_id), cgiOut);
+	    fprintf(cgiOut, "</td>\n");
 
-	    curr_id=allLoans[count];
-	    while (curr_id != LAST_ID_IN_ARRAY) {
-		fprintf(cgiOut, "  <tr>\n");
+	    if(getLoanTimeOut(curr_id) == -1) {
+		fprintf(cgiOut, "    <td>N/A</td>\n");
+	    }
+	    else {
 		fprintf(cgiOut, "    <td>");
-		userLink(getLoanUser(curr_id), getUserName(getLoanUser(curr_id)), cgiOut);
-		fprintf(cgiOut, "    </td>\n");
-		if(isLoanReturned(curr_id) == FALSE) {
-		    fprintf(cgiOut, "    <td>On Loan</td>\n");
-		}
-		else {
-		    fprintf(cgiOut, "    <td>Returned</td>\n");
-		}
-		fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeIn(curr_id));
-		fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeOut(curr_id));
-		fprintf(cgiOut, "  </tr>\n");
-
-		count++;
-		curr_id=allLoans[count];
+		printTime(getLoanTimeOut(curr_id), cgiOut);
+		fprintf(cgiOut, "</td>\n");
 	    }
-	
-	    fprintf(cgiOut, "</tbody>\n");
-	    fprintf(cgiOut, "\n");
-	    fprintf(cgiOut, "</table>\n");
+		
+	    fprintf(cgiOut, "  </tr>\n");
 
-	    free(allLoans);
+	    count++;
+	    curr_id=allLoans[count];
 	}
+	
+	fprintf(cgiOut, "</tbody>\n");
+	fprintf(cgiOut, "\n");
+	fprintf(cgiOut, "</table>\n");
+
+	free(allLoans);
+    }
     
 }

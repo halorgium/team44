@@ -71,11 +71,45 @@ static void doAddUser(void) {
 }
 
 static int processAddForm(void) {
-  return -1;
+    int result=0;
+    int newUserid=-1;
+    char *userCode=malloc(sizeof(char)*MAXSIZE_USERCODE);
+    char *userName=malloc(sizeof(char)*MAXSIZE_USERNAME);
+    char *userEmail=malloc(sizeof(char)*MAXSIZE_USEREMAIL);
+    Boolean isLib=FALSE;
+
+    result = cgiFormStringNoNewlines("usrcode", userCode, MAXSIZE_USERCODE);
+    if(result != cgiFormSuccess || userCode == NULL) {
+	return -1;
+    }
+
+    result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
+    if(result != cgiFormSuccess || userName == NULL) {
+	return -1;
+    }
+
+    result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
+    if(result != cgiFormSuccess || userEmail == NULL) {
+	return -1;
+    }
+    
+    result = cgiFormCheckboxSingle("islib");
+    if(result != cgiFormSuccess) {
+	isLib=FALSE;
+    }
+    else {
+	isLib=TRUE;
+    }
+
+    newUserid=addUser(userCode, userName, userEmail, isLib);
+    if(newUserid < 0) {
+	return -1;
+    }
+    return newUserid;
 }
 
 static void printAddForm(void) {
-  fprintf(cgiOut, "<form method=\"post\" action=\"./\">\n");
+  fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
   fprintf(cgiOut, "<table>\n");
   fprintf(cgiOut, "<tbody>\n");
   fprintf(cgiOut, "  <tr class=\"hidden\">\n");
@@ -263,5 +297,6 @@ void printSpecificUser(int userid) {
 
     fprintf(cgiOut, "<hr />\n");
 
+    fprintf(cgiOut, "You have <b>%d</b> albums on loan<br />\n", getLoansByUserCount(userid));
     fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&amp;hash=%d\">View users borrowing history</a>\n", userid, _currUserLogon);
 }

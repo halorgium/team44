@@ -827,3 +827,17 @@ int getLoansByAlbumCount(int idNumber) {
   return size;
 }
 
+int setLoanReturned(int idNumber, int timeOut) {
+    loanNode_t *a;
+
+    a=getLoan(idNumber);
+
+    if(a == NULL) {
+	return E_NOLOAN;
+    }
+
+    a->isReturned = TRUE;
+    a->timeStampOut = timeOut;
+
+    return 1;
+}

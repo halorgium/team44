@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "cgic.h"
 #include "globals.h"
@@ -14,4 +15,12 @@ void userLink(int userid, const char *content,  FILE *output) {
   else {
     fprintf(output, "%s", content);
   }
+}
+
+void printTime(long thectime, FILE *output) {
+    if(thectime == -1) {
+	fprintf(output, "unknown time");
+	return;
+    }
+    fprintf(output, "%s", ctime(&thectime));
 }

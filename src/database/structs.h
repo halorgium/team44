@@ -68,8 +68,8 @@ typedef struct loanNode{
     int ID;
     int albumID;
     int userID;
-    int timeStampIn;
-    int timeStampOut;
+    long timeStampIn;
+    long timeStampOut;
     Boolean isReturned;
     
     struct loanNode *next;

@@ -13,7 +13,8 @@ int saveUserComment(int ID, int userID, int owner, const char *body);
 int saveAlbumComment(int ID, int albumID, int owner, const char *body);
 int saveArtistComment(int ID, int artistID, int owner, const char *body);
 
-int saveLoan(int ID, int albumID, int userID, int timeIn, int timeOut, Boolean isReturned);
+int saveLoan(int ID, int albumID, int userID, long timeIn);
+int saveLoanReturned(int loanID, long timeOut);
 
 int saveLine(FILE *file, char *line);
 
