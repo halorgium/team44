@@ -1,0 +1,4 @@
+#!/bin/sh
+F=`id -nu`;
+echo "adding pass for "$F;
+htpasswd -d .htpasswd $F
