@@ -7,6 +7,6 @@
 
 void printNews() {
   fprintf(cgiOut, "<ul>\n");
-  fprintf(cgiOut, "  <li>Something happened today</li>\n");
+  fprintf(cgiOut, "  <li>It has been discovered that Jeremy has a small penis</li>\n");
   fprintf(cgiOut, "</ul>\n");
 }
