@@ -3,7 +3,7 @@ CC=gcc
 AR=ar
 LIBS=-L./ -lcgic
 
-INSTALL_DIR=~/public_html/testweb
+INSTALL_DIR=$(HOME)/public_html/testweb
 
 all: libcgic.a ../bin/cgictest.cgi ../bin/capture.cgi
 
@@ -20,10 +20,10 @@ libcgic.a: cgic.o cgic.h
 	gcc capture.o -o ../bin/capture.cgi ${LIBS}
 
 install: 
-	rm -fr ${INSTALL_DIR}
-	cp -r ../html ${INSTALL_DIR}
-	cp ../bin/* ${INSTALL_DIR}
-	chmod -R o+rX ${INSTALL_DIR}
+	rm -fr $(INSTALL_DIR)
+	cp -r ../html $(INSTALL_DIR)
+	cp ../bin/* $(INSTALL_DIR)
+	chmod -R o+rX $(INSTALL_DIR)
 
 clean:
 	rm -f *.o *.a ../bin/cgictest ../bin/capture
