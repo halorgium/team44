@@ -527,7 +527,7 @@ static void printHeader(FILE * output)
     fprintf(output, "<td id=\"header\" colspan=\"2\">\n");
     fprintf(output, "<!-- Start Header -->\n");
     fprintf(output,
-            "  <div id=\"maintitle\"><img src=\"logo.png\" width=\"321\" height=\"188\" alt=\"Team44 Music Library\" /></div>\n");
+            "  <div id=\"maintitle\"><img src=\"logo.png\" width=\"398\" height=\"140\" alt=\"Team44 Music Library\" /></div>\n");
     fprintf(output, "<!-- End Header -->\n");
     fprintf(output, "</td>\n");
     fprintf(output, "  </tr>\n");
