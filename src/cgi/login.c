@@ -26,22 +26,26 @@
  * output stream
  */
 
-void printLogin() {
-  fprintf(cgiOut, "<table style=\"width:100%%; text-align: center;\">\n");
-  fprintf(cgiOut, "<tr>\n");
-  fprintf(cgiOut, "<td>\n");
-  fprintf(cgiOut, "<p>Please login to use the Music Library</p>\n");
-  fprintf(cgiOut, "\n");
-  fprintf(cgiOut, "<form method=\"get\" action=\"./?page=home\">\n");
-  fprintf(cgiOut, "<p>\n");
-  fprintf(cgiOut, "<input type=\"hidden\" name=\"dologin\" value=\"1\" />\n");
-  fprintf(cgiOut, "<label for=\"usercode\" title=\"User Code\"><u>U</u>ser Code: </label>\n");
-  fprintf(cgiOut, "<input type=\"text\" id=\"usercode\" name=\"usercode\" value=\"\" size=\"%d\" maxlength=\"%d\" tabindex=\"1\" accesskey=\"u\" />\n", MAXLEN_USERCODE, MAXLEN_USERCODE);
-  fprintf(cgiOut, "<input type=\"submit\" value=\"Login\" />\n");
-  fprintf(cgiOut, "</p>\n");
-  fprintf(cgiOut, "</form>\n");
-  fprintf(cgiOut, "</td>\n");
-  fprintf(cgiOut, "</tr>\n");
-  fprintf(cgiOut, "</table>\n");
+void printLogin()
+{
+    fprintf(cgiOut, "<table style=\"width:100%%; text-align: center;\">\n");
+    fprintf(cgiOut, "<tr>\n");
+    fprintf(cgiOut, "<td>\n");
+    fprintf(cgiOut, "<p>Please login to use the Music Library</p>\n");
+    fprintf(cgiOut, "\n");
+    fprintf(cgiOut, "<form method=\"get\" action=\"./?page=home\">\n");
+    fprintf(cgiOut, "<p>\n");
+    fprintf(cgiOut,
+            "<input type=\"hidden\" name=\"dologin\" value=\"1\" />\n");
+    fprintf(cgiOut,
+            "<label for=\"usercode\" title=\"User Code\"><u>U</u>ser Code: </label>\n");
+    fprintf(cgiOut,
+            "<input type=\"text\" id=\"usercode\" name=\"usercode\" value=\"\" size=\"%d\" maxlength=\"%d\" tabindex=\"1\" accesskey=\"u\" />\n",
+            MAXLEN_USERCODE, MAXLEN_USERCODE);
+    fprintf(cgiOut, "<input type=\"submit\" value=\"Login\" />\n");
+    fprintf(cgiOut, "</p>\n");
+    fprintf(cgiOut, "</form>\n");
+    fprintf(cgiOut, "</td>\n");
+    fprintf(cgiOut, "</tr>\n");
+    fprintf(cgiOut, "</table>\n");
 }
-

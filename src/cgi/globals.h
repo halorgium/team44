@@ -7,6 +7,7 @@
 /* This variable holds the userid of the currently logged in user */
 int _currUserLogon;
 
+/* This enum identifies the current page */
 typedef enum {
     PAGE_UNKNOWN=-1, 
     PAGE_LOGIN,
@@ -21,11 +22,15 @@ typedef enum {
     PAGE_HOME
 } pageName_t;
 
+/* This enum identifies the function of the page */
 typedef enum {
     FUNC_UNKNOWN=-1,
-    FUNC_ADD,
-    FUNC_RETURN,
-    FUNC_VIEW
+    FUNC_ADD, /* Adding an entity */
+    FUNC_BORROW, /* Borrowing an album */
+    FUNC_RETURN, /* Returning an album */
+    FUNC_CURRLOAN, /* Viewing current user loans */
+    FUNC_PREVLOAN, /* Viewing previous user loans */
+    FUNC_VIEW /* View some entities */
 } funcName_t;
 
 void userLink(char *extra, int userid, const char *content, FILE *output);
