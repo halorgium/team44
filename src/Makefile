@@ -77,6 +77,7 @@ install: install-cgi
 install-cgi: $(CGI_FILES)
 #	mkdir $(INSTALL_DIR)
 	cp $(CGI_FILES) $(INSTALL_DIR)
+	chmod -R u+rw $(INSTALL_DIR)
 	chmod -R o+rX $(INSTALL_DIR)
 
 install-db: $(DB_FILES)
