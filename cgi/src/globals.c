@@ -14,8 +14,11 @@ void echoFile(FILE *input, FILE *output) {
     char buffer[80];
 
     while(!feof(input)) {
+	buffer[0]='\0';
 	fgets(buffer, 80, input);
-	fprintf(output, buffer);
+	if(buffer[0]!='\0') {
+	    fprintf(output, buffer);
+	}
     }
 }
 

@@ -28,10 +28,6 @@ int cgiMain() {
     
     result = cgiFormStringNoNewlines("user", userCode, MAXSIZE_USERCODE);
     if(result != cgiFormSuccess) {
-	FILE *stdlinks;
-	stdlinks=fopen(HTML_SRC_ROOT"/.shared/links_std.info", "r");
-	printLinks(stdlinks, cgiOut);
-
         /* No user, now do the login page */
 	printLogin();
     }
