@@ -1,4 +1,7 @@
 #!/bin/sh
+
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.3 2003/05/08 21:38:12 tsm20 Exp $
+
 cd /home/cosc/student/tsm20/team44clean/casestudy/
 rm -fr /home/cosc/student/tsm20/team44clean/casestudy/*
 cvs -d /home/cosc/student/tsm20/team44cvs/ export -r HEAD -d /home/cosc/student/tsm20/team44clean/casestudy/ casestudy
