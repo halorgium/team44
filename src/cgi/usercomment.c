@@ -240,6 +240,7 @@ static void printAllUserCommentsByUser(int userid) {
 	free(allUserComments);
     }
 
+    fprintf(cgiOut, "<hr /><a href=\"./?page=usercomment&amp;userid=%d&amp;hash=%d\">Back to User Comments page</a>\n", userid, _currUserLogon);
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
@@ -290,6 +291,7 @@ static void printAllUserCommentsForUser(int userid) {
 	free(allUserComments);
     }
 
+    fprintf(cgiOut, "<hr /><a href=\"./?page=usercomment&amp;userid=%d&amp;hash=%d\">Back to User Comments page</a>\n", userid, _currUserLogon);
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
