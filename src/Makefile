@@ -1,6 +1,6 @@
 CC=gcc
 AR=ar
-CFLAGS=-g -ansi -Wall -pedantic
+CFLAGS=-ansi -Wall -pedantic
 LIBS=-Lcgi/ -lcgic -lm
 
 CGI_OBJS=cgi/cgic.o cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/album.o cgi/artist.o cgi/usercomment.o cgi/albumcomment.o cgi/artistcomment.o cgi/loan.o
@@ -32,13 +32,13 @@ cgi/main.o: $(CGI_H)
 cgi/login.o: $(CGI_H)
 cgi/home.o: $(CGI_H)
 cgi/contact.o: $(CGI_H)
-cgi/user.o: $(CGI_H)
-cgi/album.o: $(CGI_H)
-cgi/artist.o: $(CGI_H)
-cgi/usercomment.o: $(CGI_H)
-cgi/albumcomment.o: $(CGI_H)
-cgi/artistcomment.o: $(CGI_H)
-cgi/loan.o: $(CGI_H)
+cgi/user.o: $(CGI_H) database/structs.h
+cgi/album.o: $(CGI_H) database/structs.h
+cgi/artist.o: $(CGI_H) database/structs.h
+cgi/usercomment.o: $(CGI_H) database/structs.h
+cgi/albumcomment.o: $(CGI_H) database/structs.h
+cgi/artistcomment.o: $(CGI_H) database/structs.h
+cgi/loan.o: $(CGI_H) database/structs.h
 
 cgi/globals.h: shared/defines.h shared/lib.h
 
