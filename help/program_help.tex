@@ -26,11 +26,17 @@ The MusicLib program is divided up into two main layers;
 Some files are used by both the Database and the CGI layer, these are located in the directory named ``shared''.
 
 All the web pages are Xhtml 1.0 compliant visit ``http://w3.org'' for more details.
-
+\begin{figure}
+\begin{center}
+\epsfig{file=ER-Diagram.pdf}
+\caption{A figure showing the basic relationships between different entities in the database.}
+\label{Fig1}
+\end{center}
+\end{figure}
 %put the ER diagram hereish
 \section{Data Structures}
 There are many different data structures used to store data within the MusicLib program. Typically for each type of entity that is stored in the database there is one structure associated with holding the data, it is known as a \verb|node|. For example, to hold information about a loan, a \verb|loanNode| is used.
-Each type of node is stored in a linked list with other nodes of its type. This section will go through the various nodes and mention the different fields within each one.
+Each type of node is stored in a linked list with other nodes of its type. This section will go through the various nodes and mention the different fields within each one. See Figure \ref{Fig1} for more details.
 \subsection{Generic Node Information}
 Each Node has a Unique ID value, this is dynamically allocated to it upon creation and remains with it until the database is erased. All nodes  also contain a link to the next node of the same type, as data is accessed and stored within a linked list structure. 
 \subsection{Artist, Album and User Nodes}

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.4 2003/09/28 22:15:51 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.5 2003/09/29 09:36:48 djb142 Exp $
 
 CLEANOUT="releases"
    CVSIN=`cat CVS/Root`
@@ -25,11 +25,12 @@ rm -fr $CLEANDIR || exit
 mkdir $CLEANDIR || exit
 
 cp $MODULE/do_install.sh $CLEANDIR || exit
-cp $MODULE/main_vars $CLEANDIR || exit
+cp $MODULE/main_vars.in $CLEANDIR || exit
 cp $MODULE/Makefile $CLEANDIR || exit
 cp -r $MODULE/src  $CLEANDIR || exit
 mkdir $CLEANDIR/help
 cp $MODULE/help/Makefile $CLEANDIR/help || exit
+cp $MODULE/help/.htaccess $CLEANDIR/help || exit
 cp $MODULE/help/*.tex $CLEANDIR/help || exit
 cp $MODULE/help/*.pdf $CLEANDIR/help || exit
 cp -r $MODULE/help/usr_help $CLEANDIR/help || exit

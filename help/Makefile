@@ -3,6 +3,7 @@ all: help
 help: programmers assumptions users
 
 programmers: program_help.tex
+	epstopdf ER-Diagram.eps
 	pdflatex program_help.tex
 	pdflatex program_help.tex
 

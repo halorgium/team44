@@ -1,0 +1,60 @@
+
+  Team 44 Music Library Installation
+
+  Quick Start - Unix
+  ------------------
+
+  Installation of the system requires a ANSI C compiler. 
+
+  $ ./configure PREFIX
+      [ Replace PREFIX with the directory 
+        within ${HOME}/public_html that 
+        the application should be installed; 
+        Please note if prefix argument is 
+        omitted, the install will default 
+        to the 'musiclib' directory ]
+  $ make
+  $ make install
+
+  After the preceding command have been executed successfully, 
+  the Music Library should be accessible through a web browser. 
+  The URL will be similar to http://{HOST}/~{USER}/{PREFIX}/
+    For example: 
+    If the web application was installed by a user 'foobar' by 
+    executing the following commands: 
+
+     $ ./configure mylibrary
+     $ make
+     $ make install
+
+     The web application would be installed into: 
+       ${HOME}/public_html/mylibrary
+     where ${HOME} is the users home directory. 
+
+     If the web server providing the user's web pages was named 
+     'wibble', then the web application would be accessible using 
+     the URL: 
+       http://wibble/~foobar/mylibrary/
+
+  Quick Start - Windows
+  ---------------------
+
+  Please note the following: 
+    o This application should not under any circumstances be 
+      run, let alone installed on a Windows-based operating 
+      system. 
+
+    o Use of a Windows-based operating system can cause blindness 
+      in your left eye. This is due to the excessive slowness of the 
+      operating system. The Blue Screen of Death (BSOD) is another 
+      common cause of eye injury and has caused emotional and 
+      psychological damage in users across the globe. 
+
+   Any attempt to install this application on a Windows-based 
+   operating system is NOT supported NOR authorised by the developers. 
+
+   If any indication of violation of the above statement is received 
+   by the developers (either first-hand or nth-hand), you _may_ be 
+   subjected to extended exposure to the Mirco$oft Paper-Clip. 
+
+

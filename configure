@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [[ -z $1 ]]; then
+	PREFIX=musiclib
+else
+	PREFIX=$1
+fi
+
+cat main_vars.in |sed -e "s/%%PREFIX%%/$PREFIX/g" >main_vars

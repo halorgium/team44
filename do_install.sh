@@ -73,6 +73,12 @@ cp $DB_FILES $DB_INSTALL_DIR 2>&1 >/dev/null || (echo " error copying db files" 
 chmod u+rw $DB_INSTALL_DIR/* 2>&1 >/dev/null 
 chmod -R og-rwx $DB_INSTALL_DIR 2>&1 >/dev/null 
 
+# copy and chmod help files
+echo " Copying and chmoding help files" >&2
+cp -r help/usr_help $INSTALL_DIR/help 2>&1 >/dev/null || (echo " error copying help files" >&2 && exit 3)
+cp help/.htaccess $INSTALL_DIR/help 2>&1 >/dev/null || (echo " error copying help files" >&2 && exit 3)
+chmod -R o+rX $INSTALL_DIR/help
+
 # loop towards / from $INSTALL_DIR
 echo " Recursively chmod..." >&2
 TMP_DIR=$INSTALL_DIR 

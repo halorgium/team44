@@ -1,11 +1,62 @@
-This is the cosc204 casestudy project completed by tsm20, ejs73, jbk20, djb142.
-We hope you like our work.
+                         Team 44 Music Library
 
+  What is it?
+  -----------
 
-Instructions:
+  The Team 44 Music Library is a powerful web application. It provides 
+  an easy-to-use interface for the management of a music library system. 
+  The developers are committed to offering the best and most user-friendly 
+  product for the lowest cost (for free!). 
 
-1. Type 'make' in the casestudy directory. This will compile all the nessasary files.
+  Documentation
+  -------------
 
-2. Type 'make install' this will install casestudy. Making it ready to use.
+  Documentation for this application is available online through the 
+  web site. An additional programmer's guide is available in the help/ 
+  dir. 
 
-Now you can access this music library through the linux1 server.
+  Installation
+  ------------
+
+  For installation instructions, please refer to the file called 'INSTALL'. 
+
+  Contact
+  -------
+
+  The developers of this application are: 
+
+    o Tim Carey-Smith
+      Chief Programmer
+      tsm20@student.canterbury.ac.nz
+
+    o Jeremy King
+      CGI Guru
+      jbk20@student.canterbury.ac.nz
+
+    o Eden Sinclair
+      Database Extraordinaire
+      ejs73@student.canterbury.ac.nz
+
+    o Daniel Bakker
+      Documenter
+      djb142@student.canterbury.ac.nz
+
+  Acknowledgments
+  ---------------
+
+  The developers would like to acknowledge the help of many people. 
+  Some of those wonderful people are: 
+    o God
+      For giving us DNA as the 'perfect' code. 
+
+    o Cosc204 Lab Tutors
+      For the hours of sacrificed time. 
+
+    o Family and Friends
+      For stress-testing the web application and finding many errors
+      and HCI issues. 
+
+    o Cosc Linux Programmers
+      For keeping linux1 online and running while us students run our 
+      CGI applications, consuming all the remaining CPU time and memory. 
+
