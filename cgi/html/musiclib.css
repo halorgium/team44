@@ -109,12 +109,9 @@ a.dirlink {
 /* Content Styles */
 /*----------------*/
 
-table#body {
-    width : 100%;
-    padding : 15px 0px 15px 0px;
-}
-
 td#bodycontent { 
+    padding : 10px 15px 10px 15px;
+    width : 100%;
     text-align : left;
     vertical-align : top;
 }

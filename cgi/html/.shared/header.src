@@ -29,5 +29,12 @@
 </td>
   </tr>
     </thead>
+    <tfoot>
+  <tr>
+<td id="footer" colspan="2">
+&#169; Team 44 2003
+</td>
+  </tr>
+    </tfoot>
     <tbody>
   <tr>
