@@ -32,50 +32,55 @@ Response packet (DB=>CGI)
 Database functions:
 -----------------------------
 
+isUserInDatabase()
+
 addUser
 getUser
 -by userid/usercode
--by name
--by email
+#-by name
+#-by email
 
 addCommentUser
 getCommentUser
--by commentid
--by ownerid
--by userid
--by title || body
+-by commentid returnj struct
+-all by ownerid  return aray of id's
+-all by userid    return aray of id's
+# -by title || body
 
 addCommentArtist
 getCommentArtist
--by commentid
--by ownerid
--by artistid
--by title || body
+-by commentid   return struct
+-all by ownerid    return id[]
+-all by artistid   return commentid[]
+#-by title || body
 
 addCommentAlbum
 getCommentAlbum
 -by commentid
--by ownerid
--by albumid
--by title || body
+-all by ownerid
+-all by albumid
+#-by title || body
 
 addArtist
 getArtist
 -by artistid
--by name
+#-by name
+-getAllArtists
 
 addAlbum
 getAlbum
 -by albumid
--by artistid
--by name
+-all by artistid
+#-by name
+-getAllAlbums
 
 addLoan
 getLoan
--by loanid
--by userid
+-by loanid return struct
+-by userid  return loanid[]
 -by albumid
--by status??
+??-by status??
+-by status and userId
 
 Database structure:
 -----------------------------
