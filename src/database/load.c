@@ -79,15 +79,11 @@ int loadAllUsers(FILE *file){
 	newUser->userName = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->userName == NULL) return E_MALLOC_FAILED;
 
-	/*get Id from file, malloc temp char which holds id*/
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
 
 	/*get isLibrarian Boolean out of file, if char ==1 (49) then true*/
-	if(((int) temp[0]) == 49) newUser->isLibrarian = TRUE;
+	if(temp[0] == '1') newUser->isLibrarian = TRUE;
 	else newUser->isLibrarian = FALSE;
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
@@ -100,9 +96,6 @@ int loadAllUsers(FILE *file){
 	
 	newUser->ID =  atoi(char2int);
 	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller*/
-	temp2 = strchr(temp, '%');
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
