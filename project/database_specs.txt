@@ -102,18 +102,21 @@ Artist:
 
 CommentUser:
 -commentid
+-timestamp
 -ownerid
 -userid
 -body
 
 CommentArtist:
 -commentid
+-timestamp
 -ownerid
 -artistid
 -body
 
 CommentAlbum:
 -commentid
+-timestamp
 -ownerid
 -albumid
 -body
