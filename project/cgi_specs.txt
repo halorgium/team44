@@ -39,6 +39,7 @@ User Stuff
 =>Add User
 =>View Users
 (With users)
+  =>view info??
+  =>view loans 
   =>View Comments
   =>Add Comment
-
