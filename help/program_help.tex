@@ -157,7 +157,21 @@ This is the main working part of the \verb|htmlEscape| function. It takes as arg
 \item[getLoansByAlbum] returns an array of returned or unreturned loans relating to the \verb|albumID| specified. 
 \item[getLoansByAlbumCount] returns the number of returned or unreturned loans relating to the album.
 \item[setLoanReturned] marks the selected loan as returned, and supplies the time that it was returned at.
-
 \end{description}
+
+\subsection{globals.h}
+This header file contains 3 different sections;
+\begin{description}
+\item[Definintions] of the different data file names that are used by the database.
+\item[Pointers] to the first node in each of the linked lists used to store every different entity in the database.
+\item[ID numbers] for each entity, these are incremented after a new object is added of that entity type.
+\end{description}
+
+\subsection{load.c}
+This file is used when the program is fist initialized, it loads all the information current stored in the database using the following methods;
+\subsubsection*{loadDatabase}
+This is the main function of this file. It sets all the first variables to Null
+and then sequentially calls the other methods in this file, loading and checking each different entity.
+\subsubsection*{loadNextID}
 
 \end{document}
