@@ -1304,6 +1304,12 @@ int *getAllLoansByStatus(int isReturned){
 
 
 
+char *getUserCodeFromID(int ID){
+
+
+}
+
+int getUserIDFromUserCode(char *userCode){}
 
 
 /*-------------------- end musiclib.c ---------------------------------*/
