@@ -63,7 +63,7 @@ int cgiMain() {
 	echoFile(linksStart, cgiOut);
 
 	fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as <b>%s</b></td>\n  </tr>\n", userCode);
-	fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\"><img src=\"images/1px.gif\" height=\"1\" width=\"1\"/></td>\n  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\"><img src=\"images/1px.gif\" height=\"1\" width=\"1\" alt=\"\" /></td>\n  </tr>\n");
 	
 	if(userType/* currUser->isLibrarian */) {
 	    FILE *thelinks;
@@ -130,7 +130,7 @@ int printLinks(FILE *input, const char *userCode, FILE *output) {
 	temp2 = strchr(temp, '%');
 
 	if(strlen(temp)-strlen(temp2) == 0) {
-	    fprintf(output, "  <tr>\n    <td class=\"spacer\"><img src=\"images/1px.gif\" height=\"3\" width=\"1\"/></td>\n  </tr>\n");
+	    fprintf(output, "  <tr>\n    <td class=\"spacer\"><img src=\"images/1px.gif\" height=\"3\" width=\"1\" alt=\"\" /></td>\n  </tr>\n");
 	    free(line);
 	    continue;
 	}
