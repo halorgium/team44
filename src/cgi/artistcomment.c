@@ -113,12 +113,14 @@ static int processAddForm(void) {
 static void printAddForm(int artistid) {
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
+    fprintf(cgiOut, "<tbody>\n");
+    fprintf(cgiOut, "  <tr><td>\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"artistcomment\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"artid\" value=\"%d\" />\n", artistid);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
-    fprintf(cgiOut, "<tbody>\n");
+    fprintf(cgiOut, "  </td></tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label title=\"Artist Title\">Artist Title: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
