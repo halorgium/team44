@@ -76,7 +76,7 @@ void printContact(void) {
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">\n");
-  fprintf(cgiOut, "      <label title=\"Position\">Fixer of Dans lies</label>\n");
+  fprintf(cgiOut, "      <label title=\"Position\">Needs The Health Clinic</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "    <td>");
   fprintf(cgiOut, "    </td>\n");
@@ -127,12 +127,12 @@ void printContact(void) {
   fprintf(cgiOut, "<tbody>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">\n");
-  fprintf(cgiOut, "      <label title=\"Name\">Daniel &quot;Enjoys the company of horses&quot; Bakker</label>\n");
+  fprintf(cgiOut, "      <label title=\"Name\">Daniel &quot;Enjoys Life&quot; Bakker</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">  \n");
-  fprintf(cgiOut, "      <label title=\"Position\">Slight Anal Problems(must be those dang horses!)</label>\n");
+  fprintf(cgiOut, "      <label title=\"Position\">On Top Of The World</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "    <td>");
   fprintf(cgiOut, "    </td>\n");
