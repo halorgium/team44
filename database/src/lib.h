@@ -1,7 +1,9 @@
 #ifndef _LIB_H_
 #define _LIB_H_ 2
 
+#include <stdio.h>
 #include "../../shared/structs.h"
+
 #define SOURCE_LOCATION "../var/"
 #define ALBUMS_FILE_NAME "albums"
 #define ARTISTS_FILE_NAME "artists"

@@ -1,26 +1,24 @@
 CC=gcc
 CFLAGS=-g  -ansi -Wall
 AR=ar
-HFILES=lib.h ../../shared/read_line.h load.h save.h 
-CFILES=lib.c ../../shared/read_line.c load.c save.c 
-OFILES=lib.o read_line.o load.o save.o 
+#HFILES=lib.h ../../shared/read_line.h load.h save.h 
+#CFILES=lib.c ../../shared/read_line.c load.c save.c 
+OFILES=main.o lib.o load.o save.o ../../shared/read_line.o
 
-all:	lib
+all:	database
 
-lib:	$(OFILES)
+database: $(OFILES)
 	$(LINK.c) -lm -o ../bin/lib $(OFILES)
 
-lib.o: lib.c ../../shared/structs.h ../../shared/defines.h $(HFILES)
-	$(CC) $(CFLAGS) $(LDFLAGS) -c lib.c -o lib.o
+main.o: ../../shared/defines.h lib.h load.h
 
-read_line.o: ../../shared/read_line.c ../../shared/read_line.h
-	$(CC) $(CFLAGS) $(LDFLAGS) -c ../../shared/read_line.c -o read_line.o
+lib.o:  ../../shared/defines.h ../../shared/structs.h lib.h save.h
 
-load.o: load.c load.h lib.h ../../shared/read_line.h
-	$(CC) $(CFLAGS) $(LDFLAGS) -c load.c -o load.o
+load.o: ../../shared/defines.h ../../shared/structs.h ../../shared/read_line.h lib.h load.h
 
-save.o: save.c lib.h save.h ../../shared/defines.h
-	$(CC) $(CFLAGS) -c save.c -o save.o
+save.o: ../../shared/defines.h lib.h save.h
+
+../../shared/read_line.o: ../../shared/read_line.h
 
 clean:
-	rm  ../bin/lib *.o
+	rm -f  *.o ../bin/database

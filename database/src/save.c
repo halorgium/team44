@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include "../../shared/defines.h"
 #include "lib.h"
 #include "save.h"
-#include "../../shared/defines.h"
 
 /*functions dealing with saving database to disk*/
 /* int saveDatabase(void){} */

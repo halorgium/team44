@@ -4,11 +4,19 @@
 
 #include "../../shared/defines.h"
 #include "../../shared/structs.h"
-#include "lib.h"
 #include "../../shared/read_line.h"
+#include "lib.h"
 #include "load.h"
 
-
+int loadAllUsers(FILE *f);
+/*int loadAlbum(const int ID);*/
+int loadAllArtists(FILE *f);
+int loadAllAlbums(FILE *f);
+int loadAllLoans(FILE *f);
+/*int loadLoan(const int ID);*/
+int loadAlbumComments(FILE *f);
+int loadArtistComments(FILE *f);
+int loadUserComments(FILE *f);
 
 /* ALL LOAD operations are performed only at initilisation*/
 int  loadDatabase(){
