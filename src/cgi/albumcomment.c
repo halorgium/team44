@@ -252,7 +252,7 @@ static void printAllAlbumCommentsForAlbum(int albumid) {
 	    while (curr_id != LAST_ID_IN_ARRAY) {
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-		fprintf(cgiOut, "<a class=\"topper\" href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", getAlbumCommentOwner(curr_id), _currUserLogon, getUserName(getAlbumCommentOwner(curr_id)));
+		userLink(getAlbumCommentOwner(curr_id), getUserName(getAlbumCommentOwner(curr_id)), cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
