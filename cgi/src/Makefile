@@ -2,9 +2,9 @@ CFLAGS=-Wall -ansi -pedantic
 CC=gcc
 AR=ar
 OBJS=globals.o main.o login.o home.o contact.o user.o artist.o album.o loan.o news.o ../../shared/read_line.o tester.o
-LIBS=-L./ -lcgic
 
-INSTALL_DIR=$(HOME)/public_html/testweb
+
+
 
 all: ../bin/index.cgi
 
