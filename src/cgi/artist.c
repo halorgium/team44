@@ -228,10 +228,6 @@ void printSpecificArtist(int artistid) {
     fprintf(cgiOut, "</table>\n");
     fprintf(cgiOut, "<hr />\n");
 
-    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;artistid=%d&amp;hash=%d\">View Comments written about Artist</a>\n", artistid, _currUserLogon);
-    fprintf(cgiOut, "<br /><a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">Add Comment about this Artist</a>\n", artistid, _currUserLogon);
-
-    fprintf(cgiOut, "<hr />\n");
     {
 	/* list all albums by this artist */
 	int *allAlbums=NULL;
@@ -294,4 +290,10 @@ void printSpecificArtist(int artistid) {
 	    free(allAlbums);
 	}
     }
+    
+    fprintf(cgiOut, "<hr />\n");
+    
+    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;artistid=%d&amp;hash=%d\">View Comments written about Artist (%d)</a>\n", artistid, _currUserLogon, getArtistCommentsForArtistCount(artistid));
+    fprintf(cgiOut, "<br /><a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">Add Comment about this Artist</a>\n", artistid, _currUserLogon);
+
 }

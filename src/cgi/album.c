@@ -328,6 +328,6 @@ static void printSpecificAlbum(int albumid) {
 
     fprintf(cgiOut, "<hr />\n");
 
-    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;albumid=%d&amp;hash=%d\">View Comments written about Album</a>\n", albumid, _currUserLogon);
+    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;albumid=%d&amp;hash=%d\">View Comments written about Album (%d)</a>\n", albumid, _currUserLogon, getAlbumCommentsForAlbumCount(albumid));
     fprintf(cgiOut, "<br /><a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">Add Comment about this Album</a>\n", albumid, _currUserLogon);
 }
