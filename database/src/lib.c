@@ -28,7 +28,42 @@
 
 
 
-int addArtist(const char *name){}
+int addArtist(const char *name){
+    
+    artistNode_t *newArtistNode = NULL;
+    
+    /*checks whether argument pointers are NULL */
+    if(name == NULL){
+	return E_INVALID_PARAM;
+    }
+    
+    /*allocates memory for new Artist*/
+    newArtistNode = (artistNode_t*) malloc(sizeof(artistNode_t));
+    if(newArtistNode == NULL){        /*malloc failure test*/
+	return E_MALLOC_FAILED;
+    }
+    
+    /*allocates memory for the Artist's title*/
+    newArtistNode->name =(char*) malloc(sizeof(char) *(strlen(name)+1));
+    if(newArtistNode->name == NULL){    /*pointer is null - malloc failure*/
+	free(newArtistNode);
+	return E_MALLOC_FAILED;	
+    }
+    
+    
+    /*copy the param string into the newArtist*/
+    strcpy(newArtistNode->name, name);
+    /* artist is being created for first time - unique id should be created*/
+    newArtistNode->ID = nextArtistID;  /*this needs changing*/
+    
+    newArtistNode->next = firstArtist;   /*insert at front of list*/
+    firstArtist = newArtistNode;
+
+    /*created in memory so now needs to be saved*/
+    if(saveArtist(title, artistID, newArtistNode->ID)==0) return SAVE_FAILURE;
+    
+    return nextArtistID++;    /*return id then increment  CHANGE*/
+}/*end addArtist()*/
 
 
 
