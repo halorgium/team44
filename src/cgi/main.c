@@ -406,6 +406,8 @@ static void printLinks(FILE * output)
             "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=contact&amp;hash=%d\">Contact&nbsp;Us</a></td>\n  </tr>\n",
             _currUserLogon);
     fprintf(output,
+            "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./help/index.html\">Help!</a></td>\n  </tr>\n");
+    fprintf(output,
             "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=logout\">Logout</a></td>\n  </tr>\n");
     fprintf(output,
             "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
