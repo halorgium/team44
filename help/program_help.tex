@@ -64,7 +64,7 @@ This function is complimentary to the addLoan function, it takes a \verb|loanID|
 This file contains all the get functions for the various structures within the database. Also it has functions to convert special characters to their corresponding html entities.
 
 \subsubsection*{htmlEscape}
-This is the function that converts text values to their proper html syntax, values that are converted are \verb| & `` < > |. Various C functions are used in this process including \verb|malloc (3), strncpy (3), strlen(3)|. Also the function \verb|replaceChar| is used. This is explained in the next section. This function is called everytime an item of information is requested from the database, making each displayable by the cgi function calls.
+This is the function that converts text values to their proper html syntax, values that are converted are \verb| & `` < > |. Various C functions are used in this process including \verb|malloc (3)|, \verb|strncpy (3)|, \verb|strlen(3)|. Also the function \verb|replaceChar| is used. This is explained in the next section. This function is called everytime an item of information is requested from the database, making each displayable by the cgi function calls.
 
 \subsubsection*{replaceChar}
 This is the main working part of the \verb|htmlEscape| function. It takes as arguments; the \verb|data| to be searched through, the character to be replaced (\verb|replacee|) and the html string to replace it with (\verb|replacment|).The function then searches through the \verb|data| replacing all instances of the \verb|replacee| character with the \verb|replacement| string.
