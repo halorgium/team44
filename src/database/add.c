@@ -20,7 +20,7 @@ static long getctime(void) {
     return tv->tv_sec;
 }
 
-static int checkString(char *string) {
+static int checkString(const char *string) {
   if(string == NULL) {
     return -1;
   }
@@ -52,7 +52,7 @@ static int checkString(char *string) {
  * 
  * Blank user names and emails are allowed to be added 
  */
-int addUser(/* const  */char *userCode, const char* name, const char* email, Boolean isLib){
+int addUser(const char *userCode, const char* name, const char* email, Boolean isLib){
   userNode_t *newUserNode = NULL;
 
   /* check for char * params*/
