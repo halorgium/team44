@@ -3,7 +3,7 @@
 <td>
 <p>Please login to use the Music Library</p>
 
-<form method="post" action="./?page=login">
+<form method="get" action="./?page=home">
 <p>
 <label for="userCode" title="User Code">User Code: </label>
 <input type="text" id="userCode" name="user" value="" maxlength="16" />

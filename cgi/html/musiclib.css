@@ -12,6 +12,7 @@ a:hover {
 }
 
 body, td {
+    vertical-align : top;
     font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
 }
 
@@ -22,55 +23,70 @@ body {
     background : #FFFFFF;
 }
 
+/* Container Styles */
+/*------------------*/
+
+table#container { 
+    width : 100%;
+    height : 100%;
+}
+
+tr#topspacera { 
+    height: 0px;
+    font-size: 0px;
+}
+
+td#topspacerb { 
+    font-size : 0px;
+    background : #C0C0C0;
+}
+
 /* Header Styles */
 /*---------------*/
 
-div#header {
-    padding: 10px 20px 5px 20px;
-    font-size: 14px;
+td#header { 
+    height : 0px;
+    text-align : center;
+    vertical-align : middle;
+}
+
+div#hiddenlink { 
+    display: none;
 }
 
 table#header {
+    padding: 10px 20px 5px 20px;
+    font-size: 28px;
     width : 100%;
     color : #000000;
     background : #FFFFFF;
     margin : 0px 0px 0px 0px;
 }
 
-td#title {
+div#maintitle {
     font-size : 40px;
-    vertical-align : middle;
-}
-
-td#stay {
     text-align : center;
+    vertical-align : middle;
 }
 
 /* Links Styles */  
 /*--------------*/
 
-div.links {
-    font-size : 14px;
-    padding : 10px 20px 15px 20px;
-    color : #FFFFFF;
-    background : #6699FF;
-}
-
 table.links {
-    width : 100%;
+    padding : 10px 20px 15px 20px;
+    font-size : 14px;
     color : #FFFFFF;
     background : #6699FF;
 }
 
-a.linkoff {
+td.link { 
     color : #FFFF33;
     background : #6699FF;
-    text-decoration : none;
 }
 
-a.linkon {
-    color : #000000;
-    background : #FFFFFF;
+a.buttonref {
+    color : #FFFF33;
+    background : #6699FF;
     text-decoration : none;
 }
 
@@ -93,14 +109,20 @@ a.dirlink {
 /* Content Styles */
 /*----------------*/
 
-div#content {
+table#body {
+    width : 100%;
     padding : 15px 0px 15px 0px;
+}
+
+td#bodycontent { 
+    text-align : left;
+    vertical-align : top;
 }
 
 /* Footer Styles */
 /*---------------*/
 
-div#footer {
+td#footer {
     border-top : 1px solid #00CC00;
     border-bottom : 1px solid #00CC00;
     background : #CCFFCC;
@@ -110,15 +132,3 @@ div#footer {
     padding : 10px 0px 10px 0px;
 }
 
-/* Expander Styles */
-/*******************/
-
-a.expandToggle:link, a.expandToggle:visited {
-    text-decoration:none;
-/*    cursor: help;*/
-}
-div.expand {
-/*    display : none;*/
-    cursor: text;  
-    padding : 0px 140px 8px 27px;    
-}

@@ -6,7 +6,7 @@
 #include "../../shared/structs.h"
 #include "../../shared/defines.h"
 
-void openFile(FILE *toset, const char* name) {
+void openFile(FILE *toset, const char *name) {
     toset=fopen(name, "r");
 }
 
@@ -22,6 +22,6 @@ void echoFile(FILE *input, FILE *output) {
     }
 }
 
-void printLink(const char *href, const char* title, FILE *output) {
-    fprintf(output, "    <td class=\"link\"><a class=\"buttonref\" href=\"%s\">%s</a></td>\n", href, title);
+void printLink(const char *href, const char *title, const char *userCode, FILE *output) {
+    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;user=%s\">%s</a></td>\n  </tr>\n", href, userCode, title);
 }

@@ -7,10 +7,11 @@
 
 void openFile(FILE *toecho, const char *name);
 void echoFile(FILE *input, FILE *output);
-void printLink(const char *href, const char* title, FILE *output);
+void printLink(const char *href, const char* title, const char *userCode, FILE *output);
 
 void printLogin();
 void printHome();
+void printNews();
 void printUser();
 
 #endif

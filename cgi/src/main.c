@@ -6,13 +6,16 @@
 #include "globals.h"
 #include "../../shared/structs.h"
 #include "../../shared/defines.h"
+#include "../../shared/read_line.h"
 
-void printLinks();
+int  printLinks();
 void printHeader();
 void printFooter();
 
 int cgiMain() {
     int result=0;
+
+    Boolean links=TRUE;
     
     char userCode[MAXSIZE_USERCODE]={'\0'};
     char pageName[MAXSIZE_PAGENAME]={'\0'};
@@ -22,62 +25,128 @@ int cgiMain() {
     cgiReadEnvironment("/home/boutell/public_html/capcgi.dat");
 #endif
 
+    /* Start outputting the header */
+    
     printHeader();
-
+    
     /* At this point we start the dynamic content, error page may be shown */
     
     result = cgiFormStringNoNewlines("user", userCode, MAXSIZE_USERCODE);
     if(result != cgiFormSuccess) {
-        /* No user, now do the login page */
-	printLogin();
+	strcpy(pageName, "login");
+	links=FALSE;
     }
     else {
 	/* Open net conns */
 	/* Check & get user */
 	/* Make sure logged in */
-
-	result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
+        result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
 	if(result != cgiFormSuccess) {
 	    strcpy(pageName, "home");
 	}
-
-	if(pageName == "logout") {
+	
+	if(strncmp(pageName, "logout", MAXSIZE_PAGENAME) == 0) {
 	    /* Set user to be inactive in mem on DB */
-	    printLogin();
-	}
-	else {
-	    FILE *stdlinks;
-	    stdlinks=fopen(HTML_SRC_ROOT"/.shared/links_std.info", "r");
-	    printLinks(stdlinks, cgiOut);
-
-	    if(FALSE/* currUser->isLibrarian */) {
-		FILE *liblinks;
-		liblinks=fopen(HTML_SRC_ROOT"/.shared/links_lib.info", "r");
-		printLinks(liblinks, cgiOut);
-	    }
-
-	    if(pageName == "home") {
-		printHome();
-	    }
+	    strcpy(pageName, "login");
+	    links=FALSE;
 	}
     }
 
+    /* If links are neccessary print them */
+    if(links) {
+	FILE *linksStart;
+	FILE *linksEnd;
+
+        Boolean userType=(strncmp(userCode, "admin", MAXSIZE_USERCODE) == 0) ? TRUE : FALSE;
+	
+	linksStart=fopen(HTML_SRC_ROOT"/.shared/links_s.src", "r");
+	echoFile(linksStart, cgiOut);
+
+	if(userType/* currUser->isLibrarian */) {
+	    FILE *thelinks;
+	    
+	    thelinks=fopen(HTML_SRC_ROOT"/.shared/links_lib.info", "r");
+	    printLinks(thelinks, userCode, cgiOut);
+	}
+	else {
+	    FILE *thelinks;
+	    
+	    thelinks=fopen(HTML_SRC_ROOT"/.shared/links_std.info", "r");
+	    printLinks(thelinks, userCode, cgiOut);
+	}
+	
+	linksEnd=fopen(HTML_SRC_ROOT"/.shared/links_e.src", "r");
+	echoFile(linksEnd, cgiOut);
+    }
+
+    {
+	/* Start outputting the body */
+	FILE *bodyStart;
+	FILE *bodyEnd;
+
+	bodyStart=fopen(HTML_SRC_ROOT"/.shared/body_s.src", "r");
+	echoFile(bodyStart, cgiOut);
+
+	if(strncmp(pageName, "home", MAXSIZE_PAGENAME) == 0) {
+	    printHome();
+	}
+	else if(strncmp(pageName, "login", MAXSIZE_PAGENAME) == 0) {
+	    printLogin();
+	}
+	else if(strncmp(pageName, "news", MAXSIZE_PAGENAME) == 0) {
+	    printNews();
+	}
+	else if(strncmp(pageName, "user", MAXSIZE_PAGENAME) == 0) {
+	    /* Something about a user */
+	    printUser();
+	}
+
+	bodyEnd=fopen(HTML_SRC_ROOT"/.shared/body_e.src", "r");
+	echoFile(bodyEnd, cgiOut);
+    }
+    
+    /* Start outputting the footer */
+    
     printFooter();
     return 0;
 }
 
-void printLinks(FILE *input, FILE *output) {
-    char *href=NULL;
-    char *title=NULL;
+int printLinks(FILE *input, const char *userCode, FILE *output) {
+    char *line = NULL;
 
-    href=malloc(100*sizeof(char));
-    title=malloc(100*sizeof(char));
-    
-    while(!feof(input)) {
-	while(fscanf(input, "%s%%%s\n", &href, &title) == 2) {
-	    printLink(href, title, output);
-	}
+    while((line = readLine(input)) != NULL ){
+	char *href=NULL;
+	char *title=NULL;
+
+	char *temp = line;
+	char *temp2 = NULL;
+
+	temp2 = strchr(temp, '%');
+	
+	href = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(href == NULL) return E_MALLOC_FAILED;
+
+	strncpy(href, temp, (strlen(temp)-strlen(temp2)));
+	href[strlen(temp)-strlen(temp2)]='\0';
+	
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+
+	temp2 = strchr(temp, '%');
+	
+	title = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(title == NULL) return E_MALLOC_FAILED;
+	
+	strncpy(title, temp, (strlen(temp)-strlen(temp2)));
+	title[strlen(temp)-strlen(temp2)]='\0';
+	
+	printLink(href, title, userCode, output);
+	
+	/*free memory before reiteration*/
+	free(href);
+	free(title);
+	free(line);
     }
+    return 1;
 }
 
 void printHeader() {

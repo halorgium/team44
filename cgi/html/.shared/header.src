@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
- "http:://cosc344:31000/public/downloads/html/dtds/xhtml1-strict.dtd">
+ "http://cosc344:31000/public/downloads/html/dtds/xhtml1-strict.dtd">
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -13,14 +13,21 @@
     <!--link rel="shortcut icon" href="images/favicon.ico" /-->
   </head>
   <body>
-    <div><a href="#navskip"><img src="images/1px.gif" width="1" height="10" alt="Go to main content" style="border: 0px;" /></a></div>
-    <div id="heads">
-      <table style="border: 0px; width: 100%">
-	<tbody>
-	  <tr>
-	    <td class="header">!! Team44 Music Library !!</td>
-	  </tr>
-	</tbody>
-      </table>
-</div>
-    
+    <div id="hiddenlink"><a href="#navskip"><img src="images/1px.gif" width="1" height="10" alt="Go to main content" style="border: 0px;" /></a></div>
+    <table id="container">
+    <thead>
+  <tr>
+<td id="header" colspan="2">
+<!-- Start Header -->
+  <div id="maintitle">!! Team44 Music Library !!</div>
+<!-- End Header -->
+</td>
+  </tr>
+  <tr id="topspacera">
+<td id="topspacerb" colspan="2">
+<img src="images/1px.gif" width="1" height="4" alt="" />
+</td>
+  </tr>
+    </thead>
+    <tbody>
+  <tr>
