@@ -132,7 +132,7 @@ void printContact(void) {
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">  \n");
-  fprintf(cgiOut, "      <label title=\"Position\">Slight Anal Problems(must be those dang horses!</label>\n");
+  fprintf(cgiOut, "      <label title=\"Position\">Slight Anal Problems(must be those dang horses!)</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "    <td>");
   fprintf(cgiOut, "    </td>\n");
