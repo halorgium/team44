@@ -2,6 +2,8 @@ CGI_FILES=src/index.cgi src/musiclib.css src/1px.gif src/.htaccess src/logo.png
 DB_FILES=var/nextid var/user var/album var/artist var/usrcom var/albcom var/artcom var/loan var/loanret var/.htaccess
 
 INSTALL_DIR=$(HOME)/public_html/testweb
+DB_INSTALL_DIR=$(INSTALL_DIR)/var
+HELP_INSTALL_DIR=$(INSTALL_DIR)/help
 
 all: 
 	@(cd src; make)
@@ -19,9 +21,9 @@ install-cgi:
 	chmod -R o+rX $(INSTALL_DIR)
 
 install-db: install-cgi
-#	mkdir $(INSTALL_DIR)/var
-	cp $(DB_FILES) $(INSTALL_DIR)/var
-	chmod u+w $(INSTALL_DIR)/var/*
+#	mkdir $(DB_INSTALL_DIR)
+	cp $(DB_FILES) $(INSTALL_DIR)
+	chmod u+w $(DB_INSTALL_DIR)/*
 
 install-help: 
-#	mkdir $(INSTALL_DIR)/help
+#	mkdir $(HELP_INSTALL_DIR)/help
