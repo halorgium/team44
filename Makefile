@@ -1,21 +1,16 @@
 include main_vars
 
-all: cgi
-
-debug: cgi-debug 
+all: cgi_all
 
 clean:
 	@(cd src; make clean)
 	@(cd help; make clean)
 
-cgi:
-	@(cd src; make)
+cgi_all:
+	@(cd src; make all)
 
-cgi-debug:
-	@(cd src; make debug)
-
-help:
-	@(cd src; make)
+help_all:
+	@(cd help; make all)
 
 install:
 	@./do_install.sh
