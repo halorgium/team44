@@ -3,8 +3,8 @@
 #include <string.h>
 
 #include "../shared/defines.h"
-#include "../shared/structs.h"
-#include "../shared/read_line.h"
+#include "structs.h"
+#include "read_line.h"
 #include "globals.h"
 
 int loadNextID(FILE *f);
@@ -91,8 +91,9 @@ int loadNextID(FILE *file) {
 
     while((line = readLine(file)) != NULL ){
 
-      /* Format to parse */
-      /* [nextID]% */
+      /* Format to parse (per line) */
+      /* [nextAlbumID]%[nextArtistID]%[nextUserCommentID]%
+	 [nextAlbumCommentID]%[nextArtistCommentID]%[nextLoanID] */
 
 	char *temp = line;
 	char *temp2 = NULL;
@@ -100,14 +101,79 @@ int loadNextID(FILE *file) {
 	
 	temp2 = strchr(temp, '%');
 
-	/* get ID */
+	/* get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	
-	_nextID = atoi(char2int);
+	_nextAlbumID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+
+	/* get artistID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	_nextArtistID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+
+	/* get userCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	_nextUserCommentID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+
+	/* get albumCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	_nextAlbumCommentID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+
+	/* get artistCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	_nextArtistCommentID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+
+	/* get loanID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	_nextLoanID = atoi(char2int);
 	free(char2int);
 
 	/*end of line test*/

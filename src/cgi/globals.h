@@ -1,7 +1,6 @@
 #ifndef _CGI_GLOBALS_H
 #define _CGI_GLOBALS_H 1
 
-#include "../shared/structs.h"
 #include "../shared/lib.h"
 #include "../shared/defines.h"
 
@@ -9,11 +8,9 @@
 
 #define MAXSIZE_PAGENAME 10
 
-userNode_t *_currUserLogon;
+int _currUserLogon;
 
-void openFile(FILE *toecho, const char *name);
-void echoFile(FILE *input, FILE *output);
-void printLink(const char *href, const char* title, FILE *output);
+void userLink(int userid, const char *content, FILE *output);
 
 void printLogin(void);
 void printHome(void);

@@ -8,60 +8,35 @@
 #include "save.h"
 
 /*functions dealing with saving database to disk*/
-/* int saveDatabase(void){} */
 
-/* int  saveAllUsers(){}; */
+int saveNextID(void) {
+    FILE *outFile = fopen(SOURCE_LOCATION""NEXTID_FILE_NAME, "w");
+
+    if(outFile == NULL) return DB_SAVE_FAILURE;
+    fprintf(outFile, "%d%%%d%%%d%%%d%%%d%%%d%%\n", _nextAlbumID, _nextArtistID, _nextUserCommentID, _nextAlbumCommentID, _nextArtistCommentID, _nextLoanID);
+
+    return 1;
+}
+
 int saveUser(int ID, const char *userCode, const char* userName, const char *emailAddress, Boolean isLibrarian){
-    int check=1;
-/*     int IDLen; */
-/*     char *line = NULL; */
-    FILE *userFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "rw");
+    FILE *outFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "a");
 
-    /* Better ????????????????????????????????????????????????????? */
-    if(userFile == NULL) return DB_SAVE_FAILURE;;
+    if(outFile == NULL) return DB_SAVE_FAILURE;
+    fprintf(outFile, "%d%%%s%%%s%%%s%%%d%%\n", ID, userCode, userName, emailAddress, isLibrarian);
 
-    fprintf(userFile, "%d%%%s%%%s%%%s%%%d\n", ID, userCode, userName, emailAddress, isLibrarian);
-/*     IDLen = floor(log10(ID)) + 1; */
-    
-/*     line = malloc(sizeof(char)*(strlen(name)+strlen(userCode)+strlen(email)+IDLen+1+4)+1); */
-/*     if(line == NULL) return E_MALLOC_FAILED; */
-
-/*     sprintf(line, "%s%%%s%%%d%%%d%%%s\n", name, userCode, bool, ID, email); */
-
-    /*     printf("%s",line);*//*see what it did  (remove)*/
-
-/*     check =  saveLine(userFile, line); */
-/*     free(line); */
-    return check;
+    return 1;
 }
 
-/* int  saveAllAlbums(){}; */
 int saveAlbum(int ID, const char* title, const int artistID){
-    char *line = NULL;
-    int check;
-    int artIDLen;
-    int IDLen;
-    FILE *albumFile = fopen(SOURCE_LOCATION""ALBUMS_FILE_NAME, "rw");
+    FILE *outFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "a");
 
-   /* find how many characters the ints are*/
-    artIDLen = floor(log10(artistID));
-    IDLen = floor(log10(ID));
+    if(outFile == NULL) return DB_SAVE_FAILURE;
+    fprintf(outFile, "%d%%%s%%%d%%\n", ID, title, artistID);
 
-    /*get memory for the line that will be saved*/
-    line = malloc(sizeof(char)*(strlen(title)+artIDLen+IDLen+2)+1);
-    if(line == NULL) return E_MALLOC_FAILED;
-
-    sprintf(line, "%d%%%s%%%d\n", ID, title, artistID);
-
-    printf("%s",line);
-
-    check = saveLine(albumFile, line);
-    free(line);
-    return check;
+    return 1;
 }
 
-/* int  saveAllArtists(){}; */
-int saveArtist(int ID, char *name){
+int saveArtist(int ID, const char *name){
 
     char *line = NULL;
     int check;
@@ -80,7 +55,7 @@ int saveArtist(int ID, char *name){
     return check;
 }
 
-int saveUserComment(int ID, int userID, int owner, char *body){
+int saveUserComment(int ID, int userID, int owner, const char *body){
 
     char *line = NULL;
     int check;
@@ -108,7 +83,7 @@ int saveUserComment(int ID, int userID, int owner, char *body){
     return check;
 }
 
-int saveAlbumComment(int ID, int albumID, int owner, char *body){
+int saveAlbumComment(int ID, int albumID, int owner, const char *body){
     char *line = NULL;
     int check;
     /*length of ints (how many chars)*/
@@ -135,7 +110,7 @@ int saveAlbumComment(int ID, int albumID, int owner, char *body){
     return check;
 }
 
-int saveArtistComment(int ID, int artistID, int owner, char *body){
+int saveArtistComment(int ID, int artistID, int owner, const char *body){
     char *line = NULL;
     int check;
     /*length of ints (how many chars)*/

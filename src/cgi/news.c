@@ -3,12 +3,10 @@
 
 #include "cgic.h"
 #include "globals.h"
-#include "../shared/structs.h"
 #include "../shared/defines.h"
 
 void printNews() {
-    FILE *newsPage=NULL;
-
-    newsPage=fopen(HTML_SRC_ROOT"/.shared/news.src", "r");
-    echoFile(newsPage, cgiOut);
+  fprintf(cgiOut, "<ul>\n");
+  fprintf(cgiOut, "  <li>Something happened today</li>\n");
+  fprintf(cgiOut, "</ul>\n");
 }

@@ -3,31 +3,15 @@
 
 #include "cgic.h"
 #include "globals.h"
-#include "../shared/structs.h"
 #include "../shared/defines.h"
 
-void openFile(FILE *toset, const char *name) {
-    toset=fopen(name, "r");
-}
-
-void echoFile(FILE *input, FILE *output) {
-    char buffer[80];
-
-    while(!feof(input)) {
-	buffer[0]='\0';
-
-	fgets(buffer, 80, input);
-	if(buffer[0]!='\0') {
-	    fprintf(output, buffer);
-	}
-    }
-}
-
-void printLink(const char *href, const char *title, FILE *output) {
-    /* If logout, don't print hash */
-    if(strcmp(title, "Logout") != 0) {
-	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;hash=%d\">%s</a></td>\n  </tr>\n", href, _currUserLogon->ID, title);
-	return;
-    }
-    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s\">%s</a></td>\n  </tr>\n", href, title);
+/* This method prints a link to user info if the curruser is a librarian */
+/* otherwise it just prints the name of the user */
+void userLink(int userid, const char *content,  FILE *output) {
+  if(isUserLibrarian(_currUserLogon) == TRUE) {
+    fprintf(output, "<a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">%s</a>", userid, _currUserLogon, content);
+  }
+  else {
+    fprintf(output, "%s", content);
+  }
 }

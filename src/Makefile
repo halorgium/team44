@@ -1,27 +1,28 @@
 CC=gcc
+AR=ar
 CFLAGS=-g -ansi -Wall -pedantic
 LIBS=-Lcgi/ -lcgic -lm
 
 ##############################################
 # Object files
 
-SHARED_OBJS=shared/read_line.o
-CGI_OBJS=cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o #cgi/tester.o
-DATABASE_OBJS=database/lib.o database/load.o database/save.o database/add.o
+CGI_OBJS=cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o
+DATABASE_OBJS=database/lib.o database/load.o database/save.o database/add.o database/read_line.o
 
-OBJS=$(SHARED_OBJS) $(CGI_OBJS) $(DATABASE_OBJS)
+OBJS=$(CGI_OBJS) $(DATABASE_OBJS)
+
+CGI_FILES=index.cgi musiclib.css 1px.gif .htaccess
+DB_FILES=../var/nextid ../var/users ../var/albums ../var/artists ../var/usrcom ../var/albcom ../var/artcom ../var/loan ../var/.htaccess
+DEPENDS=$(CGIL_FILES) $(DB_FILES)
 
 INSTALL_DIR=$(HOME)/public_html/testweb
 
-all: ../bin/index.cgi
+all: index.cgi
 
 ##############################################
 # Shared
 
-read_line.o: ../shared/read_line.h
-
-lib.h: defines.h
-structs.h: defines.h
+shared/lib.h: shared/defines.h
 
 ##############################################
 # CGI
@@ -31,47 +32,51 @@ cgi/libcgic.a: cgi/cgic.o cgi/cgic.h
 	(cd cgi; $(AR) rc libcgic.a cgic.o)
 
 cgi/cgic.o: cgi/cgic.h
-cgi/contact.o: cgi/globals.h shared/structs.h shared/defines.h
-cgi/globals.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/home.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/login.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/main.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/news.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/user.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/artist.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/album.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/loan.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/contact.o: cgi/globals.h shared/defines.h
+cgi/globals.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/home.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/login.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/main.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/news.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/user.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/artist.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/album.o: cgi/cgic.h cgi/globals.h shared/defines.h
+cgi/loan.o: cgi/cgic.h cgi/globals.h shared/defines.h
 
 ##############################################
 # Database
 
-database/lib.o:  shared/defines.h shared/structs.h shared/lib.h database/globals.h
-database/load.o: shared/defines.h shared/structs.h shared/read_line.h database/globals.h 
+database/lib.o:  shared/defines.h database/structs.h shared/lib.h database/globals.h
+database/load.o: shared/defines.h database/structs.h database/read_line.h database/globals.h 
 database/save.o: shared/defines.h database/globals.h database/save.h
-database/add.o: shared/defines.h shared/structs.h database/globals.h database/save.h
+database/add.o: shared/defines.h database/structs.h database/globals.h database/save.h
+database/read_line.o: database/read_line.h
 
-database/globals.h: shared/structs.h
+
+database/globals.h: database/structs.h
 database/save.h: shared/defines.h
+database/structs.h: shared/defines.h
 
 ##############################################
 # Clean up
 
 clean: 
-	rm -f shared/*.o cgi/*.o cgi/*.a database/*.o ../bin/index.cgi
+	rm -f index.cgi cgi/libcgic.a $(OBJS)
 
 ##############################################
 # Main executable
 
-../bin/index.cgi: $(OBJS) cgi/libcgic.a
-	gcc $(OBJS) -o ../bin/index.cgi ${LIBS}
+index.cgi: $(OBJS) cgi/libcgic.a
+	gcc $(OBJS) -o index.cgi ${LIBS}
 
 ##############################################
 # Installation
 
-install: 
+install: $(DPECNDS)
 	rm -fr $(INSTALL_DIR)
-	cp -r ../html $(INSTALL_DIR)
-	cp -r ../var $(INSTALL_DIR)/var
-	cp ../bin/* $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)
+	cp $(CGI_FILES) $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)/var
+	cp $(DB_FILES) $(INSTALL_DIR)/var
 	chmod -R o+rX $(INSTALL_DIR)
 

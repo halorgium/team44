@@ -19,25 +19,31 @@
 #include <stdio.h>
 
 #include "../shared/defines.h"
-#include "../shared/structs.h"
 #include "../shared/lib.h"
+#include "structs.h"
 #include "globals.h"
 
 /*'private' method construct*/
-int *getAllLoansByStatus(Boolean isReturned);
 
 /*--------------- User Functions ----------------------*/
 
-userNode_t *getUser(int userID){
+static userNode_t *getUser(int idNumber){
   userNode_t *a; 
-    
+  
   /**find user id in list, assumes unsorted list**/
   for(a = firstUser; a != NULL; a=a->next){
-    if(a->ID == userID){
+    if(a->ID == idNumber){
       return a;
     }
   }
   return NULL;
+}
+
+Boolean getUserExists(int idNumber) {
+  if(getUser(idNumber) == NULL) {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 int makeUserID(const char *userCode) {
@@ -46,7 +52,6 @@ int makeUserID(const char *userCode) {
   int len = strlen(userCode);
 
   for(i = 0; i < len; i++){
-
     id = id + (userCode[i] * (31^(len-1-i)));
   }
 
@@ -107,7 +112,7 @@ Boolean isUserLibrarian(int idNumber) {
  *
  * a memory allocation failure returns NULL.
  */
-int *getAllUsers(void){
+int *getUsers(void){
   int size = 0;   /**number of users in list**/
   int *userArray=NULL;  /*array of users to be returned*/ 
   userNode_t *u;
@@ -143,16 +148,23 @@ int getUsersCount(void) {
 
 /*--------------- Album Functions ----------------------*/
 
-albumNode_t *getAlbum(int albumID){
+static albumNode_t *getAlbum(int idNumber){
   albumNode_t *a; 
     
   /**find album id in list, assumes unsorted list**/
   for(a = firstAlbum; a != NULL; a=a->next){
-    if(a->ID == albumID){
+    if(a->ID == idNumber){
       return a;
     } 
   }
   return NULL;
+}
+
+Boolean getAlbumExists(int idNumber) {
+  if(getAlbum(idNumber) == NULL) {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 /* Function: getAlbumTitle
@@ -213,7 +225,7 @@ int getAlbumCurrentLoan(int idNumber){
  *
  * NULL is returned if a memory allocation error occurred.
  */
-int *getAllAlbums(void){
+int *getAlbums(void){
   int size = 0;        /**size will be number of albums in list**/
   int *albumArray = 0;    /*ID array to be returned*/
   albumNode_t *a;
@@ -246,33 +258,44 @@ int getAlbumsCount(void) {
 
 /*--------------- Artist Functions ----------------------*/
 
-artistNode_t *getArtist(int artistID){
+static artistNode_t *getArtist(int idNumber) {
   artistNode_t *a; 
     
   /**find artist id in list, assumes unsorted list**/
   for(a = firstArtist; a != NULL; a=a->next){
-    if(a->ID == artistID){
+    if(a->ID == idNumber){
       return a;
     } 
   }
   return NULL;
 }
 
-/* Function: getAllAlbums
- * Params:  
- * Returns: int*.
+Boolean getArtistExists(int idNumber) {
+  if(getArtist(idNumber) == NULL) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+/* Function: getArtistName
+ * Params:  int idNumber
+ * Returns: char*.
  *
- * This function retrieves an array of album IDs. This array should be
- * freed by the caller function. The last id in the array is
- * LAST_ID_IN_ARRAY. For example, if there were three albums in the
- * database, with IDs '4', '7', '19', then this function returns
- * this array:
- *
- *  [4,7,19,LAST_ID_IN_ARRAY]
- *
- * NULL is returned if a memory allocation error occurred.
+ * This function retrieves the name of an artist with the specified id. 
+ * It returns NULL if the artistdoes not exist in the database.
  */
-int *getAllArtists(void){
+const char* getArtistName(int idNumber){
+  artistNode_t *a;
+  a = getArtist(idNumber);
+    
+  if(a != NULL) {
+    return a->name;
+  }
+  return NULL;
+}
+/*end getArtistName() */
+
+int *getArtists(void){
   int size = 0;        /**size will be number of artists in list**/
   int *artistArray = 0;    /*ID array to be returned*/
   artistNode_t *a;
@@ -302,24 +325,6 @@ int getArtistsCount(void) {
 
   return size;
 }
-
-/* Function: getArtistName
- * Params:  int idNumber
- * Returns: char*.
- *
- * This function retrieves the name of an artist with the specified id. 
- * It returns NULL if the artistdoes not exist in the database.
- */
-const char* getArtistName(int idNumber){
-  artistNode_t *a;
-  a = getArtist(idNumber);
-    
-  if(a != NULL) {
-    return a->name;
-  }
-  return NULL;
-}
-/*end getArtistName() */
 
 int *getArtistAlbums(int idNumber) {
   int size = 0;        /**size will be number of albums in list**/
@@ -355,7 +360,7 @@ int getArtistAlbumsCount(int idNumber) {
 
 /*--------------- User Comment Functions ------------------------*/
 
-userCommentNode_t *getUserComment(int idNumber){
+static userCommentNode_t *getUserComment(int idNumber){
   userCommentNode_t *c; 
     
   /**find comment id in list, assumes unsorte
@@ -464,7 +469,7 @@ int getUserCommentsForUserCount(int idNumber) {
 
 /*--------------- Album Comment Functions -----------------------*/
 
-albumCommentNode_t *getAlbumComment(int idNumber){
+static albumCommentNode_t *getAlbumComment(int idNumber){
   albumCommentNode_t *c; 
     
   /**find comment id in list, assumes unsorted list**/
@@ -573,7 +578,7 @@ int getAlbumCommentsForAlbumCount(int idNumber) {
 /*--------------- Artist Comment Functions ----------------------*/
 
 /*returns pointer to comment */
-artistCommentNode_t *getArtistComment(int idNumber){
+static artistCommentNode_t *getArtistComment(int idNumber){
   artistCommentNode_t *c; 
     
   /**find comment id in list, assumes unsorted list**/
@@ -584,6 +589,14 @@ artistCommentNode_t *getArtistComment(int idNumber){
   }
   return NULL;
 }
+
+Boolean getArtistCommentExists(int idNumber) {
+  if(getArtistComment(idNumber) == NULL) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
 
 int getArtistCommentArtist(int idNumber) {
   artistCommentNode_t *a;
@@ -681,16 +694,23 @@ int getArtistCommentsForArtistCount(int idNumber) {
 
 /*--------------- Loan Functions --------------------------------*/
 
-loanNode_t *getLoan(int idNumber){
+static loanNode_t *getLoan(int idNumber){
   loanNode_t *l; 
     
   /**find artist id in list, assumes unsorted list**/
   for(l = firstLoan; l != NULL; l=l->next){
     if(l->ID == idNumber){
       return l;
-    } 
+    }
   }
   return NULL;
+}
+
+Boolean getLoanExists(int idNumber) {
+  if(getLoan(idNumber) == NULL) {
+    return FALSE;
+  }
+  return TRUE;
 }
 
 int getLoanUser(int idNumber) {
@@ -807,105 +827,3 @@ int getLoansByAlbumCount(int idNumber) {
   return size;
 }
 
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-/*******************************************************/
-
-
-int *getAllLoansByStatus(int isReturned){
-
-  int arraySize = 0; 
-  int *loansArray = 0; /*new array to be returned*/ 
-  loanNode_t *l;
-
-  /*allocate mem for 1st element in array*/ 
-  loansArray = (int*) malloc(sizeof(int));
-  if(loansArray == NULL) return NULL;
-    
-  /*loops through array and reallocates memory when it finds loans,*/ 
-  /* that are 'isreturned'*/ 
-  for(l = firstLoan; l != NULL; l=l->next){
-    if(l->isReturned == isReturned){
-      /*reallocates mem for array and checks for mem error*/ 
-      if(realloc(loansArray, sizeof(int)*(arraySize+2)) == NULL){
-	free(loansArray);
-	return NULL;
-      }
-      /*add comment to array and increment size*/ 
-      loansArray[arraySize++] = l->ID;
-    }
-  }
-
-  /*put in end of array identifier*/
-  loansArray[arraySize] = LAST_ID_IN_ARRAY;
-  return loansArray;
-}
-
-int *getAllCurrentLoans(void){
-  return getAllLoansByStatus(FALSE);
-}
-
-int *getAllReturnedLoans(void){
-  return getAllLoansByStatus(TRUE);
-}
-
-int *getLoansByUserCodeAndStatus(int idNumber, int isReturned){
-
-  int arraySize = 0;
-  int *loansByUser = 0;
-  int *loansByStatus = 0;
-  int *both = 0;
-  int i;
-  int k;
-
-  loansByStatus = getAllLoansByStatus(isReturned);
-  loansByUser = getLoansByUser(idNumber);
-
-  /*get memory for first elem in array*/
-  both = (int*) malloc(sizeof(int));
-  if(both == NULL) return NULL;
-
-  /*loop through both arrays find common loan id's (O(n^2))*/
-  for(i=0; loansByUser[i] != LAST_ID_IN_ARRAY; i++){
-    for(k=0; loansByStatus[k] != LAST_ID_IN_ARRAY; k++){
-      if(loansByUser[i] == loansByStatus[k]){
-
-	/*get more memory for array*/
-	if(realloc(both, sizeof(int)*(arraySize+2)) == NULL){
-	  free(loansByUser);
-	  free(loansByStatus);
-	  free(both);
-	  return NULL;
-	}
-	/*put common ID in array*/
-	both[arraySize++] = loansByUser[i];
-      }
-    }
-  }
-  free(loansByUser);
-  free(loansByStatus);
-
-  both[arraySize] = LAST_ID_IN_ARRAY;
-  return both;    
-}

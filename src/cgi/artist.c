@@ -4,7 +4,6 @@
 
 #include "cgic.h"
 #include "globals.h"
-#include "../shared/structs.h"
 #include "../shared/defines.h"
 
 static void doAddArtist(void);
@@ -59,7 +58,7 @@ static void doAddArtist(void) {
     if(newartistid != -1) {
       /* Artist added ok */
       fprintf(cgiOut, "Adding successful<br />\n");
-      fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a>", newartistid, _currUserLogon->ID);
+      fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a>", newartistid, _currUserLogon);
     }
     else {
       /* Some sort of failure */
@@ -86,7 +85,7 @@ static void printAddForm(void) {
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"artist\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
-  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon->ID);
+  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
@@ -116,15 +115,7 @@ static void doViewArtist(void) {
   }
   else {
     /* Check artistid exists */
-    Boolean artistexists=TRUE;
-
-    /****************************/
-    if(artistid == 23) {
-      artistexists=FALSE;
-    }
-    /****************************/
-
-    if(!artistexists) {
+    if(getArtistExists(artistid) == FALSE) {
       fprintf(cgiOut, "Artist [%d] does not exist in the database", artistid);
       return;
     }
@@ -147,7 +138,7 @@ static void printAllArtists(void) {
 
     fprintf(cgiOut, "<div class=\"head1\">Viewing All Artists</div>");
 
-    allArtists=getAllArtists();
+    allArtists=getArtists();
 
     if(allArtists == NULL) {
       fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Artists</div>");
@@ -174,7 +165,7 @@ static void printAllArtists(void) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	  fprintf(cgiOut, "  <tr>\n");
 	  fprintf(cgiOut, "    <td>");
-	  fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon->ID, getArtistName(curr_id));
+	  fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getArtistName(curr_id));
 	  fprintf(cgiOut, "    </td>\n");
 	  fprintf(cgiOut, "    <td>%d</td>\n", getArtistAlbumsCount(curr_id));
 	  fprintf(cgiOut, "  </tr>\n");
@@ -210,4 +201,68 @@ void printSpecificArtist(int artistid) {
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "</tbody>\n");
     fprintf(cgiOut, "</table>\n");
+    fprintf(cgiOut, "<hr />\n");
+
+    {
+      /* list all albums by this artist */
+	int *allAlbums=NULL;
+	int curr_id=0;
+	int count=0;
+
+	fprintf(cgiOut, "<div class=\"head1\">Albums written</div>");
+
+	allAlbums=getArtistAlbums(artistid);
+
+	if(allAlbums == NULL) {
+	    fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Albums</div>");
+	}
+	else {
+	    fprintf(cgiOut, "<table border=\"1\">\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<thead>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Album Title</td>\n");
+	    fprintf(cgiOut, "    <td class=\"thead\">Status</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</thead>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tfoot>\n");
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td class=\"tfoot\" colspan=\"2\">&nbsp;</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	    fprintf(cgiOut, "</tfoot>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "<tbody>\n");
+
+	    if(getArtistAlbumsCount(artistid) == 0) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td colspan=\"4\">No albums</td>\n");
+		fprintf(cgiOut, "  </tr>\n");
+	    }
+
+	    curr_id=allAlbums[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		fprintf(cgiOut, "  <tr>\n");
+		fprintf(cgiOut, "    <td>");
+		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getAlbumTitle(curr_id));
+		fprintf(cgiOut, "    </td>\n");
+		if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
+		    fprintf(cgiOut, "    <td>On Loan</td>\n");
+		}
+		else {
+		    fprintf(cgiOut, "    <td>In Library</td>\n");
+		}
+		fprintf(cgiOut, "  </tr>\n");
+
+		count++;
+		curr_id=allAlbums[count];
+	    }
+	
+	    fprintf(cgiOut, "</tbody>\n");
+	    fprintf(cgiOut, "\n");
+	    fprintf(cgiOut, "</table>\n");
+
+	    free(allAlbums);
+	}
+    }
 }
