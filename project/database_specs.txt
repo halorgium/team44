@@ -38,11 +38,25 @@ getUser
 -by name
 -by email
 
-addComment
-getComment
+addCommentUser
+getCommentUser
 -by commentid
+-by ownerid
 -by userid
--by subjectid && commenttype
+-by title || body
+
+addCommentArtist
+getCommentArtist
+-by commentid
+-by ownerid
+-by artistid
+-by title || body
+
+addCommentAlbum
+getCommentAlbum
+-by commentid
+-by ownerid
+-by albumid
 -by title || body
 
 addArtist
@@ -81,11 +95,24 @@ Artist:
 -artistid
 -name
 
-Comment:
+CommentUser:
 -commentid
+-ownerid
 -userid
--commenttype (user || album || artist)
--subjectid (id of user || album || artist)
+-title??
+-body
+
+CommentArtist:
+-commentid
+-ownerid
+-artistid
+-title??
+-body
+
+CommentAlbum:
+-commentid
+-ownerid
+-albumid
 -title??
 -body
 
