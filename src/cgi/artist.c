@@ -24,7 +24,7 @@ static void printSpecificArtist(int);
 /*
   function: printArtist
   parameters: none
-  Used to: This function is used to print the artist and it checks??????
+  Used to: This function is used to print the artist whenever it is needed
 */
 
 void printArtist(void) {
@@ -105,6 +105,12 @@ static void doAddArtist(void) {
     }
 }
 
+  
+/*
+FUNCTION: processAddForm
+PARAMETERS: none
+USED TO: This function is used to process the data that was entered in the adding form. The function allocates memory and if it fails memory allocation error will be printed to the user. It also checks there were no errors in new artists id and if there are errors the appropriate message will be shown to the user.
+*/
 static int processAddForm(void) {
     int result=0;
     int newArtistid=-1;
@@ -150,6 +156,11 @@ static int processAddForm(void) {
     return newArtistid;
 } 
 
+/*
+FUNCTION: printAddForm
+PARAMETERS: none
+USED TO: This funtion prints the appropriate form for the user to add an artist. The output is written to the cgi output stream
+*/
 static void printAddForm(void) {
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
@@ -177,6 +188,11 @@ static void printAddForm(void) {
     fprintf(cgiOut, "</form>\n");
 }
 
+/*
+FUNCTION: doViewArtist
+PARAMETERS: none
+USED TO: 
+*/
 static void doViewArtist(void) {
     int result=0;
     int artistid=-1;
