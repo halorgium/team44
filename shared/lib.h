@@ -19,27 +19,27 @@ int *getAllAlbums(void);
 /* int *getCommentsByAlbumAndUserID(int albumID, int userID); */
 
 
-int isUserInDatabase(char *userCode){}
-int *getAlbumsByArtistID(int ID){}
-albumNode_t *getAlbum(int albumID){}
-artistNode_t *getArtist(int artistID){}
-int *getAllArtists(void){}
-loanNode_t *getLoan(int loanID){}
-int *getLoansByUserID(int ID){}
-int *getLoansByAlbumID(int ID){}
-int *getAllCurrentLoans(void){}
-int *getAllReturnedLoans(void){}
-int *getLoansByUserIDAndStatus(int userID, int isReturned){}
-int isAlbumOnLoan(int albumID){}
-userCommentNode_t *getUserComment(int commentID){}
-int *getUserCommentsByOwnerID(int ID){}
-int *getUserCommentsByUserID(int ID){}
-artistCommentNode_t *getArtistComment(int commentID){}
-int *getArtistCommentsByArtistID(int ID){}
-int *getArtistCommentsByOwnerID(int ID){}
-albumCommentNode_t *getAlbumComment(int commentID){}
-int *getAlbumCommentsByOwnerID(int ID){}
-int *getAlbumCommentsByAlbumID(int ID){}
+int isUserInDatabase(char *userCode);
+int *getAlbumsByArtistID(int ID);
+albumNode_t *getAlbum(int albumID);
+artistNode_t *getArtist(int artistID);
+int *getAllArtists(void);
+loanNode_t *getLoan(int loanID);
+int *getLoansByUserID(int ID);
+int *getLoansByAlbumID(int ID);
+int *getAllCurrentLoans(void);
+int *getAllReturnedLoans(void);
+int *getLoansByUserIDAndStatus(int userID, int isReturned);
+int isAlbumOnLoan(int albumID);
+userCommentNode_t *getUserComment(int commentID);
+int *getUserCommentsByOwnerID(int ID);
+int *getUserCommentsByUserID(int ID);
+artistCommentNode_t *getArtistComment(int commentID);
+int *getArtistCommentsByArtistID(int ID);
+int *getArtistCommentsByOwnerID(int ID);
+albumCommentNode_t *getAlbumComment(int commentID);
+int *getAlbumCommentsByOwnerID(int ID);
+int *getAlbumCommentsByAlbumID(int ID);
 
 
 #endif
