@@ -1,3 +1,8 @@
+#ifndef _STRUCTS_H
+#define _STRUCTS_H 1
+
+#include "defines.h"
+
 /* structure which holds a user and links next user in list*/
 typedef struct userNode{ 
     /*int ID;*/
@@ -71,3 +76,5 @@ typedef struct loan{
     
     struct loan *next;
 }loan_t;
+
+#endif
