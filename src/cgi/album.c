@@ -122,7 +122,7 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"albtitle\" name=\"albtitle\" size=\"%d\"/></td>\n", MAXSIZE_ALBUMTITLE);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artistid\" title=\"Artist Name\">Artist Name: </label>&nbsp;<a class=\"small\" href=\"./?page=artist&amp;func=add&amp;hash=%d\">[View Artist]</a></td>\n", _currUserLogon);
+    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artistid\" title=\"Artist Name\">Artist Name: </label>&nbsp;<a class=\"small\" href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Artist]</a></td>\n", _currUserLogon);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"field\">\n");
