@@ -2,3 +2,15 @@
 cd /home/cosc/student/tsm20/team44clean/casestudy/
 rm -fr /home/cosc/student/tsm20/team44clean/casestudy/*
 cvs -d /home/cosc/student/tsm20/team44cvs/ export -r HEAD -d /home/cosc/student/tsm20/team44clean/casestudy/ casestudy
+
+echo "----------------------------------"
+echo "Start perms tsm20/team44clean/casestudy/"
+
+echo "Reset perms for other"
+chmod -R o-rwx /home/cosc/student/tsm20/team44clean/casestudy/
+echo "Add execute perm for other (casestudy)"
+chmod 771 /home/cosc/student/tsm20/team44clean/casestudy
+echo "web - Add execute perm for other (all dirs and scripts under)"
+chmod o+X `find /home/cosc/student/tsm20/team44clean/casestudy/web`
+echo "web - Add read perm for other (all files under)"
+chmod o+r `find /home/cosc/student/tsm20/team44clean/casestudy/web -type f`
