@@ -179,10 +179,10 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <td>\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
+    fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     if(artistid != -1) {
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"artistid\" value=\"%d\" />\n", artistid);
     }
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
     fprintf(cgiOut, "    </td>\n");
     fprintf(cgiOut, "  </tr>\n");
@@ -384,7 +384,6 @@ static void printSpecificAlbum(int albumid) {
 		fprintf(cgiOut, "  <p>\n");
 		fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 		fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"return\" />\n");
-		fprintf(cgiOut, "    <input type=\"hidden\" name=\"returning\" value=\"%d\" />\n", TRUE);
 		fprintf(cgiOut, "    <input type=\"hidden\" name=\"loanid\" value=\"%d\" />\n", currLoan);
 		fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
 		fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
@@ -414,7 +413,6 @@ static void printSpecificAlbum(int albumid) {
 	    fprintf(cgiOut, "  <p>\n");
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
-	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"albid\" value=\"%d\" />\n", albumid);
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
 	    fprintf(cgiOut, "    <input type=\"submit\" value=\"Borrow Album\" />\n");

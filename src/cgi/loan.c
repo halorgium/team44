@@ -11,8 +11,6 @@ static void doReturnLoan(void);
 static void doViewLoan(void);
 
 static int processAddForm(void);
-static void printAddForm(void);
-
 static int processReturnForm(void);
 
 static void printAllLoansByUser(int);
@@ -54,41 +52,27 @@ void printLoan(void) {
 }
 
 static void doAddLoan(void) {
-    int result=0;
-    Boolean isAdding=FALSE;
-
+    int newloanid=0;
+    
     fprintf(cgiOut, "<div class=\"head1\">Borrowing an Album</div>\n");
 
-    /* if adding field is set */
-    result=cgiFormIntegerBounded("adding", &isAdding, FALSE, TRUE, FALSE);
-    if(result != cgiFormSuccess) {
-	/* Some sort of failure */
-	isAdding=FALSE;
-    }
-
-    if(isAdding) {
-	/* The curr data is ready for processing */
-	int newloanid=processAddForm();
-	if(newloanid != -1) {
-	    /* Loan added ok */
-	    int albumID = getLoanAlbum(newloanid);
-	    char *albumtitle = getAlbumTitle(albumID);
-	    
-	    fprintf(cgiOut, "Borrowing successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
-	    if(isUserLibrarian(_currUserLogon) == TRUE) {
-		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
-	    }
-	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
+    /* The curr data is ready for processing */
+    newloanid=processAddForm();
+    if(newloanid > 0) {
+	/* Loan added ok */
+	int albumID = getLoanAlbum(newloanid);
+	char *albumtitle = getAlbumTitle(albumID);
+	
+	fprintf(cgiOut, "Borrowing successful<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
+	if(isUserLibrarian(_currUserLogon) == TRUE) {
+	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
 	}
-	else {
-	    /* Some sort of failure */
-	    fprintf(cgiOut, "Adding failed\n");
-	}
+	fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
     }
     else {
-	/* Need to print form */
-	printAddForm();
+	/* Some sort of failure */
+	fprintf(cgiOut, "Adding failed\n");
     }
 }
 
@@ -109,85 +93,27 @@ static int processAddForm(void) {
     return newLoanid;
 }
 
-static void printAddForm(void) {
-    int *allAlbums=getAlbums();
-    int curr_id=0;
-    int count=0;
-
-    if(allAlbums == NULL) {
-	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Albums.</div>");
-	return;
-    }
-
-    fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
-    fprintf(cgiOut, "<table>\n");
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
-    fprintf(cgiOut, "<tbody>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"albtitle\" title=\"Album Title\">Album Title: </label></td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">\n");
-    fprintf(cgiOut, "<select id=\"albtitle\" name=\"artist\" size=\"5\">\n");
-
-    curr_id=allAlbums[count];
-    while (curr_id != LAST_ID_IN_ARRAY) {
-	if(getAlbumCurrentLoan(curr_id) == E_NOLOAN) {
-	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getAlbumTitle(curr_id));
-	}
-	count++;
-	curr_id=allAlbums[count];
-    }
-
-    free(allAlbums);
-
-    fprintf(cgiOut, "</select>\n");
-    fprintf(cgiOut, "    </td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td><input type=\"submit\" value=\"Borrow Album\" /></td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "</tbody>\n");
-    fprintf(cgiOut, "</table>\n");
-    fprintf(cgiOut, "</form>\n");
-
-}
-
 static void doReturnLoan(void) {
-    int result=0;
-    Boolean isReturning=-1;
+    int loanid=0;
 
     fprintf(cgiOut, "<div class=\"head1\">Returning an Album</div>\n");
 
-    /* if adding field is set */
-    result=cgiFormIntegerBounded("returning", &isReturning, FALSE, TRUE, FALSE);
-    if(result != cgiFormSuccess || isReturning == FALSE) {
-	/* Some sort of failure */
-	fprintf(cgiOut, "Invalid request\n");
+    /* The curr data is ready for processing */
+    loanid=processReturnForm();
+    if(loanid > 0) {
+	/* Album added ok */
+	const char* albumtitle=getAlbumTitle(getLoanAlbum(loanid));
+	
+	fprintf(cgiOut, "Album returned successfully<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
+	if(isUserLibrarian(_currUserLogon) == TRUE) {
+	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
+	}
+	fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
     }
-
-    if(isReturning) {
-	/* The curr data is ready for processing */
-	int loanid=processReturnForm();
-	if(loanid != -1) {
-	    /* Album added ok */
-	    const char* albumtitle=getAlbumTitle(getLoanAlbum(loanid));
-	    
-	    fprintf(cgiOut, "Album returned successfully<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
-	    if(isUserLibrarian(_currUserLogon) == TRUE) {
-		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
-	    }
-	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
-	}
-	else {
-	    /* Some sort of failure */
-	    fprintf(cgiOut, "Returning failed\n");
-	}
+    else {
+	/* Some sort of failure */
+	fprintf(cgiOut, "Returning failed\n");
     }
 }
 
@@ -347,7 +273,6 @@ static void printCurrentLoansByUser(int userid) {
 		    fprintf(cgiOut, "  <div>\n");
 		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"return\" />\n");
-		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"returning\" value=\"%d\" />\n", TRUE);
 		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"loanid\" value=\"%d\" />\n", curr_id);
 		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
 		    fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
@@ -462,7 +387,6 @@ static void printCurrentLoanByAlbum(int albumid) {
 	    fprintf(cgiOut, "  <p>\n");
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"return\" />\n");
-	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"returning\" value=\"%d\" />\n", TRUE);
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"loanid\" value=\"%d\" />\n", currLoan);
 	    fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
 	    fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
@@ -488,7 +412,6 @@ static void printCurrentLoanByAlbum(int albumid) {
 	fprintf(cgiOut, "  <p>\n");
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
-	fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"albid\" value=\"%d\" />\n", albumid);
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
 	fprintf(cgiOut, "    <input type=\"submit\" value=\"Borrow Album\" />\n");
