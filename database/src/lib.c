@@ -24,8 +24,55 @@
 #include "globals.h"
 #include "save.h"
 
+/*'private' method construct*/
+int *getAllLoansByStatus(Boolean isReturned);
+
 /*-------------------------- functions ------------------------------------*/
 
+
+
+int addLoan(char *user, int albumID){
+    
+    loanNode_t *newLoanNode = NULL;
+    
+    /*checks whether argument pointers are NULL */
+    if(user == NULL || albumID < 1){
+	return E_INVALID_PARAM;
+    }
+    
+    /*allocates memory for new Loan*/
+    newLoanNode = (loanNode_t*) malloc(sizeof(loanNode_t));
+    if(newLoanNode == NULL){        /*malloc failure test*/
+	return E_MALLOC_FAILED;
+    }
+    
+    /*allocates memory for the Loan's title*/
+    newLoanNode->userCode =(char*) malloc(sizeof(char) *(strlen(user)+1));
+    if(newLoanNode->userCode == NULL){    /*pointer is null - malloc failure*/
+	free(newLoanNode);
+	return E_MALLOC_FAILED;	
+    }
+    
+    
+    /*copy the param string into the newLoan*/
+    strcpy(newLoanNode->userCode, user);
+    /*set other fields*/
+    newLoanNode->albumID = albumID;
+    newLoanNode->timeStamp = 99999;  /*change*/
+    newLoanNode->isReturned = FALSE;
+    
+    /* loan is being created for first time - unique id should be created*/
+    newLoanNode->ID = nextLoanID;  /*this needs changing*/
+    
+    newLoanNode->next = firstLoan;   /*insert at front of list*/
+    firstLoan = newLoanNode;
+
+    /*created in memory so now needs to be saved*/
+    if(saveLoan(newLoanNode->ID, albumID, user, newLoanNode->timeStamp, FALSE) < 0)
+	return SAVE_FAILURE;
+    
+    return nextLoanID++;    /*return id then increment  CHANGE*/    
+}
 
 
 int addArtist(char *name){
@@ -887,21 +934,206 @@ loanNode_t *getLoan(int loanID){
     }
     return NULL;
 }
-int *getLoansByUserID(int ID){}
-int *getLoansByAlbumID(int ID){}
-int *getAllCurrentLoans(void){}
-int *getAllReturnedLoans(void){}
-int *getLoansByUserIDAndStatus(int userID, int isReturned){}
-int isAlbumOnLoan(int albumID){}
-userCommentNode_t *getUserComment(int commentID){}
-int *getUserCommentsByOwnerID(int ID){}
-int *getUserCommentsByUserID(int ID){}
-artistCommentNode_t *getArtistComment(int commentID){}
+
+
+int *getLoansByUserCode(char *userCode){
+
+    int arraySize = 0; 
+    int *loansArray = 0; /*new array to be returned*/ 
+    loanNode_t *l;
+
+   /*allocate mem for 1st element in array*/ 
+    loansArray = (int*) malloc(sizeof(int));
+    if(loansArray == NULL) return NULL;
+    
+     /*loops through array and reallocates memory when it finds loans,*/ 
+    /* with that UserID and adds them to array*/ 
+    for(l = firstLoan; l != NULL; l=l->next){
+	if(strcmp(l->userCode,  userCode) == 0){
+	    /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(loansArray, sizeof(int)*(arraySize+2)) == NULL){
+		free(loansArray);
+		return NULL;
+	    }
+ 	    /*add comment to array and increment size*/ 
+	    loansArray[arraySize++] = l->ID;
+	}
+    }
+
+    /*put in end of array identifier*/
+    loansArray[arraySize] = LAST_ID_IN_ARRAY;
+    return loansArray;
+}
+
+int *getLoansByAlbumID(int ID){
+
+    int arraySize = 0; 
+    int *loansArray = 0; /*new array to be returned*/ 
+    loanNode_t *l;
+
+   /*allocate mem for 1st element in array*/ 
+    loansArray = (int*) malloc(sizeof(int));
+    if(loansArray == NULL) return NULL;
+    
+     /*loops through array and reallocates memory when it finds loans,*/ 
+    /* with that UserID and adds them to array*/ 
+    for(l = firstLoan; l != NULL; l=l->next){
+	if(l->albumID == ID){
+	    /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(loansArray, sizeof(int)*(arraySize+2)) == NULL){
+		free(loansArray);
+		return NULL;
+	    }
+ 	    /*add ID to array and increment size*/ 
+	    loansArray[arraySize++] = l->ID;
+	}
+    }
+
+    /*put in end of array identifier*/
+    loansArray[arraySize] = LAST_ID_IN_ARRAY;
+    return loansArray;
+}
+
+
+int *getAllCurrentLoans(void){
+    return getAllLoansByStatus(FALSE);
+}
+
+
+int *getAllReturnedLoans(void){
+    return getAllLoansByStatus(TRUE);
+}
+
+
+int *getLoansByUserCodeAndStatus(char *userCode, Boolean isReturned){
+
+    int arraySize = 0;
+    int *loansByUser = 0;
+    int *loansByStatus = 0;
+    int *both = 0;
+    int i;
+    int k;
+
+    loansByStatus = getAllLoansByStatus(isReturned);
+    loansByUser = getLoansByUserCode(userCode);
+
+    /*get memory for first elem in array*/
+    both = (int*) malloc(sizeof(int));
+    if(both == NULL) return NULL;
+
+    /*loop through both arrays find common loan id's (O(n^2))*/
+    for(i=0; loansByUser[i] != LAST_ID_IN_ARRAY; i++){
+	for(k=0; loansByStatus[k] != LAST_ID_IN_ARRAY; k++){
+	    if(loansByUser[i] == loansByStatus[k]){
+
+		/*get more memory for array*/
+		if(realloc(both, sizeof(int)*(arraySize+2)) == NULL){
+		    free(loansByUser);
+		    free(loansByStatus);
+		    free(both);
+		    return NULL;
+		}
+		/*put common ID in array*/
+		both[arraySize++] = loansByUser[i];
+	    }
+	}
+    }
+    free(loansByUser);
+    free(loansByStatus);
+
+    both[arraySize] = LAST_ID_IN_ARRAY;
+    return both;    
+}
+
+/*returns id of loan that shows this album is on loan or error*/
+int isAlbumOnLoan(int albumID){
+
+    int i;
+    int *albumLoans = 0;
+
+    albumLoans = getLoansByAlbumID(albumID);
+
+/* search for a loan that is still not returned*/
+    for(i = 0; albumLoans[i] != LAST_ID_IN_ARRAY; i++){
+	if(getLoan(albumLoans[i])->isReturned == FALSE)
+	    return albumLoans[i];
+    }
+}
+
+
+userCommentNode_t *getUserComment(int commentID){
+    userCommentNode_t *c; 
+    
+    /**find comment id in list, assumes unsorte
+       d list**/
+    for(c = firstUserComment; c != NULL; c=c->next){
+	if(c->ID == commentID){
+	    return c;
+ 	} 
+    }
+    return NULL;
+}
+
+
+int *getUserCommentsByOwner(char *owner){}
+int *getUserCommentsByUserCode(char *userCode){}
+artistCommentNode_t *getArtistComment(int commentID){
+
+    artistCommentNode_t *c; 
+    
+    /**find comment id in list, assumes unsorted list**/
+    for(c = firstArtistComment; c != NULL; c=c->next){
+	if(c->ID == commentID){
+	    return c;
+ 	} 
+    }
+    return NULL;
+}
 int *getArtistCommentsByArtistID(int ID){}
-int *getArtistCommentsByOwnerID(int ID){}
-albumCommentNode_t *getAlbumComment(int commentID){}
-int *getAlbumCommentsByOwnerID(int ID){}
+int *getArtistCommentsByOwner(char *owner){}
+albumCommentNode_t *getAlbumComment(int commentID){
+
+    albumCommentNode_t *c; 
+    
+    /**find comment id in list, assumes unsorted list**/
+    for(c = firstAlbumComment; c != NULL; c=c->next){
+	if(c->ID == commentID){
+	    return c;
+ 	} 
+    }
+    return NULL;
+}
+int *getAlbumCommentsByOwner(char *owner){}
 int *getAlbumCommentsByAlbumID(int ID){}
+
+int *getAllLoansByStatus(Boolean isReturned){
+
+    int arraySize = 0; 
+    int *loansArray = 0; /*new array to be returned*/ 
+    loanNode_t *l;
+
+   /*allocate mem for 1st element in array*/ 
+    loansArray = (int*) malloc(sizeof(int));
+    if(loansArray == NULL) return NULL;
+    
+     /*loops through array and reallocates memory when it finds loans,*/ 
+    /* with that UserID and adds them to array*/ 
+    for(l = firstLoan; l != NULL; l=l->next){
+	if(l->isReturned == isReturned){
+	    /*reallocates mem for array and checks for mem error*/ 
+	    if(realloc(loansArray, sizeof(int)*(arraySize+2)) == NULL){
+		free(loansArray);
+		return NULL;
+	    }
+ 	    /*add comment to array and increment size*/ 
+	    loansArray[arraySize++] = l->ID;
+	}
+    }
+
+    /*put in end of array identifier*/
+    loansArray[arraySize] = LAST_ID_IN_ARRAY;
+    return loansArray;
+}
 
 
 
