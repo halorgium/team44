@@ -13,13 +13,13 @@
 /* ALL LOAD operations are performed only at initilisation*/
 int  loadDatabase(){
 
-    FILE *albumInFile = fopen(strcat(SOURCE_LOCATION, ALBUMS_FILE_NAME), "r");
-    FILE *artistInFile = fopen(strcat(SOURCE_LOCATION, ARTISTS_FILE_NAME), "r");
-    FILE *art_comInFile = fopen(strcat(SOURCE_LOCATION, ARTIST_COMMENTS_FILE_NAME), "r");
-    FILE *alb_comInFile = fopen(strcat(SOURCE_LOCATION, ALBUM_COMMENTS_FILE_NAME), "r");
-    FILE *usr_comInFile = fopen(strcat(SOURCE_LOCATION, USER_COMMENTS_FILE_NAME), "r");
-    FILE *loanInFile = fopen(strcat(SOURCE_LOCATION, LOANS_FILE_NAME), "r");
-    FILE *userInFile = fopen(strcat(SOURCE_LOCATION, USERS_FILE_NAME), "r");
+    FILE *albumInFile = fopen(SOURCE_LOCATION""ALBUMS_FILE_NAME, "r");
+    FILE *artistInFile = fopen(SOURCE_LOCATION""ARTISTS_FILE_NAME, "r");
+    FILE *art_comInFile = fopen(SOURCE_LOCATION""ARTIST_COMMENTS_FILE_NAME, "r");
+    FILE *alb_comInFile = fopen(SOURCE_LOCATION""ALBUM_COMMENTS_FILE_NAME, "r");
+    FILE *usr_comInFile = fopen(SOURCE_LOCATION""USER_COMMENTS_FILE_NAME, "r");
+    FILE *loanInFile = fopen(SOURCE_LOCATION""LOANS_FILE_NAME, "r");
+    FILE *userInFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "r");
 
     if(loadAllUsers(userInFile)!=1) return USER_LOAD_FAILURE;
     if(loadAllArtists(artistInFile)!=1) return ARTIST_LOAD_FAILURE;
@@ -87,7 +87,8 @@ int loadAllUsers(FILE *file){
 	firstUser = newUser;
 
 	/*free memory before reiteration*/
-	free(line);
+/*	free(line);*/
+	line = NULL;
     }
     return 1;
 }
@@ -144,7 +145,7 @@ int loadAllAlbums(FILE *file){
 	firstAlbum = newAlbum;
 
 	/*free memory before reiteration*/
-	free(line);
+/*	free(line);*/
     }
 
     return 1;
@@ -190,7 +191,7 @@ int loadAllArtists(FILE *file){
 	firstArtist = newArtist;
 
 	/*free memory before reiteration*/
-	free(line);
+/* 	free(line); */
     }
 
     return 1;
@@ -239,6 +240,8 @@ int loadAllLoans(FILE *file){
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
 
+	printf("temp l:  %d  \n temp 2: %d\n", strlen(temp), strlen(temp2));
+
 	/*get album title from file*/
 	newLoan->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newLoan->userCode == NULL) return E_MALLOC_FAILED;
@@ -272,7 +275,7 @@ int loadAllLoans(FILE *file){
 	firstLoan = newLoan;
 	
     	/*free memory before reiteration*/
-	free(line);
+/* 	free(line); */
     }
 
     return 1;
@@ -339,7 +342,7 @@ int loadAlbumComments(FILE *file){
 	firstAlbumComment = newAlbumComment;
 
 	/*free memory before reiteration*/
-	free(line);
+/* 	free(line); */
     }
     return 1;
 
@@ -404,7 +407,7 @@ int loadArtistComments(FILE *file){
 	firstArtistComment = newArtistComment;
 
 	/*free memory before reiteration*/
-	free(line);
+/* 	free(line); */
     }
     return 1;
 }
@@ -465,7 +468,7 @@ int loadUserComments(FILE *file){
 	firstUserComment = newUserComment;
 
 	/*free memory before reiteration*/
-	free(line);
+/* 	free(line); */
     }
     return 1;
 }

@@ -763,6 +763,8 @@ int* getAllAlbums(){
    have to be queued)
 */
 int main(int arg, char **args){
+
+    loadDatabase();
     return 1;
 }
 
