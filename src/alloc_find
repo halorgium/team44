@@ -1,7 +1,0 @@
-#!/bin/sh
-
-FILES=`find . |grep "\.[ch]$" |grep -v "CVS" |grep -v "cgic"`
-
-for f in $FILES; do
-	egrep "alloc_?m?\(" $f
-done
