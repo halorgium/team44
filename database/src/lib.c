@@ -186,11 +186,19 @@ int addAlbum(const char* title, const int artistID){
  */
 int addUser(const char* name, const char* email, const Boolean bool){
     userNode_t *newUserNode = NULL;
+    userNode_t *u = NULL;
 
     /* check for NULL params*/
     if(name == NULL || email == NULL ){ 
 	return E_INVALID_PARAM;
     }
+
+/*there needs to ba a uniqueness check, may be faster way of doing it*/
+    u = firstUser;
+    for(;u!=NULL; u=u->next){
+	if(strcmp(u->userName, name)== 0) return -12;
+    }
+    
     
     /*allocates memory for the new user*/
     newUserNode = (userNode_t*) malloc(sizeof(userNode_t));
@@ -250,15 +258,19 @@ int addCommentArtist(char *owner, const char* body, int artistID){
     artistCommentNode_t *newCommentNode = NULL;
     artistNode_t *a;   /*pointers used to check album and user id's**/
     userNode_t *u;
-    
-    if( body == NULL || owner == NULL){/**null param  check**/
+
+    /**null param  check**/
+    if( body == NULL || owner == NULL || artistID < 1){
 	return E_INVALID_PARAM;
 
     }
-    a=firstArtist;  /*test to see if any albums are in database*/
+
+    /*test to see if any artists are in database*/
+    a=firstArtist;  
     if(a==NULL){
 	return E_NOALBUM;
     }
+    
     /**find album id in album list, assumes unsorted list**/
     for(; a->ID != artistID; a=a->next){
 	if(a->next==NULL){
@@ -266,48 +278,52 @@ int addCommentArtist(char *owner, const char* body, int artistID){
 	}
     }
     
-    u=firstUser;    /*test to see if user is in the database*/
+    /*test to see if user is in the database*/
+    u=firstUser;    
     if(u==NULL){
 	return E_NOUSER;
     }
+    
     /**find user in user list, assumes unsorted**/
-    for(; u->userName != owner; u=u->next){
+    for(; strcmp(u->userName, owner) != 0; u=u->next){
 	if(u->next==NULL){
 	    return E_NOUSER;
 	}
     }
     
     /*allocates memory for newComment*/
-    newCommentNode = (commentNode_t*) malloc(sizeof(commentNode_t));
+    newCommentNode = (artistcommentNode_t*) malloc(sizeof(artistCommentNode_t));
     if(newCommentNode == NULL){        /*malloc failure?*/
 	return E_MALLOC_FAILED;
     }
     
-    /*allocates memory for newComment's title*/
-    newCommentNode->commentTitle = malloc(sizeof(char)*(strlen(title)+1));
-    if(newCommentNode->commentTitle == NULL){        /* malloc failure test*/
+    /*allocates memory for newComment's owner*/
+    newCommentNode->userOwner = malloc(sizeof(char)*(strlen(owner)+1));
+    if(newCommentNode->userOwner == NULL){        /* malloc failure test*/
 	free(newCommentNode);
 	return E_MALLOC_FAILED;
     }
     
     /*allocates memory for newComment's comment body*/
-    newCommentNode->commentBody = malloc(sizeof(char)*(strlen(body)+1));
-    if(newCommentNode->commentBody == NULL){ /*malloc failure?*/
-	free(newCommentNode->commentTitle);/*free mem before returning error*/
+    newCommentNode->comment = malloc(sizeof(char)*(strlen(body)+1));
+    if(newCommentNode->comment == NULL){ /*malloc failure?*/
+	free(newCommentNode->userOwner);/*free mem before returning error*/
 	free(newCommentNode);
 	return E_MALLOC_FAILED;
     }
 
     /*set comment fields and id fields*/
-    strcpy(newCommentNode->commentTitle, title);
+    strcpy(newCommentNode->userOwner, owner);
     strcpy(newCommentNode->commentBody, body);
-    newCommentNode->albumID = albumID; 
-    newCommentNode->userID = userID;
+    newCommentNode->artistID = artistID;
+    /*id setting may change*/
     newCommentNode->ID = nextCommentID;
     
     /*insert new node at front of list*/
     newCommentNode->next = firstComment;   
     firstComment = newCommentNode;
+
+    if(saveCommentArtist(owner, body, newCommentNode->ID, artsitID)!=0) return -15;
     
     return nextCommentID++;    /*return and increment id*/
 }/* end addCommentArtist() */
@@ -319,7 +335,7 @@ int addCommentAlbum(char *owner, const char* body, int albumID){
     albumNode_t *a;   /*pointers used to check album and user id's**/
     userNode_t *u;
     
-    if(title == NULL || body == NULL ){/**null param  check**/
+    if(title == NULL || body == NULL || albumID < 1){/**null param  check**/
 	return E_INVALID_PARAM;
 
     }
@@ -333,73 +349,78 @@ int addCommentAlbum(char *owner, const char* body, int albumID){
 	    return E_NOALBUM;
 	}
     }
-    
-    u=firstUser;    /*test to see if user is in the database*/
+
+    /*test to see if user is in the database*/
+    u=firstUser;    
     if(u==NULL){
 	return E_NOUSER;
     }
     /**find user in user list, assumes unsorted**/
-    for(; u->ID != userID; u=u->next){
+    for(; strcmp(u->userOwner, owner)!=0 ; u=u->next){
 	if(u->next==NULL){
 	    return E_NOUSER;
 	}
     }
     
     /*allocates memory for newComment*/
-    newCommentNode = (commentNode_t*) malloc(sizeof(commentNode_t));
+    newCommentNode = (albumCommentNode_t*) malloc(sizeof(albumCommentNode_t));
     if(newCommentNode == NULL){        /*malloc failure?*/
 	return E_MALLOC_FAILED;
     }
     
     /*allocates memory for newComment's title*/
-    newCommentNode->commentTitle = malloc(sizeof(char)*(strlen(title)+1));
-    if(newCommentNode->commentTitle == NULL){        /* malloc failure test*/
+    newCommentNode->userOwner = malloc(sizeof(char)*(strlen(owner)+1));
+    if(newCommentNode->userOwner == NULL){        /* malloc failure test*/
 	free(newCommentNode);
 	return E_MALLOC_FAILED;
     }
     
     /*allocates memory for newComment's comment body*/
-    newCommentNode->commentBody = malloc(sizeof(char)*(strlen(body)+1));
-    if(newCommentNode->commentBody == NULL){ /*malloc failure?*/
-	free(newCommentNode->commentTitle);/*free mem before returning error*/
+    newCommentNode->comment = malloc(sizeof(char)*(strlen(body)+1));
+    if(newCommentNode->comment == NULL){ /*malloc failure?*/
+	free(newCommentNode->userOwner);/*free mem before returning error*/
 	free(newCommentNode);
 	return E_MALLOC_FAILED;
     }
 
     /*set comment fields and id fields*/
-    strcpy(newCommentNode->commentTitle, title);
-    strcpy(newCommentNode->commentBody, body);
+    strcpy(newCommentNode->userOwner, owner);
+    strcpy(newCommentNode->comment, body);
     newCommentNode->albumID = albumID; 
-    newCommentNode->userID = userID;
+
+    /*may need changing*/
     newCommentNode->ID = nextCommentID;
     
     /*insert new node at front of list*/
     newCommentNode->next = firstComment;   
     firstComment = newCommentNode;
+
+    /*save to disk*/
+    if(saveCommentAlbum(owner, body, newCommentNode->ID, albumID)!=0) return -16;
     
     return nextCommentID++;    /*return and increment id*/
 }/* end addCommentAlbum() */
 
 /*------------------------------------------------*/
 
-int addCommentUser(char *ownerID, const char* body, char *user){
+int addCommentUser(char *owner, const char* body, char *user){
     
     commentNode_t *newCommentNode = NULL;
-    albumNode_t *a;   /*pointers used to check album and user id's**/
+               /*pointers used to check album and user id's**/
     userNode_t *u;
     
-    if(title == NULL || body == NULL ){/**null param  check**/
+    if(owner == NULL || body == NULL || user==NULL){/**null param  check**/
 	return E_INVALID_PARAM;
 
     }
-    a=firstAlbum;  /*test to see if any albums are in database*/
+    u=firstUser;  /*test to see if any albums are in database*/
     if(a==NULL){
 	return E_NOALBUM;
     }
-    /**find album id in album list, assumes unsorted list**/
-    for(; a->ID != albumID; a=a->next){
+    /**find owner in  list, assumes unsorted list**/
+    for(; strcmp(u->name, owner)!=0; u=u->next){
 	if(a->next==NULL){
-	    return E_NOALBUM;
+	    return E_NOUSER;
 	}
     }
     
@@ -408,43 +429,45 @@ int addCommentUser(char *ownerID, const char* body, char *user){
 	return E_NOUSER;
     }
     /**find user in user list, assumes unsorted**/
-    for(; u->ID != userID; u=u->next){
+    for(; strcmp(u->name, user)!=0; u=u->next){
 	if(u->next==NULL){
 	    return E_NOUSER;
 	}
     }
     
     /*allocates memory for newComment*/
-    newCommentNode = (commentNode_t*) malloc(sizeof(commentNode_t));
+    newCommentNode = (userCommentNode_t*) malloc(sizeof(userCommentNode_t));
     if(newCommentNode == NULL){        /*malloc failure?*/
 	return E_MALLOC_FAILED;
     }
     
     /*allocates memory for newComment's title*/
-    newCommentNode->commentTitle = malloc(sizeof(char)*(strlen(title)+1));
-    if(newCommentNode->commentTitle == NULL){        /* malloc failure test*/
+    newCommentNode->userOwner = malloc(sizeof(char)*(strlen(owner)+1));
+    if(newCommentNode->userOwner == NULL){        /* malloc failure test*/
 	free(newCommentNode);
 	return E_MALLOC_FAILED;
     }
     
     /*allocates memory for newComment's comment body*/
-    newCommentNode->commentBody = malloc(sizeof(char)*(strlen(body)+1));
-    if(newCommentNode->commentBody == NULL){ /*malloc failure?*/
-	free(newCommentNode->commentTitle);/*free mem before returning error*/
+    newCommentNode->comment = malloc(sizeof(char)*(strlen(body)+1));
+    if(newCommentNode->comment == NULL){ /*malloc failure?*/
+	free(newCommentNode->userOwner);/*free mem before returning error*/
 	free(newCommentNode);
 	return E_MALLOC_FAILED;
     }
 
     /*set comment fields and id fields*/
-    strcpy(newCommentNode->commentTitle, title);
-    strcpy(newCommentNode->commentBody, body);
-    newCommentNode->albumID = albumID; 
-    newCommentNode->userID = userID;
+    strcpy(newCommentNode->userOwner, owner);
+    strcpy(newCommentNode->comment, body);
+
+    /*may need changeing*/
     newCommentNode->ID = nextCommentID;
     
     /*insert new node at front of list*/
     newCommentNode->next = firstComment;   
     firstComment = newCommentNode;
+
+    if(saveCommentUser
     
     return nextCommentID++;    /*return and increment id*/
 }/* end addCommentUser() */
@@ -869,7 +892,9 @@ int  saveAllLoans(){};
 int saveLoan(){};
 
 int  saveAllComments(){};
-int saveComment(){};
+int saveCommentArtist(char *owner, char *body, int ID, int artistID){};
+ int saveCommentAlbum(char *owner, char *body, int ID, int albumID){};
+ int saveCommentUser(char *owner, char *body, int ID, char *userName){};
 
 
 
