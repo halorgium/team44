@@ -60,7 +60,7 @@ static void theRealWork(void) {
 	else {
 	    /* Hey someone is trying to login */
 	    /* Get the userCode */
-	    char *userCode=malloc_m(sizeof(char)*(MAXSIZE_USERCODE+1));
+	    char *userCode=malloc(sizeof(char)*(MAXSIZE_USERCODE+1));
 	    if(userCode == NULL) {
 		fprintf(cgiOut, "<td>Memory Error</td></tr>\n<tr>\n");
 		return;
