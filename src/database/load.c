@@ -101,19 +101,26 @@ static int loadNextID(FILE *file) {
 
     while((line = readLine(file)) != NULL ){
 
-      /* Format to parse (per line) */
-      /* [nextAlbumID]%[nextArtistID]%[nextUserCommentID]%
-	 [nextAlbumCommentID]%[nextArtistCommentID]%[nextLoanID] */
+	/* Format to parse (per line) */
+	/* [nextAlbumID]%[nextArtistID]%[nextUserCommentID]%
+	   [nextAlbumCommentID]%[nextArtistCommentID]%[nextLoanID]% */
 
 	char *temp = line;
 	char *temp2 = NULL;
 	char *char2int = NULL;
 	
 	temp2 = strchr(temp, '%');
-
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
+	
 	/* get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -124,10 +131,17 @@ static int loadNextID(FILE *file) {
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get artistID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -138,10 +152,17 @@ static int loadNextID(FILE *file) {
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get userCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -152,10 +173,17 @@ static int loadNextID(FILE *file) {
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get albumCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -166,10 +194,17 @@ static int loadNextID(FILE *file) {
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get artistCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -180,10 +215,17 @@ static int loadNextID(FILE *file) {
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get loanID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -194,7 +236,11 @@ static int loadNextID(FILE *file) {
 
 	/*end of line test*/
 	temp = temp2 + 1;  /*temp string getting smaller*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*free memory before reiteration*/
 	free(line);
@@ -207,8 +253,8 @@ static int loadAllUsers(FILE *file){
 
     while((line = readLine(file)) != NULL ){
 
-      /* Format to parse */
-      /* [ID]%[userCode]%[userName]%[emailAddress]%[isLib] */
+	/* Format to parse */
+	/* [ID]%[userCode]%[userName]%[emailAddress]%[isLib]% */
 
 	userNode_t *newUser = NULL;
 	char *temp = line;
@@ -216,13 +262,25 @@ static int loadAllUsers(FILE *file){
 	char *char2int = NULL;
 	
 	newUser = malloc(sizeof(userNode_t));
-	if(newUser == NULL) return DB_LOAD_FAILURE;
+	if(newUser == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 	
 	temp2 = strchr(temp, '%');
-
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUser);
+	    return DB_LOAD_FAILURE;
+	}
+	
 	/* get ID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newUser);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -233,11 +291,19 @@ static int loadAllUsers(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUser);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get userCode */
 	newUser->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newUser->userCode == NULL) return E_MALLOC_FAILED;
+	if(newUser->userCode == NULL) {
+	    free(line);
+	    free(newUser);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(newUser->userCode, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -245,11 +311,21 @@ static int loadAllUsers(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUser->userCode);
+	    free(newUser);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get userName */
 	newUser->userName = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newUser->userName == NULL) return E_MALLOC_FAILED;
+	if(newUser->userName == NULL) {
+	    free(line);
+	    free(newUser->userCode);
+	    free(newUser);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(newUser->userName, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -257,11 +333,23 @@ static int loadAllUsers(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUser->userName);
+	    free(newUser->userCode);
+	    free(newUser);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get emailAddress */
 	newUser->emailAddress = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newUser->emailAddress == NULL) return E_MALLOC_FAILED;
+	if(newUser->emailAddress == NULL) {
+	    free(line);
+	    free(newUser->userName);
+	    free(newUser->userCode);
+	    free(newUser);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(newUser->emailAddress, temp, (strlen(temp)-strlen(temp2)));
 	/* null terminate new string */
@@ -269,16 +357,35 @@ static int loadAllUsers(FILE *file){
 	
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUser->emailAddress);
+	    free(newUser->userName);
+	    free(newUser->userCode);
+	    free(newUser);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* get isLibrarian [Boolean] */
 	/* if char == '1' then true*/
-	if(temp[0] == '1') newUser->isLibrarian = TRUE;
-	else newUser->isLibrarian = FALSE;
+	if(temp[0] == '1') {
+	    newUser->isLibrarian = TRUE;
+	}
+	else {
+	    newUser->isLibrarian = FALSE;
+	}
 
 	/*end of line test*/
 	temp = temp2 + 1;  /*temp string getting smaller*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUser->emailAddress);
+	    free(newUser->userName);
+	    free(newUser->userCode);
+	    free(newUser);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* Everything OK */
 						     
@@ -287,7 +394,6 @@ static int loadAllUsers(FILE *file){
 
 	/*free memory before reiteration*/
 	free(line);
-	line = NULL;
     }
     return 1;
 }
@@ -296,9 +402,9 @@ static int loadAllAlbums(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
-
-      /* Format to parse */
-      /* [ID]%[title]%[artistID] */
+	
+	/* Format to parse */
+	/* [ID]%[title]%[artistID]% */
 
 	albumNode_t *newAlbum = NULL;
 	char *temp = line;
@@ -306,14 +412,25 @@ static int loadAllAlbums(FILE *file){
 	char *char2int =NULL;
 	
 	newAlbum = malloc(sizeof(albumNode_t));
-	if(newAlbum == NULL) return E_MALLOC_FAILED;
+	if(newAlbum == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 	
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbum);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newAlbum);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -324,22 +441,41 @@ static int loadAllAlbums(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbum);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get album title */
 	newAlbum->title = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newAlbum->title == NULL) return E_MALLOC_FAILED;
+	if(newAlbum->title == NULL) {
+	    free(line);
+	    free(newAlbum);
+	    return E_MALLOC_FAILED;
+	}
+	
 	strncpy(newAlbum->title, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	newAlbum->title[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbum->title);
+    	    free(newAlbum);
+	    return DB_LOAD_FAILURE;
+	}
 	
 	/*get artistId out of file*/
 	char2int = malloc(sizeof(char)*(strlen(temp)+1));
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newAlbum->title);
+    	    free(newAlbum);
+	    return E_MALLOC_FAILED;
+	}
 
 	strcpy(char2int, temp);
 	newAlbum->artistID = atoi(char2int);
@@ -347,7 +483,13 @@ static int loadAllAlbums(FILE *file){
 	
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbum->title);
+    	    free(newAlbum);
+	    return DB_LOAD_FAILURE;
+	}
 						     
 	newAlbum->next = firstAlbum;   /*insert at front of list*/
 	firstAlbum = newAlbum;
@@ -360,25 +502,38 @@ static int loadAllAlbums(FILE *file){
 }
 
 static int loadAllArtists(FILE *file){
-
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
 
+	/* Format to parse */
+	/* [ID]%[name]% */
+	
 	artistNode_t *newArtist = NULL;
 	char *temp = line;
 	char *temp2 = NULL;
 	char *char2int =NULL;
 	
 	newArtist = malloc(sizeof(artistNode_t));
-	if(newArtist == NULL) return E_MALLOC_FAILED;
+	if(newArtist == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 	
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtist);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get artistID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newArtist);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -389,11 +544,19 @@ static int loadAllArtists(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtist);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get artistName */
 	newArtist->name = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newArtist->name == NULL) return E_MALLOC_FAILED;
+	if(newArtist->name == NULL) {
+	    free(line);
+	    free(newArtist);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(newArtist->name, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -401,7 +564,13 @@ static int loadAllArtists(FILE *file){
 
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtist->name);
+	    free(newArtist);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* Everything OK */
 	
@@ -415,10 +584,399 @@ static int loadAllArtists(FILE *file){
     return 1;
 }
 
-static int loadAllLoans(FILE *file){
+static int loadUserComments(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
+
+	/* Format to parse */
+	/* [ID]%[userID]%[owner]%[body]% */
+
+	userCommentNode_t *newUserComment = NULL;
+	char *temp = line;
+	char *temp2 = NULL;
+	char *char2int =NULL;
+	
+	newUserComment = malloc(sizeof(userCommentNode_t));
+	if(newUserComment == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
+	
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get userCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUserComment->ID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get userID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUserComment->userID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get owner */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUserComment->userOwner = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get body */
+	newUserComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(newUserComment->comment == NULL) {
+	    free(line);
+	    free(newUserComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(newUserComment->comment, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newUserComment->comment[strlen(temp)-strlen(temp2)] = '\0';
+
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newUserComment->name);
+	    free(newUserComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/* Everything OK */
+	
+	newUserComment->next = firstUserComment;   /*insert at front of list*/
+	firstUserComment = newUserComment;
+
+	/*free memory before reiteration*/
+ 	free(line);
+    }
+    return 1;
+}
+
+static int loadAlbumComments(FILE *file){
+    char *line = NULL;
+
+    while((line = readLine(file)) != NULL ){
+
+	/* Format to parse */
+	/* [ID]%[albumID]%[owner]%[body]% */
+
+	albumCommentNode_t *newAlbumComment = NULL;
+	char *temp = line;
+	char *temp2 = NULL;
+	char *char2int =NULL;
+	
+	newAlbumComment = malloc(sizeof(albumCommentNode_t));
+	if(newAlbumComment == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
+	
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get albumCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newAlbumComment->ID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get albumID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newAlbumComment->albumID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get owner */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newAlbumComment->userOwner = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get body */
+	newAlbumComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(newAlbumComment->comment == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(newAlbumComment->comment, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newAlbumComment->comment[strlen(temp)-strlen(temp2)] = '\0';
+
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    free(newAlbumComment->comment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/* Everything OK */
+	
+	newAlbumComment->next = firstAlbumComment;   /*insert at front of list*/
+	firstAlbumComment = newAlbumComment;
+
+	/*free memory before reiteration*/
+ 	free(line); 
+    }
+    return 1;
+}
+
+static int loadArtistComments(FILE *file){
+
+    char *line = NULL;
+
+    while((line = readLine(file)) != NULL ){
+
+	/* Format to parse */
+	/* [ID]%[artistID]%[owner]%[body]% */
+
+	artistCommentNode_t *newArtistComment = NULL;
+	char *temp = line;
+	char *temp2 = NULL;
+	char *char2int =NULL;
+	
+	newArtistComment = malloc(sizeof(artistCommentNode_t));
+	if(newArtistComment == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return E_MALLOC_FAILED;
+	}
+	
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get artistCommentID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newAlbumComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newArtistComment->ID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get artistID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newArtistComment->artistID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get owner */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newArtistComment->userOwner = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/*get body */
+	newArtistComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(newArtistComment->comment == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    return E_MALLOC_FAILED;
+	}
+
+	strncpy(newArtistComment->comment, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newArtistComment->comment[strlen(temp)-strlen(temp2)] = '\0';
+
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newArtistComment);
+	    free(newArtistComment->comment);
+	    return DB_LOAD_FAILURE;
+	}
+
+	/* Everything OK */
+						     
+	newArtistComment->next = firstArtistComment;   /*insert at front of list*/
+	firstArtistComment = newArtistComment;
+
+	/*free memory before reiteration*/
+ 	free(line); 
+    }
+    return 1;
+}
+
+static int loadAllLoans(FILE *file){
+    char *line = NULL;
+
+    while((line = readLine(file)) != NULL) {
+
+	/* Format to parse */
+	/* [ID]%[albumID]%[userID]%[timestamp]% */
 
 	loanNode_t *newLoan = NULL;
 	char *temp = line;
@@ -426,14 +984,25 @@ static int loadAllLoans(FILE *file){
 	char *char2int =NULL;
 	
 	newLoan = malloc(sizeof(loanNode_t));
-	if(newLoan == NULL) return E_MALLOC_FAILED;
+	if(newLoan == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get loanID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -444,11 +1013,19 @@ static int loadAllLoans(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -459,11 +1036,19 @@ static int loadAllLoans(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+ 	    free(line);
+	    free(newLoan);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get userID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -474,11 +1059,19 @@ static int loadAllLoans(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get timeIn */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -489,7 +1082,12 @@ static int loadAllLoans(FILE *file){
 
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    free(newLoan);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* Everything OK */
 
@@ -510,6 +1108,10 @@ static int loadAllLoansReturned(FILE *file){
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
+
+	/* Format to parse */
+	/* [ID]%[timestamp]% */
+
 	int tempLoanID=-1;
 	int tempTimeOut=-1;
 	char *temp = line;
@@ -517,11 +1119,17 @@ static int loadAllLoansReturned(FILE *file){
 	char *char2int =NULL;
 	
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get loanID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -532,11 +1140,17 @@ static int loadAllLoansReturned(FILE *file){
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/*get timeOut */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
+	if(char2int == NULL) {
+	    free(line);
+	    return E_MALLOC_FAILED;
+	}
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
@@ -547,7 +1161,11 @@ static int loadAllLoansReturned(FILE *file){
 
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) {
+	    free(line);
+	    return DB_LOAD_FAILURE;
+	}
 
 	/* Everything OK */
 	
@@ -557,258 +1175,5 @@ static int loadAllLoansReturned(FILE *file){
  	free(line); 
     }
 
-    return 1;
-}
-
-static int loadUserComments(FILE *file){
-    char *line = NULL;
-
-    while((line = readLine(file)) != NULL ){
-
-	userCommentNode_t *newUserComment = NULL;
-	char *temp = line;
-	char *temp2 = NULL;
-	char *char2int =NULL;
-	
-	newUserComment = malloc(sizeof(userCommentNode_t));
-	if(newUserComment == NULL) return E_MALLOC_FAILED;
-	
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get userCommentID */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newUserComment->ID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get userID */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newUserComment->userID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get owner */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newUserComment->userOwner = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get body */
-	newUserComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newUserComment->comment == NULL) return E_MALLOC_FAILED;
-
-	strncpy(newUserComment->comment, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	newUserComment->comment[strlen(temp)-strlen(temp2)] = '\0';
-
-	/*end of line test*/
-	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
-
-	/* Everything OK */
-	
-	newUserComment->next = firstUserComment;   /*insert at front of list*/
-	firstUserComment = newUserComment;
-
-	/*free memory before reiteration*/
- 	free(line); 
-    }
-    return 1;
-}
-
-static int loadAlbumComments(FILE *file){
-    char *line = NULL;
-
-    while((line = readLine(file)) != NULL ){
-
-	albumCommentNode_t *newAlbumComment = NULL;
-	char *temp = line;
-	char *temp2 = NULL;
-	char *char2int =NULL;
-	
-	newAlbumComment = malloc(sizeof(albumCommentNode_t));
-	if(newAlbumComment == NULL) return E_MALLOC_FAILED;
-	
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get albumCommentID */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newAlbumComment->ID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get albumID */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newAlbumComment->albumID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get owner */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newAlbumComment->userOwner = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get body */
-	newAlbumComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newAlbumComment->comment == NULL) return E_MALLOC_FAILED;
-
-	strncpy(newAlbumComment->comment, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	newAlbumComment->comment[strlen(temp)-strlen(temp2)] = '\0';
-
-	/*end of line test*/
-	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
-
-	/* Everything OK */
-	
-	newAlbumComment->next = firstAlbumComment;   /*insert at front of list*/
-	firstAlbumComment = newAlbumComment;
-
-	/*free memory before reiteration*/
- 	free(line); 
-    }
-    return 1;
-}
-
-static int loadArtistComments(FILE *file){
-
-    char *line = NULL;
-
-    while((line = readLine(file)) != NULL ){
-
-	artistCommentNode_t *newArtistComment = NULL;
-	char *temp = line;
-	char *temp2 = NULL;
-	char *char2int =NULL;
-	
-	newArtistComment = malloc(sizeof(artistCommentNode_t));
-	if(newArtistComment == NULL) return E_MALLOC_FAILED;
-	
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get artistCommentID */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newArtistComment->ID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get artistID */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newArtistComment->artistID = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get owner */
-	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(char2int == NULL) return E_MALLOC_FAILED;
-
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newArtistComment->userOwner = atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
-	temp2 = strchr(temp, '%');
-	if(temp2 == NULL) return DB_LOAD_FAILURE;
-
-	/*get body */
-	newArtistComment->comment = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newArtistComment->comment == NULL) return E_MALLOC_FAILED;
-
-	strncpy(newArtistComment->comment, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	newArtistComment->comment[strlen(temp)-strlen(temp2)] = '\0';
-
-	/*end of line test*/
-	temp = temp2 + 1;  /*remove '%' char*/
-	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
-
-	/* Everything OK */
-						     
-	newArtistComment->next = firstArtistComment;   /*insert at front of list*/
-	firstArtistComment = newArtistComment;
-
-	/*free memory before reiteration*/
- 	free(line); 
-    }
     return 1;
 }

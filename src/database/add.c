@@ -11,31 +11,39 @@
 
 /* returns the current time of day (used for album borrowing and returning */
 static long getctime(void) {
+    long toReturn=-1;
+    
     struct timeval *tv=malloc(sizeof(struct timeval));
+    if(tv == NULL) {
+	return -1;
+    }
     int suc=gettimeofday(tv, NULL);
     
     if(suc != 0) {
 	/* Some problem with retrieving the time */
+	free(tv);
 	return -1;
     }
 
     /* Return the time of day */
-    return tv->tv_sec;
+    toReturn=tv->tv_sec;
+    free(tv);
+    return toReturn;
 }
 
 /* Checks that string is acceptable for entering into the database */
-static int checkString(const char *string) {
+static Boolean checkString(const char *string) {
     if(string == NULL) {
-	return -1;
+	return FALSE;
     }
     if(string[0] == '\0' || string[0] == ' ') {
-	return -1;
+	return FALSE;
     }
     if(strchr(string, '%') != NULL) {
-	return -1;
+	return FALSE;
     }
  
-    return 1;
+    return TRUE;
 }
 
 /* Function: addUser
@@ -59,7 +67,7 @@ int addUser(const char *userCode, const char* name, const char* email, Boolean i
     }
     
     /* check for char * params*/
-    if(checkString(userCode) != 1 || checkString(name) != 1 || checkString(email) != 1) {
+    if(checkString(userCode) != TRUE || checkString(name) != TRUE || checkString(email) != TRUE) {
 	return E_INVALID_PARAM;
     }
 
@@ -115,7 +123,6 @@ int addUser(const char *userCode, const char* name, const char* email, Boolean i
 }
 /* end addUser()*/
 
-
 /* Function: addAlbum
  * Params:  char* title, char*artist
  * Returns: int.
@@ -137,7 +144,7 @@ int addAlbum(const char *title, int artistID){
     }
     
     /*checks whether argument pointers are NULL */
-    if(checkString(title) != 1) {
+    if(checkString(title) != TRUE) {
 	return E_INVALID_PARAM;
     }
    
@@ -154,12 +161,16 @@ int addAlbum(const char *title, int artistID){
 
 	/*check for album 'already in' library*/
     
-	for(i = 0; allAlbums[i] != LAST_ID_IN_ARRAY; i++){
-	    if(strcmp(getAlbumTitle(allAlbums[i]), title) == 0 &&
-	       artistID == getAlbumArtist(allAlbums[i])){
+	for(i = 0; allAlbums[i] != LAST_ID_IN_ARRAY; i++) {
+	    char *albumTitle=getAlbumTitle(allAlbums[i]);
+	    if(strcmp(albumTitle, title) == 0 &&
+	       artistID == getAlbumArtist(allAlbums[i])) {
 		/*album added is 'the same' as another in database*/
+		free(albumTitle);
+		free(allAlbums);
 		return ALREADY_ADDED;
 	    }
+	    free(albumTitle);
 	}
 	free(allAlbums);
     }
@@ -208,30 +219,29 @@ int addArtist(const char *name){
     }
 
     /*checks whether argument pointers are NULL */
-    if(checkString(name) != 1){
+    if(checkString(name) != TRUE){
 	return E_INVALID_PARAM;
     }
 
     /* check whether artist already exists */
     {
-        int *allArtists=getArtists();
-	int count=0;
-	
-	if(allArtists != NULL) {
-	    int curr_id=allArtists[count];
-	    while (curr_id != LAST_ID_IN_ARRAY) {
-		if(strcmp(getArtistName(curr_id), name) == 0) {
-		    /*artist added is 'the same' as another in database*/
-		    return ALREADY_ADDED;
-		}
-		
-		count++;
-		curr_id=allArtists[count];
+	/*pointer to list of artists*/
+	int *allArtists = getArtists();
+	int i;  /*counter*/
+
+	for(i = 0; allArtists[i] != LAST_ID_IN_ARRAY; i++){
+	    char *artistName=getArtistName(allArtists[i]);
+	    if(strcmp(artistName, name) == 0) {
+		/*artist added is 'the same' as another in database*/
+		free(artistName);
+		free(allArtists);
+		return ALREADY_ADDED;
 	    }
+	    free(artistName);
 	}
 	free(allArtists);
     }
-    
+ 
     /*allocates memory for new Artist*/
     newArtistNode = (artistNode_t*) malloc(sizeof(artistNode_t));
     if(newArtistNode == NULL){        /*malloc failure test*/
@@ -284,7 +294,7 @@ int addUserComment(int userID, int owner, const char* body){
 	return DB_NEXTID_ERROR;
     }
  
-    if(checkString(body) != 1) {
+    if(checkString(body) != TRUE) {
 	return E_INVALID_PARAM;
     }
     
@@ -337,7 +347,7 @@ int addAlbumComment(int albumID, int owner, const char *body){
     }
     
     /**null param  check**/
-    if(checkString(body) != 1){
+    if(checkString(body) != TRUE){
 	return E_INVALID_PARAM;
     }
 
@@ -395,7 +405,7 @@ int addArtistComment(int artistID, int owner, const char *body){
     }
 
     /**null param  check**/
-    if(checkString(body) != 1){
+    if(checkString(body) != TRUE){
 	return E_INVALID_PARAM;
     }
    
@@ -518,8 +528,7 @@ int addLoanReturned(int loanID){
     setLoanReturned(loanID, tempTime);
     
     /*created in memory so now needs to be saved*/
-    if(saveLoanReturned(loanID, tempTime) < 0)
-	return DB_SAVE_FAILURE;
+    if(saveLoanReturned(loanID, tempTime) < 0) return DB_SAVE_FAILURE;
     
     return 1; 
 }
