@@ -69,7 +69,7 @@ static void doAddAlbum(void) {
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a><br />\n", newalbumid, _currUserLogon);
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add another Album by the same Artist]</a><br />\n", getAlbumArtist(newalbumid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add another Album by a different Artist</a>\n", _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add another Album by a different Artist]</a>\n", _currUserLogon);
 	}
 	else {
 	    /* Album adding error */
@@ -150,9 +150,15 @@ static int processAddForm(void) {
 	
 static void printAddForm(void) {
     int result=-1;
-    
-    /* Check for artistid */
     int artistid=-1;
+
+    if(getArtistsCount() == 0) {
+	fprintf(cgiOut, "To be able to add an album, the database must contain an artist<br />\n");
+	fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Artist]</a>\n", _currUserLogon);
+	return;
+    }
+
+    /* Check for artistid */
     result = cgiFormInteger("artistid", &artistid, -1);
     if(result != cgiFormSuccess || artistid == -1) {
 	/* No artistid */
@@ -163,12 +169,6 @@ static void printAddForm(void) {
 	/* No artistid */
 	fprintf(cgiOut, "Artist [%d] does not exist in the database\n", artistid);
 	artistid=-1;
-    }
-
-    if(getArtistsCount() == 0) {
-	fprintf(cgiOut, "To be able to add an album, the database must contain an artist<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add Artist]</a>\n", _currUserLogon);
-	return;
     }
 
     fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
@@ -281,7 +281,9 @@ static void printAllAlbums(void) {
     else {
 	if(getAlbumsCount() == 0) {
 	    fprintf(cgiOut, "No albums<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add new Album]</a>\n", _currUserLogon);
+	    if(isUserLibrarian(_currUserLogon) == TRUE) {
+	      fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add new Album]</a>\n", _currUserLogon);
+	    }
 	}
 	else {
 	    fprintf(cgiOut, "<table border=\"1\">\n");

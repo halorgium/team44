@@ -148,7 +148,9 @@ static void printAddForm(void) {
     
     if(getAlbumsCount() == 0) {
 	fprintf(cgiOut, "No albums in database<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&hash=%d\">[Add Album]</a><br />\n", _currUserLogon);
+	if(isUserLibrarian(_currUserLogon) == TRUE) {
+	  fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&hash=%d\">[Add Album]</a><br />\n", _currUserLogon);
+	}
 	return;
     }
     
@@ -224,7 +226,9 @@ static void printAddForm(void) {
     fprintf(cgiOut, "</table>\n");
     fprintf(cgiOut, "</form>\n");
 
-    fprintf(cgiOut, "<hr /><a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">Back to Album page</a>\n", albumid, _currUserLogon);
+    if(albumid != -1) {
+      fprintf(cgiOut, "<hr /><a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">Back to Album page</a>\n", albumid, _currUserLogon);
+    }
 }
 
 static void doViewAlbumComment(void) {

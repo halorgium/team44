@@ -141,9 +141,17 @@ static int processAddForm(void) {
 
 static void printAddForm(void) {
   int result=-1;
-    
-  /* Check for artistid */
   int artistid=-1;
+    
+  if(getArtistsCount() == 0) {
+    fprintf(cgiOut, "No artists in database<br />\n");
+    if(isUserLibrarian(_currUserLogon) == TRUE) {
+      fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&hash=%d\">[Add Artist]</a><br />\n", _currUserLogon);
+    }
+    return;
+  }
+
+  /* Check for artistid */
   result = cgiFormInteger("artistid", &artistid, -1);
   if(result != cgiFormSuccess || artistid == -1) {
     /* No artistid */
@@ -156,12 +164,6 @@ static void printAddForm(void) {
     artistid=-1;
   }
     
-  if(getArtistsCount() == 0) {
-    fprintf(cgiOut, "No artists in database<br />\n");
-    fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&hash=%d\">[Add Artist]</a><br />\n", _currUserLogon);
-    return;
-  }
-
   fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
   fprintf(cgiOut, "<table>\n");
   fprintf(cgiOut, "<tbody>\n");

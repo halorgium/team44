@@ -55,9 +55,13 @@ void printArtist(void) {
 /*
 FUNCTION: doAddArtist
 PARAMETERS: none
-USED TO: This function checks if the current user is a librarian or not so it knows whether the user has permission to add a new artist. If they don't have permission they will recieve a message stating they are not privleged to add new artists. The function will then check that the cgi form was a success and then will add the new artist by communicating with the database.
+USED TO: This function checks if the current user is a librarian or not 
+so it knows whether the user has permission to add a new artist. 
+If they don't have permission they will recieve a message stating 
+they are not privleged to add new artists. The function will then 
+check that the cgi form was a success and then will add the new artist 
+by communicating with the database.
 */
-
 static void doAddArtist(void) {
     int result=0;
     Boolean isAdding=FALSE;
@@ -218,7 +222,9 @@ static void printAllArtists(void) {
     else {
 	if(getArtistsCount() == 0) {
 	    fprintf(cgiOut, "No artists<br />\n");
-            fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add new Artist]</a>\n", _currUserLogon);
+	    if(isUserLibrarian(_currUserLogon) == TRUE) {
+	      fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add new Artist]</a>\n", _currUserLogon);
+	    }
 	}
 	else {
 	    fprintf(cgiOut, "<table border=\"1\">\n");
