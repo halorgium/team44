@@ -29,12 +29,19 @@ int  loadDatabase(){
     FILE *loanInFile = fopen(SOURCE_LOCATION""LOANS_FILE_NAME, "r");
     FILE *userInFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "r");
 
+    fprintf(stderr, "Start Load Users\n");
     if(loadAllUsers(userInFile)!=1) return USER_LOAD_FAILURE;
+    fprintf(stderr, "Start Load Artists\n");
     if(loadAllArtists(artistInFile)!=1) return ARTIST_LOAD_FAILURE;
+    fprintf(stderr, "Start Load Albums\n");
     if(loadAllAlbums(albumInFile)!=1) return ALBUM_LOAD_FAILURE;
+    fprintf(stderr, "Start Load Loans\n");
     if(loadAllLoans(loanInFile)!=1) return LOAN_LOAD_FAILURE;
+    fprintf(stderr, "Start Load Artist Comments\n");
     if(loadArtistComments(art_comInFile)!=1) return ART_COM_LOAD_FAILURE;
+    fprintf(stderr, "Start Load Album Comments\n");
     if(loadAlbumComments(alb_comInFile)!=1) return ALB_COM_LOAD_FAILURE;
+    fprintf(stderr, "Start Load User Comments\n");
     if(loadUserComments(usr_comInFile)!=1) return USR_COM_LOAD_FAILURE;
 
     return 1;
@@ -262,8 +269,6 @@ int loadAllLoans(FILE *file){
 	
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
-
-	printf("temp l:  %d  \n temp 2: %d\n", strlen(temp), strlen(temp2));
 
 	/*get album title from file*/
 	newLoan->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2)+1));
