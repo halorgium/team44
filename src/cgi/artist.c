@@ -77,7 +77,6 @@ static void doAddArtist(void) {
 	/* Need to print form */
 	printAddForm();
     }
-
 }
 
 static int processAddForm(void) {
@@ -239,24 +238,31 @@ static void printAllArtists(void) {
 static void printSpecificArtist(int artistid) {
     fprintf(cgiOut, "<div class=\"head1\">View Artist [%d]</div>", artistid);
 
-    fprintf(cgiOut, "<table>\n");
-    fprintf(cgiOut, "<tbody>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\">Artist Name: </td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getArtistName(artistid));
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\">Album Count: </td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%d</td>\n", getArtistAlbumsCount(artistid));
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "</tbody>\n");
-    fprintf(cgiOut, "</table>\n");
-    fprintf(cgiOut, "<hr />\n");
+    {
+	/* print out artist information */
+	char *artistName=getArtistName(artistid);
+	
+	fprintf(cgiOut, "<table>\n");
+	fprintf(cgiOut, "<tbody>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"describe\">Artist Name: </td>\n");
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", artistName);
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"describe\">Album Count: </td>\n");
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "  <tr>\n");
+	fprintf(cgiOut, "    <td class=\"field\">%d</td>\n", getArtistAlbumsCount(artistid));
+	fprintf(cgiOut, "  </tr>\n");
+	fprintf(cgiOut, "</tbody>\n");
+	fprintf(cgiOut, "</table>\n");
+	fprintf(cgiOut, "<hr />\n");
 
+	free(artistName);
+    }
+	
     {
 	/* list all albums by this artist */
 	int *allAlbums=NULL;
@@ -294,9 +300,11 @@ static void printSpecificArtist(int artistid) {
 
 		curr_id=allAlbums[count];
 		while (curr_id != LAST_ID_IN_ARRAY) {
+		    char *albumTitle=getAlbumTitle(curr_id);
+		    
 		    fprintf(cgiOut, "  <tr>\n");
 		    fprintf(cgiOut, "    <td>");
-		    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, getAlbumTitle(curr_id));
+		    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon, albumTitle);
 		    fprintf(cgiOut, "    </td>\n");
 		    if(getAlbumCurrentLoan(curr_id) != E_NOLOAN) {
 			fprintf(cgiOut, "    <td>On Loan</td>\n");
@@ -308,6 +316,8 @@ static void printSpecificArtist(int artistid) {
 		    
 		    count++;
 		    curr_id=allAlbums[count];
+
+		    free(albumTitle);
 		}
 		
 		fprintf(cgiOut, "</tbody>\n");
@@ -324,5 +334,4 @@ static void printSpecificArtist(int artistid) {
     
     fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;artistid=%d&amp;hash=%d\">View Comments written about Artist (%d)</a>\n", artistid, _currUserLogon, getArtistCommentsForArtistCount(artistid));
     fprintf(cgiOut, "<br /><a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">Add Comment about this Artist</a>\n", artistid, _currUserLogon);
-
 }
