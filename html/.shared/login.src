@@ -5,8 +5,9 @@
 
 <form method="get" action="./?page=home">
 <p>
+<input type="hidden" name="dologin" value="1" />
 <label for="userCode" title="User Code">User Code: </label>
-<input type="text" id="userCode" name="user" value="" maxlength="16" />
+<input type="text" id="userCode" name="usercode" value="" size="16" maxlength="16" />
 <input type="submit" value="Login" />
 </p>
 </form>
