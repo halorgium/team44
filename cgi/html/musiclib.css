@@ -38,7 +38,7 @@ tr#topspacera {
 
 td#topspacerb { 
     font-size : 0px;
-    background : #C0C0C0;
+    background : #0000FF;
 }
 
 /* Header Styles */
@@ -58,14 +58,16 @@ table#header {
     padding: 10px 20px 5px 20px;
     font-size: 28px;
     width : 100%;
-    color : #000000;
-    background : #FFFFFF;
+    color : #FFFFFF;
+    background : #000000;
     margin : 0px 0px 0px 0px;
 }
 
 div#maintitle {
     font-size : 40px;
     text-align : center;
+    color : #FFFFFF;
+    background : #000000;
     vertical-align : middle;
 }
 
@@ -73,20 +75,22 @@ div#maintitle {
 /*--------------*/
 
 table.links {
+  
+    text-align : center;
     padding : 10px 20px 15px 20px;
     font-size : 14px;
     color : #FFFFFF;
-    background : #6699FF;
+    background : #000000;
 }
 
 td.link { 
-    color : #FFFF33;
-    background : #6699FF;
+    color : #000000;
+    background : #000000;
 }
 
 a.buttonref {
-    color : #FFFF33;
-    background : #6699FF;
+    color : #CCCCCC;
+    background : #000000;
     text-decoration : none;
 }
 

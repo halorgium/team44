@@ -1,0 +1,17 @@
+<form method="POST" action="./">
+<p><b>Contact Us!</b></p>
+<p>
+  <label for="name" title="Your Name">Your Name: </label>
+  <input type="text" id="name" name="name" />
+</p>
+<p>
+  <label for="email" title="Your Email Address">Your Email Address: </label>
+  <input type="text" id="email" name="email" />
+</p>
+<p>
+  <label for="message" title="Enter Your Message Here">Enter Your Message Here: </label><br />
+  <textarea id="message" name="message" rows="4" cols="40"></textarea>
+</p>
+<input type="submit" value="Submit Request" />
+<input type="reset" value="Reset Fields" />
+</form>
