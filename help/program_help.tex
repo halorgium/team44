@@ -1,6 +1,6 @@
 %folders not useful = html images
 \documentclass{article}
-\usepackage{palatino,a4wide}
+\usepackage{palatino,a4wide,epsfig}
 \title{Programmers Guide to MusicLib}
 \author{Daniel Bakker}
 
@@ -16,6 +16,7 @@ Analysis and requirements specifications for this project can be found at;
 
 ``http://www.cosc.canterbury.ac.nz/teaching/handouts/cosc204/casestudy\verb|_|2.pdf''.
 
+
 The MusicLib program is divided up into two main layers;
 \begin{description} 
 \item[The Database Layer] controls all the storing and recovering of information received from users.
@@ -25,6 +26,8 @@ The MusicLib program is divided up into two main layers;
 Some files are used by both the Database and the CGI layer, these are located in the directory named ``shared''.
 
 All the web pages are Xhtml 1.0 compliant visit ``http://w3.org'' for more details.
+
+%put the ER diagram hereish
 \section{Data Structures}
 There are many different data structures used to store data within the MusicLib program. Typically for each type of entity that is stored in the database there is one structure associated with holding the data, it is known as a \verb|node|. For example, to hold information about a loan, a \verb|loanNode| is used.
 Each type of node is stored in a linked list with other nodes of its type. This section will go through the various nodes and mention the different fields within each one.
@@ -191,35 +194,35 @@ This header file contains 3 different sections;
 \subsection{load.c}
 This file is used when the program is fist initialized, it loads all the information current stored in the database using the following methods;
 
-\subsubsection*{loadDatabase}
+\subsubsection*{loadDatabase()}
 This is the main function of this file. It sets all the first variables to Null
 and then sequentially calls the other methods in this file, loading and checking each different entity.
 
-\subsubsection*{loadNextID}
+\subsubsection*{loadNextID()}
 This function loads up the ID's for the various entities within the database, using the file pointed to by \verb|NEXTID_FILE_NAME|
 
-\subsubsection*{loadAllUsers}
+\subsubsection*{loadAllUsers()}
 Similar to the \verb|loadNextID| this function loads all artists stored in the database into memory to be accessed by the cgi layer.
 
-\subsubsection*{loadAllAlbums}
+\subsubsection*{loadAllAlbums()}
 This function loads all the albums from the data files into the current working application.
 
-\subsubsection*{loadAllArtists}
+\subsubsection*{loadAllArtists()}
 This function loads all the artists from the database files into the current working application.
 
-\subsubsection*{loadAllLoans}
+\subsubsection*{loadAllLoans()}
 \label{loan}
 This function retrieves all loan information from the database to be accessed and modified by the cgi application.
 
-\subsubsection*{loadAllLoansReturned}
+\subsubsection*{loadAllLoansReturned()}
 This function does exactly the same as \verb|loadAllLoans| except it is for returned loans.
 
 \subsubsection*{Comment loading}
 These methods all work similarly to load the different types of comments from the database into working memory.
 \begin{itemize}
-\item{loadArtistComments}
-\item{loadAlbumComments}
-\item{loadUserComments}
+\item{loadArtistComments()}
+\item{loadAlbumComments()}
+\item{loadUserComments()}
 \end{itemize}
 
 \subsection{read\_line.c}
@@ -346,9 +349,18 @@ This file mirrors albumcomment.c so explanations of all the functions can be fou
 This function outputs to cgi, a page with links to all comments that the selected user has made about any other entity. The most common use of this function is when the ``My Comments'' link is clicked within the browser.
 
 \section{Shared Files}
-There are two files that both the cgi layer and the database uses. These files are located within the the ``shared'' directory. They are described below.
+There are two header files and one \verb|.c| file that both the cgi layer and the database use. These files are located within the the ``shared'' directory. They are described below.
 \subsection{lib.h}
 This file contains method headers for all the methods in the database layer. The cgi layer uses this to know which methods can be called from the database layer.
 \subsection{defines.h}
 This file contains all the universal error codes and data length restrictions for different fields. 
+\subsection{shared.c}
+This file contains some string manipulation functions these are defined below:
+\begin{description}
+\item[toLowerCase()] This function calls \verb|replaceCharWithChar| for each uppercase letter to replace it with the lowercase equivalent. Thus it returns a string of lowercase characters.
+\item[replaceCharWithChar] This method takes in a string, and two characters, the one to be replaced (\verb|replacee|) and the one to replace it with (\verb|replacement|), it then loops through the input string and swaps each replacee character with its replacement.
+\item[replaceCharWithString] Similar to \verb|replaceCharWithChar| this method takes in an input string, a character to be replaced and a string to replace it with. It loops through the input string and replaces each instance of the replacee character with the replacement string.
+
+
+\end{description}
 \end{document}
