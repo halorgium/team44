@@ -2,7 +2,7 @@ Database Specs
 =============================
 
 The conversation??
-
+-----------------------------
 1 : CGI sends say hello msg
 2 : DB responds with auth?
 3 : for each bit needed
@@ -13,27 +13,24 @@ The conversation??
 4 : CGI sends goodbye msg
 5 : DB responds with OK
 
-------------------------------
-
 Send packet (CGI=>DB)
+-----------------------------
 
 -Auth (Later?)
 -Function (see below)
 -Length??
 -Arguments for the function
 
-------------------------------
-
 Response packet (DB=>CGI)
+-----------------------------
 
 -Auth (Later?)
 -Function
 -Length??
 -Data requested
 
-------------------------------
-
 Database functions:
+-----------------------------
 
 addUser
 getUser
@@ -65,4 +62,38 @@ getLoan
 -by userid
 -by albumid
 -by status??
+
+Database structure:
+-----------------------------
+
+User:
+-userid/usercode
+-usertype (std || lib)
+-name
+-email
+
+Album:
+-albumid
+-artistid
+-name
+
+Artist:
+-artistid
+-name
+
+Comment:
+-commentid
+-userid
+-commenttype (user || album || artist)
+-subjectid (id of user || album || artist)
+-title??
+-body
+
+Loan:
+-loanid
+-userid
+-albumid
+-timestampin (better names)
+-timestampout
+-status (overdue || returned || on_loan)
 
