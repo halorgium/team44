@@ -334,8 +334,9 @@ static void printSpecificArtist(int artistid) {
 	    free(allAlbums);
 	}
     }
-
-    fprintf(cgiOut, "<br /><a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">Add Album by this Artist</a>\n", artistid, _currUserLogon);
+    if(isUserLibrarian(_currUserLogon) == TRUE){
+	fprintf(cgiOut, "<br /><a href=\"./?page=album&amp;func=add&amp;artistid=%d&amp;hash=%d\">Add Album by this Artist</a>\n", artistid, _currUserLogon);
+    }
     
     fprintf(cgiOut, "<hr />\n");
     

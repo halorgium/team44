@@ -65,7 +65,7 @@ static void doAddUserComment(void) {
 	int newuserCommentid=processAddForm();
 	if(newuserCommentid > 0) {
 	    /* User Comment added ok */
-	  int commentUser=getUserCommentUser(newuserCommentid);
+	    int commentUser=getUserCommentUser(newuserCommentid);
 	    char *username=getUserName(commentUser);
 	    
 	    fprintf(cgiOut, "Adding successful<br />\n");
@@ -91,6 +91,10 @@ static int processAddForm(void) {
     int newUserCommentid=-1;
     int userid=-1;
     char *combody=malloc(sizeof(char)*MAXSIZE_USERCOMMENT);
+    if(combody == NULL){
+	    fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	    return E_MALLOC_FAILED;
+    }
 
     result = cgiFormInteger("usrid", &userid, -1);
     if(result != cgiFormSuccess || userid == -1) {
@@ -131,6 +135,8 @@ static int processAddForm(void) {
 	    return E_UNKNOWN;
 	}
     }
+    /*finished with mem so free, then return */
+    free(combody);
     return newUserCommentid;
 }
 
@@ -184,16 +190,24 @@ static void printAddForm(void) {
 	
 	curr_id=allUsers[count];
 	while (curr_id != LAST_ID_IN_ARRAY) {
-	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getUserName(curr_id));
+	    char *userName = getUserName(curr_id);
+	
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, userName);
 	    count++;
 	    curr_id=allUsers[count];
+	    
+	    free(userName);	       
 	}
 	
 	fprintf(cgiOut, "</select>\n");
 	fprintf(cgiOut, "</td>\n");
+
+	free(allUsers);
     }
     else {
-	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getUserName(userid));
+	char *name = getUserName(userid);
+	fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", name);
+	free(name);
     }
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
@@ -273,8 +287,11 @@ static void printAllUserCommentsByUser(int userid) {
     int *allUserComments=NULL;
     int curr_id=0;
     int count=0;
+    char *name = getUserName(userid);
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing User Comments written by %s</div>", getUserName(userid));
+    fprintf(cgiOut, "<div class=\"head1\">Viewing User Comments written by %s</div>", name);
+
+    free(name);
 
     allUserComments=getUserCommentsByUser(userid);
 
@@ -292,19 +309,26 @@ static void printAllUserCommentsByUser(int userid) {
 	    
 	    curr_id=allUserComments[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int userID = getUserCommentUser(curr_id);
+		char *userName = getUserName(userID);
+		char *body = getUserCommentBody(curr_id);
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written about ");
-		userLink(" class=\"topper\"", getUserCommentUser(curr_id), getUserName(getUserCommentUser(curr_id)), cgiOut);
+		userLink(" class=\"topper\"", userID, userName, cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "%s", getUserCommentBody(curr_id));
+		fprintf(cgiOut, "%s", body);
 		fprintf(cgiOut, "</td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allUserComments[count];
+
+		free(userName);
+		free(body);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");
@@ -323,8 +347,11 @@ static void printAllUserCommentsForUser(int userid) {
     int *allUserComments=NULL;
     int curr_id=0;
     int count=0;
+    char *name = getUserName(userid);
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing User Comments about %s</div>", getUserName(userid));
+    fprintf(cgiOut, "<div class=\"head1\">Viewing User Comments about %s</div>", name);
+    
+    free(name);
 
     allUserComments=getUserCommentsForUser(userid);
 
@@ -342,19 +369,27 @@ static void printAllUserCommentsForUser(int userid) {
 	    
 	    curr_id=allUserComments[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int ownerID = getUserCommentUser(curr_id);
+		char *userName = getUserName(ownerID);
+		char *body = getUserCommentBody(curr_id);
+
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td class=\"topper\">Comment written by ");
-		userLink(" class=\"topper\"", getUserCommentOwner(curr_id), getUserName(getUserCommentOwner(curr_id)), cgiOut);
+		userLink(" class=\"topper\"", ownerID, userName, cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "%s", getUserCommentBody(curr_id));
+		fprintf(cgiOut, "%s", body);
 		fprintf(cgiOut, "</td>\n");
 		fprintf(cgiOut, "  </tr>\n");
 		
 		count++;
 		curr_id=allUserComments[count];
+
+		free(userName);
+		free(body);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");

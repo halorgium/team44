@@ -69,6 +69,8 @@ static void doAddLoan(void) {
 	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
 	}
 	fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
+
+	free(albumtitle);
     }
     else {
 	/* Some sort of failure */
@@ -87,9 +89,9 @@ static int processAddForm(void) {
     }
     
     newLoanid=addLoan(albumid, _currUserLogon);
-    if(newLoanid < 0) {
-	return -1;
-    }
+    /*if(newLoanid < 0) {
+	return -1; 
+	}*/
     return newLoanid;
 }
 
@@ -102,12 +104,13 @@ static void doReturnLoan(void) {
     loanid=processReturnForm();
     if(loanid > 0) {
 	/* Album added ok */
-	const char* albumtitle=getAlbumTitle(getLoanAlbum(loanid));
+	int albumID = getLoanAlbum(loanid);
+	char* albumtitle=getAlbumTitle(albumID);
 	
 	fprintf(cgiOut, "Album returned successfully<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
+	fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
 	if(isUserLibrarian(_currUserLogon) == TRUE) {
-	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
+	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", albumID, _currUserLogon, albumtitle);
 	}
 	fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
     }
@@ -132,9 +135,14 @@ static int processReturnForm(void) {
 	}
 	else {
 	    if(getLoanUser(loanid) != _currUserLogon) {
+		int userID = getLoanUser(loanid);
+		char *name = getUserName(userID);
+		
 		fprintf(cgiOut, "You cannot return this album; It is already on loan to ");
-		userLink("", getLoanUser(loanid), getUserName(getLoanUser(loanid)), cgiOut);
+		userLink("", userID, name, cgiOut);
 		fprintf(cgiOut, "<br />\n");
+
+		free(name);
 	    }
 	    else {
 		if(isLoanReturned(loanid) == TRUE) {
@@ -203,7 +211,9 @@ static void doViewLoan(void) {
 }
 
 static void printAllLoansByUser(int userid) {
-    fprintf(cgiOut, "<div class=\"head1\">Viewing Users Borrowing History for %s</div>", getUserName(userid));
+    char *name = getUserName(userid);
+    
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Users Borrowing History for %s</div>", name);
 
     fprintf(cgiOut, "<b>Current Loans: </b><br />\n");
     printCurrentLoansByUser(userid);
@@ -213,6 +223,8 @@ static void printAllLoansByUser(int userid) {
     fprintf(cgiOut, "<b>Previous Loans: </b><br />\n");    
     printPreviousLoansByUser(userid);
     fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
+
+    free(name);
 }
 
 static void printCurrentLoansByUser(int userid) {
@@ -258,9 +270,13 @@ static void printCurrentLoansByUser(int userid) {
 
 	    curr_id=allLoans[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+	        int album = getLoanAlbum(curr_id);
+		char *title = getAlbumTitle(getLoanAlbum(curr_id));
+
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon, getAlbumTitle(getLoanAlbum(curr_id)));
+		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", album, _currUserLogon, title);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "    <td>On Loan</td>\n");
 		
@@ -286,8 +302,9 @@ static void printCurrentLoansByUser(int userid) {
 		
 		count++;
 		curr_id=allLoans[count];
-	    }
-	    
+
+		free(title);
+	    }	    
 	    fprintf(cgiOut, "</tbody>\n");
 	    fprintf(cgiOut, "\n");
 	    fprintf(cgiOut, "</table>\n");
@@ -334,9 +351,12 @@ static void printPreviousLoansByUser(int userid) {
 
 	    curr_id=allLoans[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int albumID = getLoanAlbum(curr_id);
+		char *title = getAlbumTitle(albumID);
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon, getAlbumTitle(getLoanAlbum(curr_id)));
+		fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", albumID, _currUserLogon, title);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "    <td>Returned</td>\n");
 		
@@ -352,6 +372,8 @@ static void printPreviousLoansByUser(int userid) {
 		
 		count++;
 		curr_id=allLoans[count];
+
+		free(title);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");
@@ -364,7 +386,9 @@ static void printPreviousLoansByUser(int userid) {
 }
 
 static void printAllLoansByAlbum(int albumid) {
-    fprintf(cgiOut, "<div class=\"head1\">Viewing Albums Borrowing History for %s</div>", getAlbumTitle(albumid));
+    char *title = getAlbumTitle(albumid);
+    
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Albums Borrowing History for %s</div>", title);
 
     printCurrentLoanByAlbum(albumid);
 
@@ -373,6 +397,8 @@ static void printAllLoansByAlbum(int albumid) {
     fprintf(cgiOut, "<b>Previous Loans: </b><br />\n");
     printPreviousLoansByAlbum(albumid);
     fprintf(cgiOut, "<hr /><a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">Back to Album page</a>\n", albumid, _currUserLogon);
+
+    free(title);
 }
 
 static void printCurrentLoanByAlbum(int albumid) {
@@ -397,12 +423,17 @@ static void printCurrentLoanByAlbum(int albumid) {
 	else {
 	    fprintf(cgiOut, "Album is on loan ");
 	    if(isUserLibrarian(_currUserLogon) == TRUE) {
+		char *name = getUserName(tempUserID);
+
+		
 		fprintf(cgiOut, "to <b>");
-		userLink("", tempUserID, getUserName(tempUserID), cgiOut);
+		userLink("", tempUserID, name, cgiOut);
 		fprintf(cgiOut, "</b><br />\n");
 		fprintf(cgiOut, "[Taken at ");
 		printTime(getLoanTimeIn(currLoan), cgiOut);
 		fprintf(cgiOut, "]\n");
+
+		free(name);
 	    }
 	}
     }
@@ -458,9 +489,12 @@ static void printPreviousLoansByAlbum(int albumid) {
 	    
 	    curr_id=allLoans[count];
 	    while (curr_id != LAST_ID_IN_ARRAY) {
+		int userID = getLoanUser(curr_id);
+		char *name = getUserName(userID);
+		
 		fprintf(cgiOut, "  <tr>\n");
 		fprintf(cgiOut, "    <td>");
-		userLink("", getLoanUser(curr_id), getUserName(getLoanUser(curr_id)), cgiOut);
+		userLink("", userID, name, cgiOut);
 		fprintf(cgiOut, "    </td>\n");
 		fprintf(cgiOut, "    <td>Returned</td>\n");
 		
@@ -476,6 +510,8 @@ static void printPreviousLoansByAlbum(int albumid) {
 		
 		count++;
 		curr_id=allLoans[count];
+
+		free(name);
 	    }
 	    
 	    fprintf(cgiOut, "</tbody>\n");

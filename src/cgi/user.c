@@ -83,10 +83,30 @@ static void doAddUser(void) {
 static int processAddForm(void) {
     int result=0;
     int newUserid=-1;
-    char *userCode=malloc(sizeof(char)*MAXSIZE_USERCODE);
-    char *userName=malloc(sizeof(char)*MAXSIZE_USERNAME);
-    char *userEmail=malloc(sizeof(char)*MAXSIZE_USEREMAIL);
+    char *userCode= NULL;
+    char *userName= NULL; 
+    char *userEmail= NULL; 
     Boolean isLib=FALSE;
+
+    /*mem allocation and testing*/
+    userCode =  malloc(sizeof(char)*MAXSIZE_USERCODE);
+    if(userCode == NULL){
+	fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	return E_MALLOC_FAILED;
+    }
+    userName = malloc(sizeof(char)*MAXSIZE_USERNAME);
+    if(userName == NULL){
+	fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	free(userCode);
+	return E_MALLOC_FAILED;
+    }
+    userEmail = malloc(sizeof(char)*MAXSIZE_USEREMAIL);
+    if(userEmail == NULL){
+	fprintf(cgiOut, "Memory Allocation Error<br />\n");
+	free(userCode);
+	free(userName);
+	return E_MALLOC_FAILED;
+    }
 
     result = cgiFormStringNoNewlines("usrcode", userCode, MAXSIZE_USERCODE);
     if(result != cgiFormSuccess || userCode == NULL) {
@@ -134,10 +154,15 @@ static int processAddForm(void) {
 	    break;
 	default:
 	    fprintf(cgiOut, "Unknown error: Adding failed<br />\n");
-	    return E_UNKNOWN;
+	    newUserid = E_UNKNOWN;
+	    break;
 	}
     }
-    
+    /*finished with malloced variables: free memory*/
+    free(userCode);
+    free(userName);
+    free(userEmail);
+	
     return newUserid;
 }
 
@@ -317,6 +342,11 @@ static void printAllUsersByType(Boolean isLib) {
 }
 
 static void printSpecificUser(int userid) {
+    /*variables used to display data in following output*/
+    char *userCode=getUserCode(userid);
+    char *userName=getUserName(userid);
+    char *userEmail=getUserEmail(userid);
+    
     fprintf(cgiOut, "<div class=\"head1\">View User [%d]</div>", userid);
 
     fprintf(cgiOut, "<table>\n");
@@ -325,19 +355,19 @@ static void printSpecificUser(int userid) {
     fprintf(cgiOut, "    <td class=\"describe\">User Code: </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getUserCode(userid));
+    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", userCode);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\">User Name: </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getUserName(userid));
+    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", userName);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\">Email Address: </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", getUserEmail(userid));
+    fprintf(cgiOut, "    <td class=\"field\">%s</td>\n", userEmail);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\">Is A Librarian: </td>\n");
@@ -365,4 +395,8 @@ static void printSpecificUser(int userid) {
     if(isUserLibrarian(_currUserLogon) == TRUE) {
       fprintf(cgiOut, "<br /><a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&amp;hash=%d\">Add Comment about this user</a>\n", userid, _currUserLogon);
     }
+
+    free(userCode);
+    free(userName);
+    free(userEmail);
 }
