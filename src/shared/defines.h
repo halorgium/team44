@@ -19,9 +19,9 @@ typedef int Boolean;
 
 #define MAXSIZE_ARTISTNAME 50
 
-#define MAXSIZE_USERCOMMENT 80
-#define MAXSIZE_ARTISTCOMMENT 80
-#define MAXSIZE_ALBUMCOMMENT 80
+#define MAXSIZE_USERCOMMENT 200
+#define MAXSIZE_ARTISTCOMMENT 200
+#define MAXSIZE_ALBUMCOMMENT 200
 
 /* Error codes */
 
@@ -47,6 +47,10 @@ typedef int Boolean;
 
 #define DB_LOAD_FAILURE -20
 #define DB_ALREADY_LOADED -21
+#define DB_NEXTID_ERROR -22
+
+#define E_FORM -40
+#define E_UNKNOWN -50
 
 #define E_NOUSER -101
 #define E_NOALBUM -102

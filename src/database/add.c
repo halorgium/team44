@@ -9,17 +9,21 @@
 #include "globals.h"
 #include "save.h"
 
+/* returns the current time of day (used for album borrowing and returning */
 static long getctime(void) {
     struct timeval *tv=malloc(sizeof(struct timeval));
     int suc=gettimeofday(tv, NULL);
     
     if(suc != 0) {
+	/* Some problem with retrieving the time */
 	return -1;
     }
 
+    /* Return the time of day */
     return tv->tv_sec;
 }
 
+/* Checks that string is acceptable for entering into the database */
 static int checkString(const char *string) {
     if(string == NULL) {
 	return -1;
@@ -129,7 +133,7 @@ int addAlbum(const char *title, int artistID){
 
     /* Check nextid is ok */
     if(getAlbumExists(_nextAlbumID) == TRUE) {
-	return DB_SAVE_FAILURE;
+	return DB_NEXTID_ERROR;
     }
     
     /*checks whether argument pointers are NULL */
@@ -141,20 +145,23 @@ int addAlbum(const char *title, int artistID){
 	return E_NOARTIST;
     }
 
+    /* check whether album with this title has already
+       been created by this artist */
     {
 	/*pointer to list of albums*/
-	int *albumsInLibrary = getAlbums();
+	int *allAlbums = getAlbums();
 	int i;  /*counter*/
 
 	/*check for album 'already in' library*/
     
-	for(i = 0; albumsInLibrary[i] != LAST_ID_IN_ARRAY; i++){
-	    if(strcmp(getAlbumTitle(albumsInLibrary[i]), title) == 0 &&
-	       artistID == getAlbumArtist(albumsInLibrary[i])){
+	for(i = 0; allAlbums[i] != LAST_ID_IN_ARRAY; i++){
+	    if(strcmp(getAlbumTitle(allAlbums[i]), title) == 0 &&
+	       artistID == getAlbumArtist(allAlbums[i])){
 		/*album added is 'the same' as another in database*/
 		return ALREADY_ADDED;
 	    }
 	}
+	free(allAlbums);
     }
     
     /*allocates memory for new Album*/
@@ -197,12 +204,32 @@ int addArtist(const char *name){
 
     /* Check nextid is ok */
     if(getArtistExists(_nextArtistID) == TRUE) {
-	return DB_SAVE_FAILURE;
+	return DB_NEXTID_ERROR;
     }
-   
+
     /*checks whether argument pointers are NULL */
     if(checkString(name) != 1){
 	return E_INVALID_PARAM;
+    }
+
+    /* check whether artist already exists */
+    {
+        int *allArtists=getArtists();
+	int count=0;
+	
+	if(allArtists != NULL) {
+	    int curr_id=allArtists[count];
+	    while (curr_id != LAST_ID_IN_ARRAY) {
+		if(strcmp(getArtistName(curr_id), name) == 0) {
+		    /*artist added is 'the same' as another in database*/
+		    return ALREADY_ADDED;
+		}
+		
+		count++;
+		curr_id=allArtists[count];
+	    }
+	}
+	free(allArtists);
     }
     
     /*allocates memory for new Artist*/
@@ -254,7 +281,7 @@ int addUserComment(int userID, int owner, const char* body){
 
     /* Check nextid is ok */
     if(getUserCommentExists(_nextUserCommentID) == TRUE) {
-	return DB_SAVE_FAILURE;
+	return DB_NEXTID_ERROR;
     }
  
     if(checkString(body) != 1) {
@@ -306,7 +333,7 @@ int addAlbumComment(int albumID, int owner, const char *body){
     
     /* Check nextid is ok */
     if(getAlbumCommentExists(_nextAlbumCommentID) == TRUE) {
-	return DB_SAVE_FAILURE;
+	return DB_NEXTID_ERROR;
     }
     
     /**null param  check**/
@@ -364,7 +391,7 @@ int addArtistComment(int artistID, int owner, const char *body){
 
     /* Check nextid is ok */
     if(getArtistCommentExists(_nextArtistCommentID) == TRUE) {
-	return DB_SAVE_FAILURE;
+	return DB_NEXTID_ERROR;
     }
 
     /**null param  check**/
@@ -421,7 +448,7 @@ int addLoan(int albumID, int userID) {
     
     /* check next id is ok */
     if(getLoanExists(_nextLoanID) == TRUE) {
-        return DB_SAVE_FAILURE;
+        return DB_NEXTID_ERROR;
     }
     
     /*checks whether user existsL */
