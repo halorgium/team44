@@ -104,8 +104,6 @@ static char *replaceChar(char *data, char replacee, const char *replacement) {
 	/* set to newdata */
 	data=newdata;
 
-	fprintf(stderr, "%s\n", data);
-	
 	temp=strchr(tempB, replacee);
     }
 

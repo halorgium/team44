@@ -197,8 +197,7 @@ static int loadNextID(FILE *file) {
 	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
 
 	/*free memory before reiteration*/
-/*	free(line);*/
-	line = NULL;
+	free(line);
     }
     return 1;
 }
@@ -287,7 +286,7 @@ static int loadAllUsers(FILE *file){
 	firstUser = newUser;
 
 	/*free memory before reiteration*/
-/*	free(line);*/
+	free(line);
 	line = NULL;
     }
     return 1;
@@ -354,11 +353,10 @@ static int loadAllAlbums(FILE *file){
 	firstAlbum = newAlbum;
 
 	/*free memory before reiteration*/
-/*	free(line);*/
+	free(line);
     }
 
     return 1;
-
 }
 
 static int loadAllArtists(FILE *file){
@@ -411,7 +409,7 @@ static int loadAllArtists(FILE *file){
 	firstArtist = newArtist;
 
 	/*free memory before reiteration*/
-/* 	free(line); */
+ 	free(line); 
     }
 
     return 1;
@@ -501,7 +499,7 @@ static int loadAllLoans(FILE *file){
 	firstLoan = newLoan;
 	
     	/*free memory before reiteration*/
-/* 	free(line); */
+ 	free(line); 
     }
 
     return 1;
@@ -529,6 +527,7 @@ static int loadAllLoansReturned(FILE *file){
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	
 	tempLoanID = atoi(char2int);
+        free(char2int);
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
@@ -543,6 +542,7 @@ static int loadAllLoansReturned(FILE *file){
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	
 	tempTimeOut = atoi(char2int);
+        free(char2int);
 
 	/*end of line test*/
 	temp = temp2 + 1;  /*remove '%' char*/
@@ -553,7 +553,7 @@ static int loadAllLoansReturned(FILE *file){
 	setLoanReturned(tempLoanID, tempTimeOut);
 	
     	/*free memory before reiteration*/
-/* 	free(line); */
+ 	free(line); 
     }
 
     return 1;
@@ -638,7 +638,7 @@ static int loadUserComments(FILE *file){
 	firstUserComment = newUserComment;
 
 	/*free memory before reiteration*/
-/* 	free(line); */
+ 	free(line); 
     }
     return 1;
 }
@@ -722,7 +722,7 @@ static int loadAlbumComments(FILE *file){
 	firstAlbumComment = newAlbumComment;
 
 	/*free memory before reiteration*/
-/* 	free(line); */
+ 	free(line); 
     }
     return 1;
 }
@@ -807,7 +807,7 @@ static int loadArtistComments(FILE *file){
 	firstArtistComment = newArtistComment;
 
 	/*free memory before reiteration*/
-/* 	free(line); */
+ 	free(line); 
     }
     return 1;
 }
