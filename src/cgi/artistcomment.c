@@ -57,7 +57,9 @@ static void doAddArtistComment(void) {
 	/* Artist Comment added ok */
 	fprintf(cgiOut, "Adding successful<br />\n");
 	fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&hash=%d\">[View Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&hash=%d\">[View Artist Comments for Artist]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
+	fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&hash=%d\">[View Artist Comments for Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
+	/*fprintf(cgiOut, "<br />\n");*/
+	fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&hash=%d\">[Add Another Comment on this Artist]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
       }
       else {
 	/* Some sort of failure */

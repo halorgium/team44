@@ -67,7 +67,8 @@ static void doAddUserComment(void) {
 	/* User Comment added ok */
 	fprintf(cgiOut, "Adding successful<br />\n");
 	fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View User Comments for User]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon);
+	fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View User Comments for User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
+	fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Add another comment on User]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon);
       }
       else {
 	/* Some sort of failure */

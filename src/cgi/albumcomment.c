@@ -57,7 +57,8 @@ static void doAddAlbumComment(void) {
 	/* Album Comment added ok */
 	fprintf(cgiOut, "Adding successful<br />\n");
 	fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&hash=%d\">[View Album Comments for Album]</a>\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
+	fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&hash=%d\">[View Album Comments for Album]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
+	fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&hash=%d\">[Add Another Comment for this Album]</a>\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
       }
       else {
 	/* Some sort of failure */
