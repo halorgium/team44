@@ -15,3 +15,5 @@ help_all:
 install:
 	@./do_install.sh
 
+egg_all:
+	@(cd egg; make all)
