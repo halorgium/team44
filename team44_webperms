@@ -1,0 +1,3 @@
+#!/bin/sh
+chmod -R o+r web/
+chmod o+x `find web/ -type d`

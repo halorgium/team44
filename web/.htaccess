@@ -1,0 +1,4 @@
+ErrorDocument 403 /~tsm20/team44/
+ErrorDocument 404 /~tsm20/team44/
+
+# Needs to be changed so if some random person checks it out it is relative
