@@ -1,3 +1,13 @@
+/*
+ *
+ * artistcomment.c
+ * ==========
+ * provides functions which deal with artist comments in the cgi
+ * 
+*/
+
+/*===================== Preprocessor statements===========================*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +15,8 @@
 #include "cgic.h"
 #include "globals.h"
 #include "../shared/defines.h"
+
+/*======================Function Declarations=============================*/
 
 static void doAddArtistComment(void);
 static void doViewArtistComment(void);
@@ -15,6 +27,18 @@ static void printAddForm(void);
 static void printAllArtistCommentsByUser(int);
 static void printAllArtistCommentsForArtist(int);
 
+
+/*======================Function Definitions=============================*/
+
+
+/*
+ * Function: printArtistComment
+ * Parameters: funcName stuct
+ * Returns: (void)
+ *
+ * checks to see if the function name is for adding an artist.
+ * if not it calls the doViewAlbum method
+ */
 void printArtistComment(funcName_t func) {
     switch(func) {
     case FUNC_ADD:
@@ -28,6 +52,15 @@ void printArtistComment(funcName_t func) {
     }
 }
 
+/*
+ * Function: doAddArtistComment
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function communicates with the database and adds artistcomments. Then checks that there
+ * are artists in the database which we can attribute the comment with. Providing there are no errors the
+ * artist comment is then added to the database and a message is sent back to the user - Adding Successful.
+ */
 static void doAddArtistComment(void) {
   int result=0;
   Boolean isAdding=FALSE;
@@ -73,6 +106,13 @@ static void doAddArtistComment(void) {
   }
 }
 
+/*
+ * Function: processAddForm
+ * Parameters: (void)
+ * Returns: int
+ *
+ * This is used to process the form that adds the new artistcomment..
+ */
 static int processAddForm(void) {
   int result=0;
   int newArtistCommentid=-1;
@@ -130,6 +170,14 @@ static int processAddForm(void) {
   return newArtistCommentid;
 }
 
+/*
+ * Function: printAddForm
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function checks for errors like Comment is too big, is invalid or already exist
+ * and then once this has been processed the form(html code) can be written to the cgi output stream 
+ */
 static void printAddForm(void) {
   int result=-1;
   int artistid=-1;
@@ -222,6 +270,14 @@ static void printAddForm(void) {
   }
 }
 
+
+/*
+ * Function: doViewArtistComment
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function lets the user view the details of a specified ArtistComment
+ */
 static void doViewArtistComment(void) {
   int result=0;
   int artistid=0;
@@ -270,6 +326,15 @@ static void doViewArtistComment(void) {
   }
 }
 
+
+/*
+ * Function: printAllArtistCommentsByUser
+ * Parameters: int
+ * Returns: (void)
+ *
+ * This lists all the ArtistCommentsByUser in the database in a table that the user can view.
+ * The method goes through the list and adds each to a table
+ */
 static void printAllArtistCommentsByUser(int userid) {
   int *allArtistComments=NULL;
   int curr_id=0;
@@ -331,11 +396,19 @@ static void printAllArtistCommentsByUser(int userid) {
   fprintf(cgiOut, "<hr /><a href=\"./?page=user&amp;userid=%d&amp;hash=%d\">Back to User page</a>\n", userid, _currUserLogon);
 }
 
+/*
+ * Function: printAllArtistCommentsForArtist
+ * Parameters: int
+ * Returns: (void)
+ *
+ * This lists all the ArtistCommentsForArtist in the database in a table that the user can view.
+ * The method goes through the list and adds each to a table
+ */
 static void printAllArtistCommentsForArtist(int artistid) {
+
   int *allArtistComments=NULL;
   int curr_id=0;
   int count=0;
-
   char *artistName=getArtistName(artistid);
 
   fprintf(cgiOut, "<div class=\"head1\">Viewing Artist Comments written about %s</div>", artistName);

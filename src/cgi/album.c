@@ -1,8 +1,12 @@
 /*
- album.c provides functions which deal with albums in the cgi
+ *
+ * album.c
+ * ==========
+ * provides functions which deal with albums in the cgi
+ * 
 */
 
-/*================= Preprocessor statements===============================*/
+/*===================== Preprocessor statements===========================*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,6 +30,15 @@ static void printSpecificAlbum(int);
 
 /*======================Function Definitions=============================*/
 
+/*
+ * Function: printAlbum
+ * Parameters: funcName stuct
+ * Returns: (void)
+ *
+ * checks to see if the function name is for adding an album.
+ * if not it calls the doViewAlbum method
+ */
+
 void printAlbum(funcName_t func) {
     switch(func) {
     case FUNC_ADD:
@@ -37,8 +50,19 @@ void printAlbum(funcName_t func) {
 	/* Do view album etc */
 	doViewAlbum();
     }
-}  
+}
 
+  
+/*
+ * Function: doAddAlbum
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function communicates with the database and adds albums. Checks privileges of current user
+ * to see if they are a librarian. Because only librarians can add Albums. Then the ablum checks that there
+ * are artists in the database which we can attribute the album with. Providing there are no errors the album
+ * is then added to the database and a message is sent back to the user - Adding Successful.
+ */
 static void doAddAlbum(void) {
     Boolean needAddForm=TRUE;
 
@@ -139,6 +163,14 @@ static void doAddAlbum(void) {
     }
 }
 
+/*
+ * Function: processAddForm
+ * Parameters: int, struct
+ * Returns: Boolean
+ *
+ * This is used to process the form that adds the new album. It communicates with the database and checks 
+ * whether the album being added has already been added before.
+ */
 static Boolean processAddForm(int *errors, albumNode_t *formdata) {
     int result=0;
     int size=-1;
@@ -206,6 +238,15 @@ static Boolean processAddForm(int *errors, albumNode_t *formdata) {
     return TRUE;
 }
 
+
+/*
+ * Function: printAddForm
+ * Parameters: int, int*, struct
+ * Returns: (void)
+ *
+ * This function checks for errors like Album Title is too big, Album Title is invalid or already exist
+ * and then once this has been processed the form (html code) can be written to the cgi output stream 
+ */
 static void printAddForm(Boolean isAdding, int *errors, albumNode_t *formdata) {
   Boolean freshForm=FALSE;
 
@@ -317,6 +358,13 @@ static void printAddForm(Boolean isAdding, int *errors, albumNode_t *formdata) {
     
 }
 
+/*
+ * Function: doViewAlbum
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This function lets the user view the details of a specified album
+ */
 static void doViewAlbum(void) {
     int result=0;
     int albumid=-1;
@@ -345,6 +393,14 @@ static void doViewAlbum(void) {
     }
 }
 
+/*
+ * Function: printAllAlbums
+ * Parameters: (void)
+ * Returns: (void)
+ *
+ * This lists all the albums in the database in a table that the user can view.
+ * The method goes through the list of albums and adds each to the table
+ */
 static void printAllAlbums(void) {
     int *allAlbums=NULL;
     int curr_id=0;
@@ -419,6 +475,14 @@ static void printAllAlbums(void) {
     }
 }
 
+/*
+ * Function: printSpecificAlbum
+ * Parameters: int
+ * Returns: (void)
+ *
+ * Users can specify the album they wish to view. This function allows them to do this. 
+ * The albums details are then printed out for the user to view.
+ */
 static void printSpecificAlbum(int albumid) {
     fprintf(cgiOut, "<div class=\"head1\">View Album [%d]</div>", albumid);
 
