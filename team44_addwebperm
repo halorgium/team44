@@ -1,4 +1,4 @@
 #!/bin/sh
 F=`id -nu`;
-echo "adding pass for "$F;
+echo "adding web pass for "$F;
 htpasswd -d .htpasswd $F
