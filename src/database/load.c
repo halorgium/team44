@@ -115,6 +115,7 @@ int loadNextID(FILE *file) {
 	/* get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -128,6 +129,7 @@ int loadNextID(FILE *file) {
 	/* get artistID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -141,6 +143,7 @@ int loadNextID(FILE *file) {
 	/* get userCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -154,6 +157,7 @@ int loadNextID(FILE *file) {
 	/* get albumCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -167,6 +171,7 @@ int loadNextID(FILE *file) {
 	/* get artistCommentID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -180,6 +185,7 @@ int loadNextID(FILE *file) {
 	/* get loanID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -219,6 +225,7 @@ int loadAllUsers(FILE *file){
 	/* get ID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
+
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
@@ -233,6 +240,7 @@ int loadAllUsers(FILE *file){
 	/* get userCode */
 	newUser->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->userCode == NULL) return E_MALLOC_FAILED;
+
 	strncpy(newUser->userCode, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	newUser->userCode[strlen(temp)-strlen(temp2)] = '\0';
@@ -244,6 +252,7 @@ int loadAllUsers(FILE *file){
 	/*get userName */
 	newUser->userName = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->userName == NULL) return E_MALLOC_FAILED;
+
 	strncpy(newUser->userName, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	newUser->userName[strlen(temp)-strlen(temp2)] = '\0';
@@ -255,9 +264,10 @@ int loadAllUsers(FILE *file){
 	/* get emailAddress */
 	newUser->emailAddress = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->emailAddress == NULL) return E_MALLOC_FAILED;
+
 	strncpy(newUser->emailAddress, temp, (strlen(temp)-strlen(temp2)));
 	/* null terminate new string */
-	newUser->userCode[strlen(temp)-strlen(temp2)] = '\0';
+	newUser->emailAddress[strlen(temp)-strlen(temp2)] = '\0';
 	
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
@@ -321,7 +331,6 @@ int loadAllAlbums(FILE *file){
 	/*get album title */
 	newAlbum->title = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newAlbum->title == NULL) return E_MALLOC_FAILED;
-
 	strncpy(newAlbum->title, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	newAlbum->title[strlen(temp)-strlen(temp2)] = '\0';

@@ -20,25 +20,24 @@ static long getctime(void) {
     return tv->tv_sec;
 }
 
-static int checkString(const char *string) {
-    char *temp=NULL;
-    
-    if(string == NULL) {
-	return -1;
-    }
-    if(string[0] == '\0' || string[0] == '%') {
-	return -1;
-    }
-    if(strchr(string, "%") != NULL) {
-	return -1;
-    }
-    temp=strchr(string, "<");
-    while(temp != NULL) {
-	/* Contains '<' */
-	
-
-	temp=strchr(string, "<");
-    }
+static int checkString(char *string) {
+  if(string == NULL) {
+    return -1;
+  }
+  if(string[0] == '\0' || string[0] == ' ') {
+    return -1;
+  }
+  if(strchr(string, '%') != NULL) {
+    return -1;
+  }
+  if(strchr(string, '"') != NULL) {
+    return -1;
+  }
+  if(strchr(string, '&') != NULL) {
+    return -1;
+  }
+  
+  return 1;
 }
 
 /* Function: addUser
@@ -53,17 +52,21 @@ static int checkString(const char *string) {
  * 
  * Blank user names and emails are allowed to be added 
  */
-int addUser(const char *userCode, const char* name, const char* email, Boolean isLib){
-    userNode_t *newUserNode = NULL;
-    
-    /* check for NULL params*/
-    if(userCode == NULL || name == NULL || email == NULL) {
-	return E_INVALID_PARAM;
-    }
+int addUser(/* const  */char *userCode, const char* name, const char* email, Boolean isLib){
+  userNode_t *newUserNode = NULL;
 
-    if(strchr(userCode, '%') != NULL || strchr(name, '%') != NULL || strchr(email, '%') != NULL) {
-	return E_INVALID_PARAM;
-    }
+  /* check for char * params*/
+  if(checkString(userCode) != 1 || checkString(name) != 1 || checkString(email) != 1) {
+    return E_INVALID_PARAM;
+  }
+
+/*     if(userCode == NULL || name == NULL || email == NULL) { */
+/* 	return E_INVALID_PARAM; */
+/*     } */
+
+/*     if(strchr(userCode, '%') != NULL || strchr(name, '%') != NULL || strchr(email, '%') != NULL) { */
+/* 	return E_INVALID_PARAM; */
+/*     } */
 
     if(getUserExists(makeUserID(userCode)) == TRUE) {
       return ALREADY_ADDED;

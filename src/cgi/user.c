@@ -83,31 +83,19 @@ static int processAddForm(void) {
 	printf("no code\n");
 	return -1;
     }
-    if(userCode[0] == ' ') {
-	printf("space not allowed at beginning\n");
-	return -1;
-    }
 
     result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
     if(result != cgiFormSuccess || userName == NULL) {
 	printf("no name\n");
 	return -1;
     }
-    if(userName[0] == ' ') {
-	printf("space not allowed at beginning\n");
-	return -1;
-    }
-    
+   
     result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
     if(result != cgiFormSuccess || userEmail == NULL) {
 	printf("no email\n");
 	return -1;
     }
-    if(userEmail[0] == ' ') {
-	printf("space not allowed at beginning\n");
-	return -1;
-    }
-    
+
     result = cgiFormCheckboxSingle("islib");
     if(result != cgiFormSuccess) {
 	isLib=FALSE;

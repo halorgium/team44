@@ -22,7 +22,146 @@
 #include "structs.h"
 #include "globals.h"
 
-/*'private' method construct*/
+static char *htmlEscape(const char* input) {
+  char *data=NULL;
+  char *temp=NULL;
+  char replacee=0;
+
+  if(input == NULL) {
+    return "(null)";
+  }
+
+  /* Copy data */
+  data=malloc(sizeof(char)*(strlen(input)+1));
+  strncpy(data, input, strlen(input)+1);
+
+  /* Checking for '&' */
+/*   replacee = '&'; */
+/*   temp=strchr(data, replacee); */
+/*   while(temp != NULL) { */
+/*     int lenToCopy=0; */
+/*     char *replacement = "&amp;"; */
+/*     char *tempA=NULL; */
+/*     char *tempB=NULL; */
+/*     char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)-1)); */
+/*     if(newdata == NULL) return "(null)"; */
+
+/*     tempA=data; */
+/*     tempB=newdata; */
+
+    /* copy pre-string */
+/*     lenToCopy=strlen(tempA)-strlen(temp); */
+/*     if(lenToCopy > 0) { */
+/*       strncpy(tempB, tempA, lenToCopy); */
+/*       tempB=tempB+lenToCopy; */
+/*       tempA=tempA+lenToCopy; */
+/*     } */
+/*     tempA++; */
+
+    /* copy replacement */
+/*     strncpy(tempB, replacement, strlen(replacement)); */
+/*     tempB=tempB+strlen(replacement); */
+
+    /* copy post-string */
+/*     lenToCopy=strlen(tempA)+1; */
+/*     if(lenToCopy > 0) { */
+/*       strncpy(tempB, tempA, lenToCopy); */
+/*     } */
+
+/*     temp=newdata+(strlen(data)-strlen(temp)); */
+
+    /* free old data */
+/*     free(data); */
+    /* set to newdata */
+/*     data=newdata; */
+
+/*     temp=strchr(temp+1, replacee); */
+/*   } */
+
+  /* Checking for '<' */
+  replacee = '<';
+  temp=strchr(data, replacee);
+  while(temp != NULL) {
+    int lenToCopy=0;
+    char *replacement = "&lt;";
+    char *tempA=NULL;
+    char *tempB=NULL;
+    char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
+    if(newdata == NULL) return "(null)";
+
+    tempA=data;
+    tempB=newdata;
+
+    /* copy pre-string */
+    lenToCopy=strlen(tempA)-strlen(temp);
+    if(lenToCopy > 0) {
+      strncpy(tempB, tempA, lenToCopy);
+      tempB=tempB+lenToCopy;
+      tempA=tempA+lenToCopy;
+    }
+    tempA++;
+
+    /* copy replacement */
+    strncpy(tempB, replacement, strlen(replacement));
+    tempB=tempB+strlen(replacement);
+
+    /* copy post-string */
+    lenToCopy=strlen(tempA)+1;
+    if(lenToCopy > 0) {
+      strncpy(tempB, tempA, lenToCopy);
+    }
+
+    /* free old data */
+    free(data);
+    /* set to newdata */
+    data=newdata;
+
+    temp=strchr(data, replacee);
+  }
+
+  /* Checking for '>' */
+  replacee = '>';
+  temp=strchr(data, replacee);
+  while(temp != NULL) {
+    int lenToCopy=0;
+    char *replacement = "&gt;";
+    char *tempA=NULL;
+    char *tempB=NULL;
+    char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
+    if(newdata == NULL) return "(null)";
+
+    tempA=data;
+    tempB=newdata;
+
+    /* copy pre-string */
+    lenToCopy=strlen(tempA)-strlen(temp);
+    if(lenToCopy > 0) {
+      strncpy(tempB, tempA, lenToCopy);
+      tempB=tempB+lenToCopy;
+      tempA=tempA+lenToCopy;
+    }
+    tempA++;
+
+    /* copy replacement */
+    strncpy(tempB, replacement, strlen(replacement));
+    tempB=tempB+strlen(replacement);
+
+    /* copy post-string */
+    lenToCopy=strlen(tempA)+1;
+    if(lenToCopy > 0) {
+      strncpy(tempB, tempA, lenToCopy);
+    }
+
+    /* free old data */
+    free(data);
+    /* set to newdata */
+    data=newdata;
+
+    temp=strchr(data, replacee);
+  }
+
+  return data;
+}
 
 /*--------------- User Functions ----------------------*/
 
@@ -62,7 +201,7 @@ const char* getUserCode(int idNumber) {
     a = getUser(idNumber);
     
     if(a != NULL) {
-	return a->userCode;
+	return htmlEscape(a->userCode);
     }
     return NULL;
 }
@@ -72,7 +211,7 @@ const char* getUserName(int idNumber) {
     a = getUser(idNumber);
 
     if(a != NULL) {
-	return a->userName;
+	return htmlEscape(a->userName);
     }
     return NULL;
 }
@@ -82,7 +221,7 @@ const char* getUserEmail(int idNumber) {
     a = getUser(idNumber);
     
     if(a != NULL) {
-	return a->emailAddress;
+	return htmlEscape(a->emailAddress);
     }
     return NULL;
 }
@@ -178,7 +317,7 @@ const char* getAlbumTitle(int idNumber){
     a = getAlbum(idNumber);
     
     if(a != NULL) {
-	return a->title;
+	return htmlEscape(a->title);
     }
     return NULL;
 }
@@ -288,7 +427,7 @@ const char* getArtistName(int idNumber){
     a = getArtist(idNumber);
     
     if(a != NULL) {
-	return a->name;
+	return htmlEscape(a->name);
     }
     return NULL;
 }
@@ -397,7 +536,7 @@ const char *getUserCommentBody(int idNumber) {
     a = getUserComment(idNumber);
     
     if(a != NULL) {
-	return a->comment;
+	return htmlEscape(a->comment);
     }
     return NULL;
 }
@@ -505,7 +644,7 @@ const char *getAlbumCommentBody(int idNumber) {
     a = getAlbumComment(idNumber);
     
     if(a != NULL) {
-	return a->comment;
+	return htmlEscape(a->comment);
     }
     return NULL;
 }
@@ -622,7 +761,7 @@ const char *getArtistCommentBody(int idNumber) {
     a = getArtistComment(idNumber);
     
     if(a != NULL) {
-	return a->comment;
+	return htmlEscape(a->comment);
     }
     return NULL;
 }

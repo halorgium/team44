@@ -6,7 +6,7 @@
 int loadDatabase(void);
 
 /* Add methods */
-int addUser(const char *, const char *, const char *, Boolean);
+int addUser(/* const  */char *, const char *, const char *, Boolean);
 int addAlbum(const char *, int);
 int addArtist(const char *);
 int addCommentUser(int, int, const char *);
