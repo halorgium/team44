@@ -58,10 +58,13 @@ int cgiMain() {
 	FILE *linksEnd;
 
         Boolean userType=(strncmp(userCode, "admin", MAXSIZE_USERCODE) == 0) ? TRUE : FALSE;
-	
+
 	linksStart=fopen(HTML_SRC_ROOT"/.shared/links_s.src", "r");
 	echoFile(linksStart, cgiOut);
 
+	fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as <b>%s</b></td>\n  </tr>\n", userCode);
+	fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\"><img src=\"images/1px.gif\" height=\"3\" width=\"1\"/></td>\n  </tr>\n");
+	
 	if(userType/* currUser->isLibrarian */) {
 	    FILE *thelinks;
 	    
@@ -96,6 +99,9 @@ int cgiMain() {
 	else if(strncmp(pageName, "news", MAXSIZE_PAGENAME) == 0) {
 	    printNews();
 	}
+	else if(strncmp(pageName, "contact", MAXSIZE_PAGENAME) == 0) {
+	    printContact();
+	}
 	else if(strncmp(pageName, "user", MAXSIZE_PAGENAME) == 0) {
 	    /* Something about a user */
 	    printUser();
@@ -122,6 +128,14 @@ int printLinks(FILE *input, const char *userCode, FILE *output) {
 	char *temp2 = NULL;
 
 	temp2 = strchr(temp, '%');
+
+	if(strlen(temp)-strlen(temp2) == 0) {
+	    fprintf(output, "  <tr>\n    <td class=\"spacer\"><img src=\"images/1px.gif\" height=\"3\" width=\"1\"/></td>\n  </tr>\n");
+	    continue;
+	}
+	else {
+
+	}
 	
 	href = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(href == NULL) return E_MALLOC_FAILED;
@@ -132,7 +146,12 @@ int printLinks(FILE *input, const char *userCode, FILE *output) {
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 
 	temp2 = strchr(temp, '%');
-	
+
+	if(strlen(temp)-strlen(temp2) == 0) {
+	    free(href);
+	    break;
+	}
+
 	title = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(title == NULL) return E_MALLOC_FAILED;
 	

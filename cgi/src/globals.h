@@ -12,6 +12,7 @@ void printLink(const char *href, const char* title, const char *userCode, FILE *
 void printLogin();
 void printHome();
 void printNews();
+void printContact();
 void printUser();
 
 #endif

@@ -1,7 +1,7 @@
 CFLAGS=-Wall -ansi -pedantic
 CC=gcc
 AR=ar
-OBJS=globals.o main.o login.o home.o user.o news.o ../../shared/read_line.o
+OBJS=globals.o main.o login.o home.o contact.o user.o news.o ../../shared/read_line.o
 LIBS=-L./ -lcgic
 
 INSTALL_DIR=$(HOME)/public_html/testweb
