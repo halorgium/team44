@@ -1,6 +1,10 @@
 #include <stdio.h>
+#include <string.h>
+
 #include "cgic.h"
+#include "globals.h"
 #include "../../shared/structs.h"
+#include "../../shared/defines.h"
 
 void printHeader();
 void printFooter();
@@ -17,16 +21,13 @@ int cgiMain() {
 #endif
     printHeader();
 
-    int result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
+    result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
     if(result != cgiFormSuccess) {
-	page="login";
+	strcpy(pageName, "login");
     }
-    int result = cgiFormStringNoNewlines("userCode", userCode, MAXSIZE_USERCODE);
+    result = cgiFormStringNoNewlines("userCode", userCode, MAXSIZE_USERCODE);
     
-    
-    fprintf(cgiOut, "%s<br />", name);
-    
-
+    fprintf(cgiOut, "%s<br />", pageName);
 
     printFooter();
     return 0;
