@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "../../shared/defines.h"
+#include "../shared/defines.h"
 
 #include <string.h>
 #include <time.h>
@@ -107,32 +107,4 @@ int getLoanStatus(int loanid) {
 	return LOAN_ACTIVE;
     }
     return LOAN_INACTIVE;
-}
-
-char *getLoanStart(int loanid) {
-    struct tm *tmtm=malloc(sizeof(struct tm));
-    char *temp=malloc(sizeof(char)*100);
-    
-    tmtm->tm_sec=rander(0, 59);
-    tmtm->tm_min=rander(0, 59);
-    tmtm->tm_hour=rander(0, 23);
-    tmtm->tm_mday=rander(1, 31);
-    tmtm->tm_mon=rander(0, 11);
-    tmtm->tm_year=rander(100, 103);
-    tmtm->tm_wday=rander(0, 6);
-    tmtm->tm_yday=rander(0, 365);
-    tmtm->tm_isdst=0;
-	
-
-    strftime(temp, 90, "%d %m %Y %H:%M:%S", tmtm);
-    free(tmtm);
-    
-    return temp;
-}
-
-char *getLoanEnd(int loanid) {
-    if(getLoanStatus(loanid) == LOAN_INACTIVE) {
-	return getLoanStart(loanid);
-    }
-    return "N/A";
 }

@@ -3,7 +3,7 @@
 
 
 #include <stdio.h>
-#include "../../shared/structs.h"
+#include "../shared/structs.h"
 
 #define SOURCE_LOCATION "../var/"
 #define ALBUMS_FILE_NAME "albums"

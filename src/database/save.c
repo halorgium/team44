@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "../../shared/defines.h"
+#include "../shared/defines.h"
 #include "globals.h"
 #include "save.h"
 

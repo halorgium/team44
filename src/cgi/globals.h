@@ -5,8 +5,6 @@
 
 #define MAXSIZE_PAGENAME 10
 
-int bdbcount;
-
 #include "tester.h"
 
 char *userCode;

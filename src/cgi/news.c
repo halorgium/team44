@@ -3,8 +3,8 @@
 
 #include "cgic.h"
 #include "globals.h"
-#include "../../shared/structs.h"
-#include "../../shared/defines.h"
+#include "../shared/structs.h"
+#include "../shared/defines.h"
 
 void printNews() {
     FILE *newsPage=NULL;

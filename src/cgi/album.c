@@ -4,8 +4,8 @@
 
 #include "cgic.h"
 #include "globals.h"
-#include "../../shared/structs.h"
-#include "../../shared/defines.h"
+#include "../shared/structs.h"
+#include "../shared/defines.h"
 
 static void doAddAlbum(void);
 static void doViewAlbum(void);

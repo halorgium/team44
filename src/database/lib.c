@@ -18,9 +18,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "../../shared/defines.h"
-#include "../../shared/structs.h"
-#include "../../shared/lib.h"
+#include "../shared/defines.h"
+#include "../shared/structs.h"
+#include "../shared/lib.h"
 #include "globals.h"
 #include "save.h"
 

@@ -4,9 +4,9 @@
 
 #include "cgic.h"
 #include "globals.h"
-#include "../../shared/structs.h"
-#include "../../shared/defines.h"
-#include "../../shared/read_line.h"
+#include "../shared/structs.h"
+#include "../shared/defines.h"
+#include "../shared/read_line.h"
 
 static int  printLinks(FILE *, FILE *);
 static void printHeader(void);
@@ -19,9 +19,6 @@ int cgiMain() {
     char pageName[MAXSIZE_PAGENAME]={'\0'};
     
     userCode=calloc(sizeof(char), MAXSIZE_USERCODE+1);
-
-    bdbcount=0;
-    fprintf(stderr, "(( blah %d ))", bdbcount);bdbcount++;
 
 #if DEBUG
     /* Load a saved CGI scenario if we're debugging */
@@ -123,8 +120,6 @@ int cgiMain() {
 	}
 	echoFile(bodyStart, cgiOut);
 	fclose(bodyStart);
-
-    fprintf(stderr, "(( blah %d ))", bdbcount);bdbcount++;
 
 	if(strncmp(pageName, "home", MAXSIZE_PAGENAME) == 0) {
 	    printHome();

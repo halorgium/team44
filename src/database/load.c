@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../shared/defines.h"
-#include "../../shared/structs.h"
-#include "../../shared/read_line.h"
+#include "../shared/defines.h"
+#include "../shared/structs.h"
+#include "../shared/read_line.h"
 #include "globals.h"
 #include "load.h"
 
