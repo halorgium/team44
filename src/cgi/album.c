@@ -252,7 +252,8 @@ static void printAllAlbums(void) {
     }
     else {
 	if(getAlbumsCount() == 0) {
-	    fprintf(cgiOut, "No albums\n");
+	    fprintf(cgiOut, "No albums<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;func=add&amp;hash=%d\">[Add new Album]</a>\n", _currUserLogon);
 	}
 	else {
 	    fprintf(cgiOut, "<table border=\"1\">\n");

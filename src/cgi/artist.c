@@ -189,7 +189,8 @@ static void printAllArtists(void) {
     }
     else {
 	if(getArtistsCount() == 0) {
-	    fprintf(cgiOut, "No artists\n");
+	    fprintf(cgiOut, "No artists<br />\n");
+            fprintf(cgiOut, "<a href=\"./?page=artist&amp;func=add&amp;hash=%d\">[Add new Artist]</a>\n", _currUserLogon);
 	}
 	else {
 	    fprintf(cgiOut, "<table border=\"1\">\n");
