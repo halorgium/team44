@@ -22,10 +22,12 @@
 #include "structs.h"
 #include "globals.h"
 
-static char *htmlEscape(const char* input) {
+static char *htmlEscape(const char *);
+static char *replaceChar(char *, char, const char *);
+
+static char *htmlEscape(const char *input) {
     char *data=NULL;
-    char *temp=NULL;
-    char replacee=0;
+    char *data2=NULL;
 
     if(input == NULL) {
 	return "(null)";
@@ -35,16 +37,48 @@ static char *htmlEscape(const char* input) {
     data=malloc(sizeof(char)*(strlen(input)+1));
     strncpy(data, input, strlen(input)+1);
 
-    /* Checking for '&' */
-    replacee = '&';
-    temp=strchr(data, replacee);
+    data2=replaceChar(data, '&', "&amp;");
+    if(data2 == NULL) {
+	free(data);
+	return NULL;
+    }
+    data=data2;
+
+    data2=replaceChar(data, '"', "&quot;");
+    if(data2 == NULL) {
+	return NULL;
+    }
+    data=data2;
+
+    data2=replaceChar(data, '<', "&lt;");
+    if(data2 == NULL) {
+	return NULL;
+    }
+    data=data2;
+
+    data2=replaceChar(data, '>', "&gt;");
+    if(data2 == NULL) {
+	return NULL;
+    }
+    data=data2;
+
+    data2=replaceChar(data, ' ', "&nbsp;");
+    if(data2 == NULL) {
+	return NULL;
+    }
+    data=data2;
+
+    return data;
+}
+
+static char *replaceChar(char *data, char replacee, const char *replacement) {
+    char *temp=strchr(data, replacee);
     while(temp != NULL) {
 	int lenToCopy=0;
-	char *replacement = "&amp;";
 	char *tempA=NULL;
 	char *tempB=NULL;
 	char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
-	if(newdata == NULL) return "(null)";
+	if(newdata == NULL) return NULL;
 
 	tempA=data;
 	tempB=newdata;
@@ -73,171 +107,9 @@ static char *htmlEscape(const char* input) {
 	/* set to newdata */
 	data=newdata;
 
+	fprintf(stderr, "%s\n", data);
+	
 	temp=strchr(tempB, replacee);
-    }
-    
-    /* Checking for ' ' */
-    replacee = '"';
-    temp=strchr(data, replacee);
-    while(temp != NULL) {
-	int lenToCopy=0;
-	char *replacement = "&quot;";
-	char *tempA=NULL;
-	char *tempB=NULL;
-	char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
-	if(newdata == NULL) return "(null)";
-
-	tempA=data;
-	tempB=newdata;
-
-	/* copy pre-string */
-	lenToCopy=strlen(tempA)-strlen(temp);
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	    tempB=tempB+lenToCopy;
-	    tempA=tempA+lenToCopy;
-	}
-	tempA++;
-
-	/* copy replacement */
-	strncpy(tempB, replacement, strlen(replacement));
-	tempB=tempB+strlen(replacement);
-
-	/* copy post-string */
-	lenToCopy=strlen(tempA)+1;
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	}
-
-	/* free old data */
-	free(data);
-	/* set to newdata */
-	data=newdata;
-
-	temp=strchr(data, replacee);
-    }
-
-    /* Checking for ' ' */
-    replacee = ' ';
-    temp=strchr(data, replacee);
-    while(temp != NULL) {
-	int lenToCopy=0;
-	char *replacement = "&nbsp;";
-	char *tempA=NULL;
-	char *tempB=NULL;
-	char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
-	if(newdata == NULL) return "(null)";
-
-	tempA=data;
-	tempB=newdata;
-
-	/* copy pre-string */
-	lenToCopy=strlen(tempA)-strlen(temp);
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	    tempB=tempB+lenToCopy;
-	    tempA=tempA+lenToCopy;
-	}
-	tempA++;
-
-	/* copy replacement */
-	strncpy(tempB, replacement, strlen(replacement));
-	tempB=tempB+strlen(replacement);
-
-	/* copy post-string */
-	lenToCopy=strlen(tempA)+1;
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	}
-
-	/* free old data */
-	free(data);
-	/* set to newdata */
-	data=newdata;
-
-	temp=strchr(data, replacee);
-    }
-
-/* Checking for '<' */
-    replacee = '<';
-    temp=strchr(data, replacee);
-    while(temp != NULL) {
-	int lenToCopy=0;
-	char *replacement = "&lt;";
-	char *tempA=NULL;
-	char *tempB=NULL;
-	char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
-	if(newdata == NULL) return "(null)";
-
-	tempA=data;
-	tempB=newdata;
-
-	/* copy pre-string */
-	lenToCopy=strlen(tempA)-strlen(temp);
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	    tempB=tempB+lenToCopy;
-	    tempA=tempA+lenToCopy;
-	}
-	tempA++;
-
-	/* copy replacement */
-	strncpy(tempB, replacement, strlen(replacement));
-	tempB=tempB+strlen(replacement);
-
-	/* copy post-string */
-	lenToCopy=strlen(tempA)+1;
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	}
-
-	/* free old data */
-	free(data);
-	/* set to newdata */
-	data=newdata;
-
-	temp=strchr(data, replacee);
-    }
-
-    /* Checking for '>' */
-    replacee = '>';
-    temp=strchr(data, replacee);
-    while(temp != NULL) {
-	int lenToCopy=0;
-	char *replacement = "&gt;";
-	char *tempA=NULL;
-	char *tempB=NULL;
-	char *newdata=calloc(sizeof(char), (strlen(data)+strlen(replacement)));
-	if(newdata == NULL) return "(null)";
-
-	tempA=data;
-	tempB=newdata;
-
-	/* copy pre-string */
-	lenToCopy=strlen(tempA)-strlen(temp);
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	    tempB=tempB+lenToCopy;
-	    tempA=tempA+lenToCopy;
-	}
-	tempA++;
-
-	/* copy replacement */
-	strncpy(tempB, replacement, strlen(replacement));
-	tempB=tempB+strlen(replacement);
-
-	/* copy post-string */
-	lenToCopy=strlen(tempA)+1;
-	if(lenToCopy > 0) {
-	    strncpy(tempB, tempA, lenToCopy);
-	}
-
-	/* free old data */
-	free(data);
-	/* set to newdata */
-	data=newdata;
-
-	temp=strchr(data, replacee);
     }
 
     return data;

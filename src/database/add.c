@@ -294,7 +294,7 @@ int addAlbumComment(int albumID, int owner, const char *body){
     }
     
     /**null param  check**/
-    if(checkString(body) != -1){
+    if(checkString(body) != 1){
 	return E_INVALID_PARAM;
     }
 
