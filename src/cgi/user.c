@@ -80,16 +80,31 @@ static int processAddForm(void) {
 
     result = cgiFormStringNoNewlines("usrcode", userCode, MAXSIZE_USERCODE);
     if(result != cgiFormSuccess || userCode == NULL) {
+	printf("no code\n");
+	return -1;
+    }
+    if(userCode[0] == ' ') {
+	printf("space not allowed at beginning\n");
 	return -1;
     }
 
     result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
     if(result != cgiFormSuccess || userName == NULL) {
+	printf("no name\n");
 	return -1;
     }
-
+    if(userName[0] == ' ') {
+	printf("space not allowed at beginning\n");
+	return -1;
+    }
+    
     result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
     if(result != cgiFormSuccess || userEmail == NULL) {
+	printf("no email\n");
+	return -1;
+    }
+    if(userEmail[0] == ' ') {
+	printf("space not allowed at beginning\n");
 	return -1;
     }
     
@@ -297,6 +312,6 @@ void printSpecificUser(int userid) {
 
     fprintf(cgiOut, "<hr />\n");
 
-    fprintf(cgiOut, "You have <b>%d</b> albums on loan<br />\n", getLoansByUserCount(userid));
+    fprintf(cgiOut, "You have <b>%d</b> albums on loan<br />\n", getLoansByUserCount(userid, FALSE));
     fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&amp;hash=%d\">View users borrowing history</a>\n", userid, _currUserLogon);
 }

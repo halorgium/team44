@@ -13,6 +13,7 @@ int addCommentUser(int, int, const char *);
 int addCommentAlbum(int, int, const char *);
 int addCommentArtist(int, int, const char *);
 int addLoan(int, int);
+int addLoanReturned(int);
 
 /* Get methods */
 /* User */
@@ -85,10 +86,10 @@ int getLoanTimeIn(int);
 int getLoanTimeOut(int);
 Boolean isLoanReturned(int);
 
-int *getLoansByUser(int);
-int getLoansByUserCount(int);
-int *getLoansByAlbum(int);
-int getLoansByAlbumCount(int);
+int *getLoansByUser(int, Boolean);
+int getLoansByUserCount(int, Boolean);
+int *getLoansByAlbum(int, Boolean);
+int getLoansByAlbumCount(int, Boolean);
 
 int setLoanReturned(int, int);
 

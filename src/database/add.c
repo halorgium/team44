@@ -33,10 +33,14 @@ static long getctime(void) {
  * Blank user names and emails are allowed to be added 
  */
 int addUser(const char *userCode, const char* name, const char* email, Boolean isLib){
-  userNode_t *newUserNode = NULL;
-
+    userNode_t *newUserNode = NULL;
+    
     /* check for NULL params*/
-    if(userCode == NULL || name == NULL || email == NULL) { 
+    if(userCode == NULL || name == NULL || email == NULL) {
+	return E_INVALID_PARAM;
+    }
+
+    if(strchr(userCode, '%') != NULL || strchr(name, '%') != NULL || strchr(email, '%') != NULL) {
 	return E_INVALID_PARAM;
     }
 
@@ -91,7 +95,7 @@ int addUser(const char *userCode, const char* name, const char* email, Boolean i
 
     /*now its in mem, so save to disk*/
     if(saveUser(newUserNode->ID, userCode, name, email, newUserNode->isLibrarian) < 0) return DB_SAVE_FAILURE;
-   
+    
     return newUserNode->ID;
 }
 /* end addUser()*/
@@ -117,6 +121,10 @@ int addAlbum(const char *title, int artistID){
 	return E_INVALID_PARAM;
     }
     
+    if(strchr(title, '%') != NULL) {
+	return E_INVALID_PARAM;
+    }
+        
     if(getArtistExists(artistID) == FALSE) {
       return E_NOARTIST;
     }
@@ -146,8 +154,12 @@ int addAlbum(const char *title, int artistID){
     /*created in memory so now needs to be saved*/
     /*an errror id should be created*/
     if(saveAlbum(newAlbumNode->ID, title, artistID) < 0) return DB_SAVE_FAILURE;
+
+    _nextAlbumID++;
     
-    return _nextAlbumID++;    /*return id then increment */
+    if(saveNextID() < 0) return DB_SAVE_FAILURE;
+    
+    return _nextAlbumID-1;    /*return id then increment */
 }
 /*end addAlbum() */
 
@@ -159,7 +171,11 @@ int addArtist(const char *name){
     if(name == NULL){
 	return E_INVALID_PARAM;
     }
-    
+
+    if(strchr(name, '%') != NULL) {
+	return E_INVALID_PARAM;
+    }
+        
     /*allocates memory for new Artist*/
     newArtistNode = (artistNode_t*) malloc(sizeof(artistNode_t));
     if(newArtistNode == NULL){        /*malloc failure test*/
@@ -183,8 +199,12 @@ int addArtist(const char *name){
 
     /*created in memory so now needs to be saved*/
     if(saveArtist(newArtistNode->ID, name) < 0) return DB_SAVE_FAILURE;
+
+    _nextArtistID++;
     
-    return _nextArtistID++;    /*return id then increment  CHANGE*/
+    if(saveNextID() < 0) return DB_SAVE_FAILURE;
+    
+    return _nextArtistID-1;    /*return id then increment  CHANGE*/
 }/*end addArtist()*/
 
 
@@ -208,6 +228,10 @@ int addUserComment(int userID, int owner, char* body){
 	return E_INVALID_PARAM;
     }
 
+    if(strchr(body, '%') != NULL) {
+	return E_INVALID_PARAM;
+    }
+    
     /*test to see if user is in the database*/
     if(getUserExists(userID) == FALSE || getUserExists(owner) == FALSE) {
       return E_NOUSER;
@@ -240,8 +264,12 @@ int addUserComment(int userID, int owner, char* body){
 
     /*save to disk return error if not worked*/
     if(saveUserComment(newCommentNode->ID, userID, owner, body) < 0) return DB_SAVE_FAILURE;
+
+    _nextUserCommentID++;
     
-    return _nextUserCommentID++;    /*return and increment id*/
+    if(saveNextID() < 0) return DB_SAVE_FAILURE;
+    
+    return _nextUserCommentID-1;    /*return and increment id*/
 }/* end addCommentUser() */
 
 int addAlbumComment(int albumID, int owner, char *body){
@@ -249,6 +277,10 @@ int addAlbumComment(int albumID, int owner, char *body){
     
     /**null param  check**/
     if(body == NULL){
+	return E_INVALID_PARAM;
+    }
+
+    if(strchr(body, '%') != NULL) {
 	return E_INVALID_PARAM;
     }
 
@@ -289,8 +321,12 @@ int addAlbumComment(int albumID, int owner, char *body){
 
     /*save to disk*/
     if(saveAlbumComment(newCommentNode->ID, albumID, owner, body) < 0) return DB_SAVE_FAILURE;
+
+    _nextAlbumCommentID++;
     
-    return _nextAlbumCommentID++;    /*return and increment id*/
+    if(saveNextID() < 0) return DB_SAVE_FAILURE;
+
+    return _nextAlbumCommentID-1;    /*return and increment id*/
 }/* end addCommentAlbum() */
 
 int addArtistComment(int artistID, int owner, char *body){
@@ -298,6 +334,10 @@ int addArtistComment(int artistID, int owner, char *body){
 
     /**null param  check**/
     if(body == NULL){
+	return E_INVALID_PARAM;
+    }
+    
+    if(strchr(body, '%') != NULL) {
 	return E_INVALID_PARAM;
     }
 
@@ -336,11 +376,15 @@ int addArtistComment(int artistID, int owner, char *body){
     firstArtistComment = newCommentNode;
 
     if(saveArtistComment(newCommentNode->ID, artistID, owner, body) < 0) return DB_SAVE_FAILURE;
+
+    _nextArtistCommentID++;
     
-    return _nextArtistCommentID++;    /*return and increment id*/
+    if(saveNextID() < 0) return DB_SAVE_FAILURE;
+
+    return _nextArtistCommentID-1;    /*return and increment id*/
 }/* end addCommentArtist() */
 
-int addLoan(int albumID, int userID){
+int addLoan(int albumID, int userID) {
     long tempTime=-1;
     loanNode_t *newLoanNode = NULL;
     
@@ -348,8 +392,13 @@ int addLoan(int albumID, int userID){
     if(getUserExists(userID) == FALSE) {
       return E_NOUSER;
     }
-    if(getAlbumExists(albumID) == FALSE && getAlbumCurrentLoan(albumID) != E_NOLOAN){
+    
+    if(getAlbumExists(albumID) == FALSE) {
 	return E_NOALBUM;
+    }
+
+    if(getAlbumCurrentLoan(albumID) != E_NOLOAN) {
+	return ALREADY_ADDED;
     }
     
     /*allocates memory for new Loan*/
@@ -378,15 +427,19 @@ int addLoan(int albumID, int userID){
 
     /*created in memory so now needs to be saved*/
     if(saveLoan(newLoanNode->ID, albumID, userID, newLoanNode->timeStampIn) < 0) return DB_SAVE_FAILURE;
+
+    _nextLoanID++;
     
-    return _nextLoanID++;    /*return id then increment  CHANGE*/    
+    if(saveNextID() < 0) return DB_SAVE_FAILURE;
+    
+    return _nextLoanID-1;    /*return id then increment  CHANGE*/    
 }
 
 int addLoanReturned(int loanID){
     long tempTime=-1;
     
     /*checks whether user existsL */
-    if(getLoanExists(loanID) == FALSE) {
+    if(getLoanExists(loanID) == FALSE && isLoanReturned(loanID) == FALSE) {
       return E_NOLOAN;
     }
 

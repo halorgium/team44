@@ -16,7 +16,10 @@ static void printAddForm(void);
 static int processReturnForm(void);
 
 static void printAllLoansByUser(int);
+static void printLoansByUser(int, Boolean);
+
 static void printAllLoansByAlbum(int);
+static void printLoansByAlbum(int, Boolean);
 
 void printLoan(void) {
     int result=0;
@@ -160,10 +163,11 @@ static void doReturnLoan(void) {
 
     if(isReturning) {
 	/* The curr data is ready for processing */
-	int success=processReturnForm();
-	if(success != -1) {
+	int loanid=processReturnForm();
+	if(loanid != -1) {
 	    /* Album added ok */
-	    fprintf(cgiOut, "Album returned successful\n");
+	    fprintf(cgiOut, "Album returned successful<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a>", getLoanAlbum(loanid), _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */
@@ -173,7 +177,20 @@ static void doReturnLoan(void) {
 }
 
 static int processReturnForm(void) {
-    return -1;
+    int result=0;
+    int success=-1;
+    int loanid=-1;
+
+    result = cgiFormInteger("loanid", &loanid, -1);
+    if(result != cgiFormSuccess || loanid == -1) {
+	return -1;
+    }
+    
+    success=addLoanReturned(loanid);
+    if(success < 0) {
+	return -1;
+    }
+    return loanid;
 }
 
 static void doViewLoan(void) {
@@ -216,13 +233,30 @@ static void doViewLoan(void) {
 }
 
 static void printAllLoansByUser(int userid) {
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Borrowing History for <b>%s</b></div>", getUserName(userid));
+
+    fprintf(cgiOut, "Current Loans: <br />\n");
+    printLoansByUser(userid, FALSE);
+
+    fprintf(cgiOut, "<hr />\n");
+    
+    fprintf(cgiOut, "Previous Loans: <br />\n");    
+    printLoansByUser(userid, TRUE);
+}
+
+static void printLoansByUser(int userid, Boolean isReturned) {
     int *allLoans=NULL;
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing All Loans for <b>%s</b></div>", getUserName(userid));
-
-    allLoans=getLoansByUser(userid);
+    if(isReturned != TRUE) {
+	isReturned = FALSE;
+    }
+    else {
+	isReturned = TRUE;
+    }
+    
+    allLoans=getLoansByUser(userid, isReturned);
 
     if(allLoans == NULL) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Loans</div>");
@@ -247,9 +281,14 @@ static void printAllLoansByUser(int userid) {
 	fprintf(cgiOut, "\n");
 	fprintf(cgiOut, "<tbody>\n");
 
-	if(getLoansByUserCount(userid) == 0) {
+	if(getLoansByUserCount(userid, isReturned) == 0) {
 	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+    	    if(isReturned == FALSE) {
+		fprintf(cgiOut, "    <td colspan=\"4\">No albums on loan</td>\n");
+	    }
+	    else {
+		fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+	    }
 	    fprintf(cgiOut, "  </tr>\n");
 	}
 
@@ -270,15 +309,30 @@ static void printAllLoansByUser(int userid) {
 	    printTime(getLoanTimeIn(curr_id), cgiOut);
 	    fprintf(cgiOut, "</td>\n");
 
-	    if(getLoanTimeOut(curr_id) == -1) {
-		fprintf(cgiOut, "    <td>N/A</td>\n");
+	    fprintf(cgiOut, "    <td>");
+	    if(isLoanReturned(curr_id) == FALSE) {
+		if(getLoanUser(curr_id) == _currUserLogon) {
+		    fprintf(cgiOut, "<form method=\"get\" action=\"./\" style=\"display: inline;\">\n");
+		    fprintf(cgiOut, "  <div>\n");
+		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
+		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"return\" />\n");
+		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"returning\" value=\"%d\" />\n", TRUE);
+		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"loanid\" value=\"%d\" />\n", curr_id);
+		    fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
+		    fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
+		    fprintf(cgiOut, "  </div>\n");
+		    fprintf(cgiOut, "</form>\n");
+		}
+		else {
+		    
+		}
 	    }
 	    else {
-		fprintf(cgiOut, "    <td>");
 		printTime(getLoanTimeOut(curr_id), cgiOut);
-		fprintf(cgiOut, "</td>\n");
 	    }
+	    fprintf(cgiOut, "</td>\n");
 
+	    
 	    fprintf(cgiOut, "  </tr>\n");
 
 	    count++;
@@ -294,14 +348,32 @@ static void printAllLoansByUser(int userid) {
 }
 
 static void printAllLoansByAlbum(int albumid) {
+    fprintf(cgiOut, "<div class=\"head1\">Viewing Borrowing History for %s</div>", getAlbumTitle(albumid));
+
+    fprintf(cgiOut, "Current Loans: <br />\n");
+    printLoansByAlbum(albumid, FALSE);
+
+    fprintf(cgiOut, "<hr />\n");
+
+    fprintf(cgiOut, "Previous Loans: <br />\n");
+    printLoansByAlbum(albumid, TRUE);
+}
+
+static void printLoansByAlbum(int albumid, Boolean isReturned) {
     /* view borrowing history */
     int *allLoans=NULL;
     int curr_id=0;
     int count=0;
 	
-    fprintf(cgiOut, "<div class=\"head1\">Borrowing History for %s</div>", getAlbumTitle(albumid));
 
-    allLoans=getLoansByAlbum(albumid);
+    if(isReturned != TRUE) {
+	isReturned = FALSE;
+    }
+    else {
+	isReturned = TRUE;
+    }
+    
+    allLoans=getLoansByAlbum(albumid, isReturned);
 
     if(allLoans == NULL) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Loans</div>");
@@ -326,9 +398,14 @@ static void printAllLoansByAlbum(int albumid) {
 	fprintf(cgiOut, "\n");
 	fprintf(cgiOut, "<tbody>\n");
 
-	if(getLoansByAlbumCount(albumid) == 0) {
+	if(getLoansByAlbumCount(albumid, isReturned) == 0) {
 	    fprintf(cgiOut, "  <tr>\n");
-	    fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+	    if(isReturned == FALSE) {
+		fprintf(cgiOut, "    <td colspan=\"4\">No albums on loan</td>\n");
+	    }
+	    else {
+		fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+	    }
 	    fprintf(cgiOut, "  </tr>\n");
 	}
 
@@ -349,15 +426,24 @@ static void printAllLoansByAlbum(int albumid) {
 	    printTime(getLoanTimeIn(curr_id), cgiOut);
 	    fprintf(cgiOut, "</td>\n");
 
-	    if(getLoanTimeOut(curr_id) == -1) {
-		fprintf(cgiOut, "    <td>N/A</td>\n");
+	    fprintf(cgiOut, "    <td>");
+	    if(isLoanReturned(curr_id) == FALSE) {
+		fprintf(cgiOut, "<form method=\"get\" action=\"./\" style=\"display: inline;\">\n");
+		fprintf(cgiOut, "  <div>\n");
+		fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
+		fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"return\" />\n");
+		fprintf(cgiOut, "    <input type=\"hidden\" name=\"returning\" value=\"%d\" />\n", TRUE);
+		fprintf(cgiOut, "    <input type=\"hidden\" name=\"loanid\" value=\"%d\" />\n", curr_id);
+		fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
+		fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
+		fprintf(cgiOut, "  </div>\n");
+		fprintf(cgiOut, "</form>\n");
 	    }
 	    else {
-		fprintf(cgiOut, "    <td>");
 		printTime(getLoanTimeOut(curr_id), cgiOut);
-		fprintf(cgiOut, "</td>\n");
 	    }
-		
+	    fprintf(cgiOut, "</td>\n");
+	    
 	    fprintf(cgiOut, "  </tr>\n");
 
 	    count++;

@@ -200,7 +200,7 @@ int getAlbumCurrentLoan(int idNumber){
   int i;
   int *albumLoans = NULL;
 
-  albumLoans = getLoansByAlbum(idNumber);
+  albumLoans = getLoansByAlbum(idNumber, FALSE);
   if(albumLoans != NULL) {
     /* search for a loan that is still not returned*/
     for(i = 0; albumLoans[i] != LAST_ID_IN_ARRAY; i++) {
@@ -763,65 +763,93 @@ Boolean isLoanReturned(int idNumber) {
   return E_NOLOAN;
 }
 
-int *getLoansByUser(int idNumber){
+int *getLoansByUser(int idNumber, Boolean isReturned){
   int size = 0;        /**size will be number of loans in list**/
   int *loanArray = NULL;    /*ID array to be returned*/
   loanNode_t *a;
-    
-  size=getLoansByUserCount(idNumber);
+
+  if(isReturned != TRUE) {
+      isReturned = FALSE;
+  }
+  else {
+      isReturned = TRUE;
+  }
+
+  size=getLoansByUserCount(idNumber, isReturned);
 
   /*mallocs memory for array and goes back through list, adding id's to array*/
   loanArray = (int*) malloc(sizeof(int)*(size+1));
   if(loanArray == NULL) return NULL;
     
   for(a=firstLoan, size=0; a != NULL; a=a->next){
-    if(a->userID == idNumber) loanArray[size++] = a->ID;
+    if(a->userID == idNumber && a->isReturned == isReturned) loanArray[size++] = a->ID;
   }
     
   loanArray[size] = LAST_ID_IN_ARRAY; /*set last field*/
   return loanArray;
 }
 
-int getLoansByUserCount(int idNumber) {
+int getLoansByUserCount(int idNumber, Boolean isReturned) {
   int size = 0;        /**size will be number of loans in list**/
   loanNode_t *a;
-    
+
+  if(isReturned != TRUE) {
+      isReturned = FALSE;
+  }
+  else {
+      isReturned = TRUE;
+  }
+  
   /**counts num of artists in list,*/
   /*I assume this is faster than calling realloc at every node**/
   for(a = firstLoan; a != NULL; a=a->next) {
-    if(a->userID == idNumber) size++;
+    if(a->userID == idNumber && a->isReturned == isReturned) size++;
   }
 
   return size;
 }
 
-int *getLoansByAlbum(int idNumber){
+int *getLoansByAlbum(int idNumber, Boolean isReturned) {
   int size = 0;        /**size will be number of loans in list**/
   int *loanArray = NULL;    /*ID array to be returned*/
   loanNode_t *a;
-    
-  size=getLoansByAlbumCount(idNumber);
+
+  if(isReturned != TRUE) {
+      isReturned = FALSE;
+  }
+  else {
+      isReturned = TRUE;
+  }
+  
+  size=getLoansByAlbumCount(idNumber, isReturned);
 
   /*mallocs memory for array and goes back through list, adding id's to array*/
   loanArray = (int*) malloc(sizeof(int)*(size+1));
   if(loanArray == NULL) return NULL;
     
   for(a=firstLoan, size=0; a != NULL; a=a->next){
-    if(a->albumID == idNumber) loanArray[size++] = a->ID;
+    if(a->albumID == idNumber && a->isReturned == isReturned) loanArray[size++] = a->ID;
   }
-    
+
   loanArray[size] = LAST_ID_IN_ARRAY; /*set last field*/
   return loanArray;
 }
 
-int getLoansByAlbumCount(int idNumber) {
+int getLoansByAlbumCount(int idNumber, Boolean isReturned) {
   int size = 0;        /**size will be number of loans in list**/
   loanNode_t *a;
-    
+
+  if(isReturned != TRUE) {
+      isReturned = FALSE;
+  }
+  else {
+      isReturned = TRUE;
+  }
+  
   /**counts num of artists in list,*/
   /*I assume this is faster than calling realloc at every node**/
   for(a = firstLoan; a != NULL; a=a->next) {
-    if(a->albumID == idNumber) size++;
+    if(a->albumID == idNumber && a->isReturned == isReturned) size++;
   }
 
   return size;

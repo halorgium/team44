@@ -264,17 +264,9 @@ static void printSpecificAlbum(int albumid) {
 	if(currLoan != E_NOLOAN) {
 	    int tempUserID=0;
 	    tempUserID=getLoanUser(currLoan);
-	    fprintf(cgiOut, "Album is on loan ");
-	    if(isUserLibrarian(_currUserLogon) == TRUE) {
-		fprintf(cgiOut, "to <b>");
-		userLink(tempUserID, getUserName(tempUserID), cgiOut);
-		fprintf(cgiOut, "</b><br />\n");
-		fprintf(cgiOut, "[Taken at ");
-		printTime(getLoanTimeIn(currLoan), cgiOut);
-		fprintf(cgiOut, "]\n");
-	    }
 
 	    if(tempUserID == _currUserLogon) {
+		fprintf(cgiOut, "You have this album on loan<br />\n");
 		fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
 		fprintf(cgiOut, "  <p>\n");
 		fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
@@ -285,6 +277,17 @@ static void printSpecificAlbum(int albumid) {
 		fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
 		fprintf(cgiOut, "  </p>\n");
 		fprintf(cgiOut, "</form>\n");
+	    }
+	    else {
+		fprintf(cgiOut, "Album is on loan ");
+		if(isUserLibrarian(_currUserLogon) == TRUE) {
+		    fprintf(cgiOut, "to <b>");
+		    userLink(tempUserID, getUserName(tempUserID), cgiOut);
+		    fprintf(cgiOut, "</b><br />\n");
+		    fprintf(cgiOut, "[Taken at ");
+		    printTime(getLoanTimeIn(currLoan), cgiOut);
+		    fprintf(cgiOut, "]\n");
+		}
 	    }
 	}
 	else {

@@ -226,7 +226,7 @@ static void printHeader(FILE *output) {
     fprintf(output, "    <tfoot>\n");
     fprintf(output, "  <tr>\n");
     fprintf(output, "<td id=\"footer\" colspan=\"2\">\n");
-    fprintf(output, "&#169;&nbsp;Copyright&nbsp;Team&nbsp;44&nbsp;2003&nbsp;|&nbsp;<a href=\"./?page=contact&amp;hash=%d\">Contact&nbsp;Us</a>\n", _currUserLogon);
+    fprintf(output, "&#169;&nbsp;Copyright&nbsp;Team&nbsp;44&nbsp;2003\n");
     fprintf(output, "</td>\n");
     fprintf(output, "  </tr>\n");
     fprintf(output, "    </tfoot>\n");
