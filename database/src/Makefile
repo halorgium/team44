@@ -15,8 +15,8 @@ save.o: ../../shared/defines.h globals.h save.h
 
 ../../shared/read_line.o: ../../shared/read_line.h
 
-globals.h: structs.h
-save.h: defines.h
+globals.h: ../../shared/structs.h
+save.h: ../../shared/defines.h
 
 clean:
-	rm -f  *.o ../bin/database
+	rm -f  *.o ../bin/database ../../shared/read_line.o
