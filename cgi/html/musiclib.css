@@ -148,6 +148,14 @@ td#bodycontent {
     vertical-align : top;
 }
 
+td.describe { 
+    font-weight : bold;
+}
+
+td.field { 
+    font-family : Verdana, Geneva, Arial, Helvetica, sans-serif;
+}
+
 /* Footer Styles */
 /*---------------*/
 
