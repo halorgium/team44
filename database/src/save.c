@@ -14,7 +14,7 @@
 int saveUser(const char *name, const char* userCode, const char *email, Boolean bool){
     int check;
     char *line = NULL;
-    FILE *userFile = fopen(strcat(SOURCE_LOCATION, USERS_FILE_NAME), "rw");
+    FILE *userFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "rw");
 
     line = malloc(sizeof(char)*(strlen(name)+strlen(userCode)+strlen(email)+1+3)+1);
     if(line == NULL) return E_MALLOC_FAILED;
@@ -34,7 +34,7 @@ int saveAlbum(const char* title, const int artistID, int ID){
     int check;
     int artIDLen;
     int IDLen;
-    FILE *albumFile = fopen(strcat(SOURCE_LOCATION, ALBUMS_FILE_NAME), "rw");
+    FILE *albumFile = fopen(SOURCE_LOCATION""ALBUMS_FILE_NAME, "rw");
 
    /* find how many characters the ints are*/
     artIDLen = floor(log10(artistID));
@@ -58,7 +58,7 @@ int saveArtist(char *name, int ID){
 
     char *line = NULL;
     int check;
-    FILE *file = fopen(strcat(SOURCE_LOCATION, ARTISTS_FILE_NAME), "rw");
+    FILE *file = fopen(SOURCE_LOCATION""ARTISTS_FILE_NAME, "rw");
 
     /*get memory for the line that will be saved*/
     line = malloc(sizeof(char)*(strlen(name)+floor(log10(ID)+1)+1)+1);
@@ -83,7 +83,7 @@ int saveLoan(int ID, int albumID, char *user, int time, Boolean isReturned){
     int albIDLen;
     int IDLen;
     int boolLen = 1;
-    FILE *file = fopen(strcat(SOURCE_LOCATION, LOANS_FILE_NAME), "rw");
+    FILE *file = fopen(SOURCE_LOCATION""LOANS_FILE_NAME, "rw");
 
     /*find log base 10, then round down*/
     timeLen = floor(log10(time)) + 1;
@@ -111,7 +111,7 @@ int saveCommentArtist(char *owner, char *body, int ID, int artistID){
     /*length of ints (how many chars)*/
     int artIDLen;
     int IDLen;
-    FILE *file = fopen(strcat(SOURCE_LOCATION, ARTIST_COMMENTS_FILE_NAME), "rw");
+    FILE *file = fopen(SOURCE_LOCATION""ARTIST_COMMENTS_FILE_NAME, "rw");
 
     /*find log base 10, then round down*/
     artIDLen = floor(log10(artistID))+1;
@@ -136,7 +136,7 @@ int saveCommentAlbum(char *owner, char *body, int ID, int albumID){
     /*length of ints (how many chars)*/
     int albIDLen;
     int IDLen;
-    FILE *file = fopen(strcat(SOURCE_LOCATION, ALBUM_COMMENTS_FILE_NAME), "rw");
+    FILE *file = fopen(SOURCE_LOCATION""ALBUM_COMMENTS_FILE_NAME, "rw");
 
     /*find log base 10, then round down*/
     albIDLen = floor(log10(albumID)) + 1;
@@ -160,7 +160,7 @@ int saveCommentUser(char *owner, char *body, int ID, char *userCode){
     int check;
     /*length of ints (how many chars)*/
     int IDLen;
-    FILE *file = fopen(strcat(SOURCE_LOCATION, USER_COMMENTS_FILE_NAME), "rw");
+    FILE *file = fopen(SOURCE_LOCATION""USER_COMMENTS_FILE_NAME, "rw");
 
     /*find log base 10, then round down*/
     IDLen = floor(log10(ID)) + 1; 
