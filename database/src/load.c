@@ -53,6 +53,8 @@ int loadAllUsers(FILE *file){
 	if(newUser->userCode == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newUser->userCode, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newUser->userCode[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
@@ -62,6 +64,8 @@ int loadAllUsers(FILE *file){
 	if(newUser->userName == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newUser->userName, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newUser->userName[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
@@ -115,6 +119,9 @@ int loadAllAlbums(FILE *file){
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
 	newAlbum->ID =  atoi(char2int);
 	free(char2int);
 
@@ -126,6 +133,8 @@ int loadAllAlbums(FILE *file){
 	if(newAlbum->title == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newAlbum->title, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newAlbum->title[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*temp2 = strchr(temp, '%');*/
@@ -174,6 +183,8 @@ int loadAllArtists(FILE *file){
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newArtist->ID = atoi(char2int);
 	free(char2int);
 
@@ -222,6 +233,8 @@ int loadAllLoans(FILE *file){
 
 	/*make loan ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newLoan->ID = atoi(char2int);
 	free(char2int);
 
@@ -234,6 +247,8 @@ int loadAllLoans(FILE *file){
 
 	/*make album ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newLoan->albumID = atoi(char2int);
 	free(char2int);
 	
@@ -243,10 +258,12 @@ int loadAllLoans(FILE *file){
 	printf("temp l:  %d  \n temp 2: %d\n", strlen(temp), strlen(temp2));
 
 	/*get album title from file*/
-	newLoan->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	newLoan->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2)+1));
 	if(newLoan->userCode == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newLoan->userCode, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newLoan->userCode[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
@@ -256,6 +273,8 @@ int loadAllLoans(FILE *file){
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newLoan->timeStamp = atoi(char2int);
 	free(char2int);
 	
@@ -304,6 +323,8 @@ int loadAlbumComments(FILE *file){
 
 	/*make albumComment ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newAlbumComment->ID = atoi(char2int);
 	free(char2int);
 
@@ -316,6 +337,8 @@ int loadAlbumComments(FILE *file){
 
 	/*make album ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newAlbumComment->albumID = atoi(char2int);
 	free(char2int);
 	
@@ -327,6 +350,8 @@ int loadAlbumComments(FILE *file){
 	if(newAlbumComment->userOwner == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newAlbumComment->userOwner, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newAlbumComment->userOwner[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
@@ -369,6 +394,8 @@ int loadArtistComments(FILE *file){
 
 	/*make artistComment ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newArtistComment->ID = atoi(char2int);
 	free(char2int);
 
@@ -381,6 +408,8 @@ int loadArtistComments(FILE *file){
 
 	/*make artist ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newArtistComment->artistID = atoi(char2int);
 	free(char2int);
 	
@@ -392,6 +421,8 @@ int loadArtistComments(FILE *file){
 	if(newArtistComment->userOwner == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newArtistComment->userOwner, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newArtistComment->userOwner[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
@@ -433,6 +464,8 @@ int loadUserComments(FILE *file){
 
 	/*make userComment ID */
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	newUserComment->ID = atoi(char2int);
 	free(char2int);
 
@@ -444,6 +477,8 @@ int loadUserComments(FILE *file){
 	if(newUserComment->user == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newUserComment->user, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate the new string*/
+	newUserComment->user[strlen(temp)-strlen(temp2)] = '\0';
 	
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
@@ -453,6 +488,8 @@ int loadUserComments(FILE *file){
 	if(newUserComment->userOwner == NULL) return E_MALLOC_FAILED;
 
 	strncpy(newUserComment->userOwner, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate the new string*/
+	newUserComment->userOwner[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
