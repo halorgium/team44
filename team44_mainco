@@ -1,15 +1,17 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.6 2003/05/12 06:31:08 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.7 2003/05/12 20:41:28 tsm20 Exp $
 
 CLEANOUT="/home/cosc/student/tsm20/team44clean"
+   CVSIN="/home/cosc/student/tsm20/team44cvs"
+  MODULE="casestudy"
 
 cd $CLEANOUT || exit
 
 echo "pwd="`pwd`
-rm -fr casestudy
+rm -fr $MODULE
 
-cvs -d /home/cosc/student/tsm20/team44cvs/ export -f -r HEAD casestudy
+cvs -d $CVSIN export -f -r HEAD $MODULE
 
 echo "----------------------------------"
 echo "Start perms "$CLEANOUT
@@ -20,18 +22,17 @@ chmod g+rwX `find $CLEANOUT`
 echo "Remove perms for other"
 chmod o-rwx `find $CLEANOUT`
 
-# at this point: 
+# at this point:
 #   other has no perms
 #   group has rwx for dirs and scripts
 #         has rw  for random files
 
-echo "Add execute perm for other (casestudy)"
+echo "Add execute perm for other ("$MODULE")"
 chmod o+x $CLEANOUT
-chmod o+x $CLEANOUT/casestudy
+chmod o+x $CLEANOUT/$MODULE
 echo "web - Add execute perm for other (all dirs and scripts under)"
-chmod o+X `find $CLEANOUT/casestudy/web`
+chmod o+X `find $CLEANOUT/$MODULE/web`
 echo "web - Add read perm for other (all files under)"
-chmod o+r `find $CLEANOUT/casestudy/web -type f`
+chmod o+r `find $CLEANOUT/$MODULE/web -type f`
 echo "web - Add read perm for other (.htpasswd)"
-chmod o+r $CLEANOUT/casestudy/.htpasswd
-
+chmod o+r $CLEANOUT/$MODULE/.htpasswd
