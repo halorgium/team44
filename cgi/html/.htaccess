@@ -1,2 +1,3 @@
-DirectoryIndex index.cgi
+DirectoryIndex index.cgi index.html
+AddHandler cgi-script .cgi
 Options ExecCGI
