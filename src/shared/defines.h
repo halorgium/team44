@@ -1,6 +1,8 @@
 #ifndef _DEFINES_H
 #define _DEFINES_H 1
 
+#define malloc_m(q) NULL
+
 /* File locations */
 
 #define DATA_LOCATION "./var"
