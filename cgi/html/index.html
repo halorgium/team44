@@ -68,51 +68,29 @@
 			</td>
 
 			<!-- This is the dynamic section of the document -->
-			<td width="20%" align="left">
-<!-- takes in the users name and the email and the boolean isLibrarian and name -->
 
-<form method="POST" action="./?page=album&func=add">
-<p><b>Add a Album</b></p>
-<p>
-	<label for="title" title="Album Title">Album Name: </label>
-</p>
-<p>
-	<label for="artist" title="Artist Name">Artist Name: </label>
+		<td width="80%">
+		  <table width="50%">
+		    <tbody>
 
-</p>
-<p>
-	<label for="albumId" title="albumId">Album ID:</label>
-</p> 
-<p>
-	<label for="artistId" title="artistId">Artist ID:</label>
-</p> 
+		      <tr>
+			<td class="describe"><b>Name: </b></td>
+			<td class="field"><input type="text" name="name"></td>
+		      </tr>
 
-<p>
-  <label for="submit" title="addAlbum"></label>
-  <input type="submit" name="addAlbum" value="Add Album" />
-</p>
+		      <tr>
+			<td class="describe"><b>Artist: </b></td>
+			<td class="field"><input type="text" name="artist"></td>
+		      </tr>
 
-<td width="70%" align="left">
-<br>
-	<p>
-	  <input type="text" id="title" title="title" />
-	</p>
-	<p>
-	  <input type="text" id="artist" title="artist" />
-	</p>
-	<p>
+		      <tr>
+			<td class="describe" colspan="2">Comment: </td>
+		      </tr>
+		      <tr>
+			<td class="field" colspan="2"><textarea name="comment" rows="7" cols="35"></textarea></td>
+		      </tr>
 
-	  <input type="text" id="albumId" title="album Id" />
-	</p>
-	<p>
-	  <input type="text" id="albumId" title="artist Id/>
-	</p>
-</table>
-
-				<br>
-			</td>
-
-		</tr>
+		  </table>
 	</table>
 </table>
 <br>
