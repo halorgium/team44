@@ -86,7 +86,7 @@ int getLoanUser(int);
 int getLoanAlbum(int);
 int getLoanTimeIn(int);
 int getLoanTimeOut(int);
-int getLoanStatus(int);
+Boolean isLoanReturned(int);
 
 int *getLoansByUser(int);
 int getLoansByUserCount(int);

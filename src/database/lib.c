@@ -33,7 +33,6 @@ userNode_t *getUser(int userID){
     
   /**find user id in list, assumes unsorted list**/
   for(a = firstUser; a != NULL; a=a->next){
-    printf("going\n");
     if(a->ID == userID){
       return a;
     }
@@ -193,8 +192,7 @@ int getAlbumCurrentLoan(int idNumber){
   if(albumLoans != NULL) {
     /* search for a loan that is still not returned*/
     for(i = 0; albumLoans[i] != LAST_ID_IN_ARRAY; i++) {
-      if(getLoan(albumLoans[i])->isReturned == FALSE)
-	return albumLoans[i];
+      if(isLoanReturned(albumLoans[i]) == FALSE) return albumLoans[i];
     }
   }
     
@@ -735,15 +733,12 @@ int getLoanTimeOut(int idNumber) {
   return E_NOLOAN;
 }
 
-int getLoanStatus(int idNumber) {
+Boolean isLoanReturned(int idNumber) {
   loanNode_t *a;
   a = getLoan(idNumber);
     
   if(a != NULL) {
-    if(a->isReturned) {
-      return LOAN_INACTIVE;
-    }
-    return LOAN_ACTIVE;
+      return a->isReturned;
   }
   return E_NOLOAN;
 }

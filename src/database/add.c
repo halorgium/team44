@@ -123,7 +123,7 @@ int addAlbum(const char *title, const int artistID){
     strcpy(newAlbumNode->title, title);
     newAlbumNode->artistID = artistID;
     /* album is being created for first time - unique id should be created*/
-    newAlbumNode->ID = nextAlbumID;  /*this needs changing*/
+    newAlbumNode->ID = _nextID;  /*this needs changing*/
     
     newAlbumNode->next = firstAlbum;   /*insert at front of list*/
     firstAlbum = newAlbumNode;
@@ -133,7 +133,7 @@ int addAlbum(const char *title, const int artistID){
     if(saveAlbum(newAlbumNode->ID, title, artistID)==0) return DB_SAVE_FAILURE;
     
     
-    return nextAlbumID++;    /*return id then increment  CHANGE*/
+    return _nextID++;    /*return id then increment  CHANGE*/
 }
 /*end addAlbum() */
 
@@ -162,7 +162,7 @@ int addArtist(char *name){
     /*copy the param string into the newArtist*/
     strcpy(newArtistNode->name, name);
     /* artist is being created for first time - unique id should be created*/
-    newArtistNode->ID = nextArtistID;  /*this needs changing*/
+    newArtistNode->ID = _nextID;  /*this needs changing*/
     
     newArtistNode->next = firstArtist;   /*insert at front of list*/
     firstArtist = newArtistNode;
@@ -170,7 +170,7 @@ int addArtist(char *name){
     /*created in memory so now needs to be saved*/
     if(saveArtist(newArtistNode->ID, name) < 0) return DB_SAVE_FAILURE;
     
-    return nextArtistID++;    /*return id then increment  CHANGE*/
+    return _nextID++;    /*return id then increment  CHANGE*/
 }/*end addArtist()*/
 
 
@@ -218,7 +218,7 @@ int addUserComment(int userID, int owner, char* body){
     strcpy(newCommentNode->comment, body);
 
     /*may need changeing*/
-    newCommentNode->ID = nextCommentID;
+    newCommentNode->ID = _nextID;
     
     /*insert new node at front of list*/
     newCommentNode->next = firstUserComment;   
@@ -227,7 +227,7 @@ int addUserComment(int userID, int owner, char* body){
     /*save to disk return error if not worked*/
     if(saveUserComment(newCommentNode->ID, userID, owner, body)!=0) return DB_SAVE_FAILURE;
     
-    return nextCommentID++;    /*return and increment id*/
+    return _nextID++;    /*return and increment id*/
 }/* end addCommentUser() */
 
 int addAlbumComment(int albumID, int owner, char *body){
@@ -267,7 +267,7 @@ int addAlbumComment(int albumID, int owner, char *body){
     strcpy(newCommentNode->comment, body);
 
     /*may need changing*/
-    newCommentNode->ID = nextCommentID;
+    newCommentNode->ID = _nextID;
     
     /*insert new node at front of list*/
     newCommentNode->next = firstAlbumComment;   
@@ -276,7 +276,7 @@ int addAlbumComment(int albumID, int owner, char *body){
     /*save to disk*/
     if(saveAlbumComment(newCommentNode->ID, albumID, owner, body)!=0) return DB_SAVE_FAILURE;
     
-    return nextCommentID++;    /*return and increment id*/
+    return _nextID++;    /*return and increment id*/
 }/* end addCommentAlbum() */
 
 int addArtistComment(int artistID, int owner, char *body){
@@ -315,7 +315,7 @@ int addArtistComment(int artistID, int owner, char *body){
     newCommentNode->userOwner = owner;
     strcpy(newCommentNode->comment, body);
     /*id setting may change*/
-    newCommentNode->ID = nextCommentID;
+    newCommentNode->ID = _nextID;
     
     /*insert new node at front of list*/
     newCommentNode->next = firstArtistComment;   
@@ -323,7 +323,7 @@ int addArtistComment(int artistID, int owner, char *body){
 
     if(saveArtistComment(newCommentNode->ID, artistID, owner, body)!=0) return DB_SAVE_FAILURE;
     
-    return nextCommentID++;    /*return and increment id*/
+    return _nextID++;    /*return and increment id*/
 }/* end addCommentArtist() */
 
 int addLoan(int userID, int albumID){
@@ -348,7 +348,7 @@ int addLoan(int userID, int albumID){
     newLoanNode->isReturned = FALSE;
     
     /* loan is being created for first time - unique id should be created*/
-    newLoanNode->ID = nextLoanID;  /*this needs changing*/
+    newLoanNode->ID = _nextID;  /*this needs changing*/
     
     newLoanNode->next = firstLoan;   /*insert at front of list*/
     firstLoan = newLoanNode;
@@ -357,5 +357,5 @@ int addLoan(int userID, int albumID){
     if(saveLoan(newLoanNode->ID, albumID, userID, newLoanNode->timeStampIn, newLoanNode->timeStampOut, FALSE) < 0)
 	return DB_SAVE_FAILURE;
     
-    return nextLoanID++;    /*return id then increment  CHANGE*/    
+    return _nextID++;    /*return id then increment  CHANGE*/    
 }

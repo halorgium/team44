@@ -24,5 +24,10 @@ void echoFile(FILE *input, FILE *output) {
 }
 
 void printLink(const char *href, const char *title, FILE *output) {
-    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;hash=%d\">%s</a></td>\n  </tr>\n", href, _currUserLogon->ID, title);
+    /* If logout, don't print hash */
+    if(strcmp(title, "Logout") != 0) {
+	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;hash=%d\">%s</a></td>\n  </tr>\n", href, _currUserLogon->ID, title);
+	return;
+    }
+    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s\">%s</a></td>\n  </tr>\n", href, title);
 }

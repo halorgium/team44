@@ -70,7 +70,7 @@ typedef struct loanNode{
     int userID;
     int timeStampIn;
     int timeStampOut;
-    int isReturned;
+    Boolean isReturned;
     
     struct loanNode *next;
 }loanNode_t;

@@ -176,7 +176,7 @@ static void printAllArtists(void) {
 	  fprintf(cgiOut, "    <td>");
 	  fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon->ID, getArtistName(curr_id));
 	  fprintf(cgiOut, "    </td>\n");
-	  fprintf(cgiOut, "    <td>%d</td>\n", 34);
+	  fprintf(cgiOut, "    <td>%d</td>\n", getArtistAlbumsCount(curr_id));
 	  fprintf(cgiOut, "  </tr>\n");
 
 	  count++;
@@ -206,7 +206,7 @@ void printSpecificArtist(int artistid) {
     fprintf(cgiOut, "    <td class=\"describe\">Album Count: </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%d</td>\n", 34);
+    fprintf(cgiOut, "    <td class=\"field\">%d</td>\n", getArtistAlbumsCount(artistid));
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "</tbody>\n");
     fprintf(cgiOut, "</table>\n");

@@ -173,13 +173,19 @@ static void printAllLoansByUser(int userid) {
 	fprintf(cgiOut, "\n");
 	fprintf(cgiOut, "<tbody>\n");
 
-        curr_id=allLoans[count];
+	if(getLoansByUserCount(userid) == 0) {
+	    fprintf(cgiOut, "  <tr>\n");
+	    fprintf(cgiOut, "    <td colspan=\"4\">No loan history</td>\n");
+	    fprintf(cgiOut, "  </tr>\n");
+	}
+
+	curr_id=allLoans[count];
         while (curr_id != LAST_ID_IN_ARRAY) {
 	    fprintf(cgiOut, "  <tr>\n");
 	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon->ID, getAlbumTitle(getAlbumCurrentLoan(curr_id)));
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon->ID, getAlbumTitle(getLoanAlbum(curr_id)));
 	    fprintf(cgiOut, "    </td>\n");
-	    if(getLoanStatus(curr_id) == LOAN_ACTIVE) {
+	    if(isLoanReturned(curr_id) == FALSE) {
 		fprintf(cgiOut, "    <td>On Loan</td>\n");
 	    }
 	    else {
