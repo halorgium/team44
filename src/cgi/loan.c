@@ -113,7 +113,7 @@ static void doReturnLoan(void) {
     }
     else {
 	/* Some sort of failure */
-	fprintf(cgiOut, "Returning failed\n");
+	fprintf(cgiOut, "Returning failed [%d]\n", loanid);
     }
 }
 
@@ -138,6 +138,7 @@ static int processReturnForm(void) {
 	    }
 	    else {
 		if(isLoanReturned(loanid) == TRUE) {
+		    fprintf(cgiOut, "blah<br />\n");
 		    success=ALREADY_ADDED;
 		}
 		else {

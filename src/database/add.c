@@ -516,7 +516,7 @@ int addLoanReturned(int loanID){
 	return E_NOLOAN;
     }
 
-    if(isLoanReturned(loanID) == FALSE) {
+    if(isLoanReturned(loanID) == TRUE) {
 	return ALREADY_ADDED;
     }
 
