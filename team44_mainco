@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.8 2003/05/14 03:06:40 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.9 2003/05/15 02:23:27 tsm20 Exp $
 
 CLEANOUT="/home/cosc/student/tsm20/team44clean"
    CVSIN="/home/cosc/student/tsm20/team44cvs"
@@ -18,7 +18,7 @@ echo "Start perms "$CLEANOUT
 
 echo "Add rw for group (all files)"
 echo "Add x  for group (dirs and scripts)"
-chmod g+rX  `find $CLEANOUT`
+chmod og+rwX  `find $CLEANOUT`
 echo "Remove perms for other"
 chmod o-rwx `find $CLEANOUT`
 
