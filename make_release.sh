@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.7 2003/09/29 09:50:07 djb142 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/make_release.sh,v 1.8 2003/09/29 10:31:28 tsm20 Exp $
 
 CLEANOUT="releases"
    CVSIN=`cat CVS/Root`
@@ -38,6 +38,7 @@ cp $MODULE/help/*.tex $CLEANDIR/help || exit
 cp $MODULE/help/*.pdf $CLEANDIR/help || exit
 cp -r $MODULE/help/usr_help $CLEANDIR/help || exit
 cp -r $MODULE/var $CLEANDIR || exit
+cp -r $MODULE/egg $CLEANDIR || exit
 
 rm -f $CLEANDIR.tar.gz
 
