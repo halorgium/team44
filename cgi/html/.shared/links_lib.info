@@ -4,8 +4,8 @@
 ./?page=logout%Logout%
 %%
 ./?page=user%My&nbsp;Account%
-./?page=user&amp;func=loan%My&nbsp;Loans%
-./?page=comments&amp;func=user%My&nbsp;Comments%
+./?page=loan&amp;func=user%My&nbsp;Loans%
+./?page=comment&amp;func=user%My&nbsp;Comments%
 %%
 ./?page=artist%View&nbsp;All&nbsp;Artists%
 ./?page=artist&amp;func=add%Add&nbsp;New&nbsp;Artist%

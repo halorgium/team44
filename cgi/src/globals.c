@@ -15,6 +15,7 @@ void echoFile(FILE *input, FILE *output) {
 
     while(!feof(input)) {
 	buffer[0]='\0';
+
 	fgets(buffer, 80, input);
 	if(buffer[0]!='\0') {
 	    fprintf(output, buffer);
@@ -22,6 +23,6 @@ void echoFile(FILE *input, FILE *output) {
     }
 }
 
-void printLink(const char *href, const char *title, const char *userCode, FILE *output) {
+void printLink(const char *href, const char *title, FILE *output) {
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;user=%s\">%s</a></td>\n  </tr>\n", href, userCode, title);
 }
