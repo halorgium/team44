@@ -7,19 +7,15 @@
 #include "../shared/structs.h"
 #include "../shared/defines.h"
 #include "../shared/read_line.h"
+#include "../shared/lib.h"
 
 static int  printLinks(FILE *, FILE *);
 static void printHeader(void);
 static void printFooter(void);
+static void theRealWork(void);
 
 int cgiMain() {
-    int result=0;
-
-    Boolean links=TRUE;
-    char pageName[MAXSIZE_PAGENAME]={'\0'};
-    
-    userCode=calloc(sizeof(char), MAXSIZE_USERCODE+1);
-
+   
 #if DEBUG
     /* Load a saved CGI scenario if we're debugging */
     cgiReadEnvironment("/home/boutell/public_html/capcgi.dat");
@@ -29,26 +25,97 @@ int cgiMain() {
     
     printHeader();
 
-    /* At this point we start the dynamic content, error page may be shown */
+    /* Do the real work */
+    theRealWork();
     
-    result = cgiFormStringNoNewlines("user", userCode, MAXSIZE_USERCODE);
-    if(result != cgiFormSuccess) {
-	strcpy(pageName, "login");
-	links=FALSE;
+    /* Start outputting the footer */
+    
+    printFooter();
+
+    return 0;
+}
+
+void theRealWork(void) {
+    int result=0;
+
+    Boolean links=TRUE;
+    char pageName[MAXSIZE_PAGENAME]={'\0'};
+
+    int userHash=0;
+   
+    /* At this point we start the dynamic content, error page may be shown */
+
+    /* We might need the database so load it up */
+    result=loadDatabase();
+    if(result != DB_LOAD_SUCCESS) {
+	/* some problem with loading */
+	fprintf(cgiOut, "<td>Some problem</td>\n");
+/* 	errorPage(HTML_ERR_DB); */
+	return;
     }
-    else {
-	/* Open net conns */
-	/* Check & get user */
-	/* Make sure logged in */
-        result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
-	if(result != cgiFormSuccess) {
-	    strcpy(pageName, "home");
-	}
+    
+    result = cgiFormInteger("hash", &userHash, -1);
+    if(result != cgiFormSuccess || userHash == -1) {
+	/* No hash */
+
+	/* check for login attempt */
+	int dologin = 0;
+	int result2 = cgiFormInteger("dologin", &dologin, FALSE);
 	
-	if(strncmp(pageName, "logout", MAXSIZE_PAGENAME) == 0) {
-	    /* Set user to be inactive in mem on DB */
+	if(result2 != cgiFormSuccess || dologin == FALSE) {
+	    /* No attempt */
+	    /* Display login */
 	    strcpy(pageName, "login");
 	    links=FALSE;
+	}
+	else {
+	    /* Hey someone is trying to login */
+	    /* Get the userCode */
+	    char *userCode=malloc(sizeof(char)*(MAXSIZE_USERCODE+1));
+	    
+	    result = cgiFormStringNoNewlines("usercode", userCode, MAXSIZE_USERCODE);
+	    if(result != cgiFormSuccess) {
+		/* Unsuccessful */
+		/* Display login */
+		strcpy(pageName, "login");
+		links=FALSE;
+	    }
+	    else {
+		/* Now check user */
+		_currUserLogon_=getUser(makeUserID(userCode));
+		if(_currUserLogon_ == NULL) {
+		    /* No such user */
+		    strcpy(pageName, "login");
+		    links=FALSE;
+		}
+		else {
+		    strcpy(pageName, "home");
+		    links=TRUE;
+		}
+	    }
+	}
+    }
+    else {
+        /* Check & get user */
+	/* Make sure logged in */
+	if(isUserInDatabase(userHash) == FALSE) {
+	    /* UserHash invalid */
+	    strcpy(pageName, "login");
+	    links=FALSE;
+	}
+	else {
+	    _currUserLogon_=getUser(userHash);
+	    
+	    result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
+	    if(result != cgiFormSuccess) {
+		strcpy(pageName, "home");
+	    }
+	    
+	    if(strncmp(pageName, "logout", MAXSIZE_PAGENAME) == 0) {
+		/* Set user to be inactive in mem on DB */
+		strcpy(pageName, "login");
+		links=FALSE;
+	    }
 	}
     }
 
@@ -56,8 +123,6 @@ int cgiMain() {
     if(links) {
 	FILE *linksStart;
 	FILE *linksEnd;
-
-        Boolean userType=(strncmp(userCode, "admin", MAXSIZE_USERCODE) == 0) ? TRUE : FALSE;
 
 	linksStart=fopen(HTML_SRC_ROOT"/.shared/links_s.src", "r");
 	if(linksStart == NULL) {
@@ -68,10 +133,10 @@ int cgiMain() {
 	echoFile(linksStart, cgiOut);
 	fclose(linksStart);
 
-	fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as <b>%s</b></td>\n  </tr>\n", userCode);
+	fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as <b>%s</b></td>\n  </tr>\n", _currUserLogon_->userCode);
 	fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
 	
-	if(userType/* currUser->isLibrarian */) {
+	if(_currUserLogon_->isLibrarian) {
 	    FILE *thelinks;
 	    
 	    thelinks=fopen(HTML_SRC_ROOT"/.shared/links_lib.info", "r");
@@ -159,11 +224,6 @@ int cgiMain() {
 	echoFile(bodyEnd, cgiOut);
 	fclose(bodyEnd);
     }
-    
-    /* Start outputting the footer */
-    
-    printFooter();
-    return 0;
 }
 
 static int printLinks(FILE *input, FILE *output) {

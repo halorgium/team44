@@ -6,6 +6,7 @@
 #include "globals.h"
 #include "../shared/structs.h"
 #include "../shared/defines.h"
+#include "../shared/lib.h"
 
 static void doAddLoan(void);
 static void doViewLoan(void);
@@ -13,7 +14,7 @@ static void doViewLoan(void);
 static int processAddForm(void);
 static void printAddForm(void);
 
-static void printAllLoansByUser(char *);
+static void printAllLoansByUser(int);
 
 void printLoan(void) {
     int result=0;
@@ -57,7 +58,7 @@ static void doAddLoan(void) {
 	if(newalbumid != -1) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Adding successful\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&user=%s\">[View Album]</a>", newalbumid, userCode);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&user=%d\">[View Album]</a>", newalbumid, _currUserLogon_->ID);
 	}
 	else {
 	    /* Some sort of failure */
@@ -90,7 +91,7 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%s\" />\n", userCode);
+    fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%d\" />\n", _currUserLogon_->ID);
     fprintf(cgiOut, "<tbody>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"title\" title=\"Album Title\">Album Title: </label></td>\n");
@@ -127,27 +128,27 @@ static void printAddForm(void) {
 
 static void doViewLoan(void) {
     int result=0;
-    char *userid=calloc(sizeof(char), MAXSIZE_USERCODE+1);
+    int userid=0;
 
     /* if userid field is set */
-    result = cgiFormStringNoNewlines("userid", userid, MAXSIZE_USERCODE);
-    if(result != cgiFormSuccess || userid == NULL) {
+    result = cgiFormInteger("userid", &userid, -1);
+    if(result != cgiFormSuccess || userid == -1) {
 	/* Some sort of failure */
 	/* Default to view for currUser */
-	strncpy(userid, userCode, MAXSIZE_USERCODE);
+	userid=_currUserLogon_->ID;
     }
 
     printAllLoansByUser(userid);
 }
 
-static void printAllLoansByUser(char *userid) {
+static void printAllLoansByUser(int userid) {
     int *allLoans=NULL;
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing All Loans for <b>%s</b></div>", userid);
+    fprintf(cgiOut, "<div class=\"head1\">Viewing All Loans for <b>%s</b></div>", _currUserLogon_->userCode);
 
-    allLoans=getAllLoansByUser(userid);
+    allLoans=getLoansByUser(userid);
 
     if(allLoans == NULL) {
 	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Loans</div>");
@@ -176,7 +177,7 @@ static void printAllLoansByUser(char *userid) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	    fprintf(cgiOut, "  <tr>\n");
 	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%s\">%s</a>", getLoanAlbum(curr_id), userCode, getAlbumTitle(getLoanAlbum(curr_id)));
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon_->ID, getAlbumTitle(getAlbumCurrentLoan(curr_id)));
 	    fprintf(cgiOut, "    </td>\n");
 	    if(getLoanStatus(curr_id) == LOAN_ACTIVE) {
 		fprintf(cgiOut, "    <td>On Loan</td>\n");
@@ -184,8 +185,8 @@ static void printAllLoansByUser(char *userid) {
 	    else {
 		fprintf(cgiOut, "    <td>Returned</td>\n");
 	    }
-	    fprintf(cgiOut, "    <td>%s</td>\n", getLoanStart(curr_id));
-	    fprintf(cgiOut, "    <td>%s</td>\n", getLoanEnd(curr_id));
+	    fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeIn(curr_id));
+	    fprintf(cgiOut, "    <td>%d</td>\n", getLoanTimeOut(curr_id));
 	    fprintf(cgiOut, "  </tr>\n");
 
 	    count++;

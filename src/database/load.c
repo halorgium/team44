@@ -6,44 +6,66 @@
 #include "../shared/structs.h"
 #include "../shared/read_line.h"
 #include "globals.h"
-#include "load.h"
 
 int loadAllUsers(FILE *f);
-/*int loadAlbum(const int ID);*/
 int loadAllArtists(FILE *f);
 int loadAllAlbums(FILE *f);
 int loadAllLoans(FILE *f);
-/*int loadLoan(const int ID);*/
 int loadAlbumComments(FILE *f);
 int loadArtistComments(FILE *f);
 int loadUserComments(FILE *f);
 
-/* ALL LOAD operations are performed only at initilisation*/
-int  loadDatabase(){
+Boolean databaseLoaded=FALSE;
 
-    FILE *albumInFile = fopen(SOURCE_LOCATION""ALBUMS_FILE_NAME, "r");
-    FILE *artistInFile = fopen(SOURCE_LOCATION""ARTISTS_FILE_NAME, "r");
-    FILE *art_comInFile = fopen(SOURCE_LOCATION""ARTIST_COMMENTS_FILE_NAME, "r");
-    FILE *alb_comInFile = fopen(SOURCE_LOCATION""ALBUM_COMMENTS_FILE_NAME, "r");
-    FILE *usr_comInFile = fopen(SOURCE_LOCATION""USER_COMMENTS_FILE_NAME, "r");
-    FILE *loanInFile = fopen(SOURCE_LOCATION""LOANS_FILE_NAME, "r");
-    FILE *userInFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "r");
+/* ALL LOAD operations are performed only at initilisation*/
+int loadDatabase(){
+    FILE *albumInFile=NULL;
+    FILE *artistInFile=NULL;
+    FILE *art_comInFile=NULL;
+    FILE *alb_comInFile=NULL;
+    FILE *usr_comInFile=NULL;
+    FILE *loanInFile=NULL;
+    FILE *userInFile=NULL;
+
+    if(databaseLoaded) {
+	return DB_ALREADY_LOADED;
+    }
 
     fprintf(stderr, "Start Load Users\n");
+    userInFile = fopen(SOURCE_LOCATION""USERS_FILE_NAME, "r");
+    if(userInFile == NULL) return USER_LOAD_FAILURE;
     if(loadAllUsers(userInFile)!=1) return USER_LOAD_FAILURE;
-    fprintf(stderr, "Start Load Artists\n");
-    if(loadAllArtists(artistInFile)!=1) return ARTIST_LOAD_FAILURE;
+    
     fprintf(stderr, "Start Load Albums\n");
+    albumInFile = fopen(SOURCE_LOCATION""ALBUMS_FILE_NAME, "r");
+    if(albumInFile == NULL) return ALBUM_LOAD_FAILURE;
     if(loadAllAlbums(albumInFile)!=1) return ALBUM_LOAD_FAILURE;
-    fprintf(stderr, "Start Load Loans\n");
-    if(loadAllLoans(loanInFile)!=1) return LOAN_LOAD_FAILURE;
-    fprintf(stderr, "Start Load Artist Comments\n");
-    if(loadArtistComments(art_comInFile)!=1) return ART_COM_LOAD_FAILURE;
-    fprintf(stderr, "Start Load Album Comments\n");
-    if(loadAlbumComments(alb_comInFile)!=1) return ALB_COM_LOAD_FAILURE;
+    
+    fprintf(stderr, "Start Load Artists\n");
+    artistInFile = fopen(SOURCE_LOCATION""ARTISTS_FILE_NAME, "r");
+    if(artistInFile == NULL) return ARTIST_LOAD_FAILURE;
+    if(loadAllArtists(artistInFile)!=1) return ARTIST_LOAD_FAILURE;
+    
     fprintf(stderr, "Start Load User Comments\n");
+    usr_comInFile = fopen(SOURCE_LOCATION""USER_COMMENTS_FILE_NAME, "r");
+    if(usr_comInFile == NULL) return USR_COM_LOAD_FAILURE;
     if(loadUserComments(usr_comInFile)!=1) return USR_COM_LOAD_FAILURE;
 
+    fprintf(stderr, "Start Load Album Comments\n");
+    alb_comInFile = fopen(SOURCE_LOCATION""ALBUM_COMMENTS_FILE_NAME, "r");
+    if(alb_comInFile == NULL) return ALB_COM_LOAD_FAILURE;
+    if(loadAlbumComments(alb_comInFile)!=1) return ALB_COM_LOAD_FAILURE;
+
+    fprintf(stderr, "Start Load Artist Comments\n");
+    art_comInFile = fopen(SOURCE_LOCATION""ARTIST_COMMENTS_FILE_NAME, "r");
+    if(art_comInFile == NULL) return ART_COM_LOAD_FAILURE;
+    if(loadArtistComments(art_comInFile)!=1) return ART_COM_LOAD_FAILURE;
+    
+    fprintf(stderr, "Start Load Loans\n");
+    loanInFile = fopen(SOURCE_LOCATION""LOANS_FILE_NAME, "r");
+    if(loanInFile == NULL) return LOAN_LOAD_FAILURE;
+    if(loadAllLoans(loanInFile)!=1) return LOAN_LOAD_FAILURE;
+    
     return 1;
 }
 
@@ -99,7 +121,7 @@ int loadAllUsers(FILE *file){
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*now get emailaddress from last element in file*/
 	newUser->emailAddress = malloc(sizeof(char)*(strlen(temp)+1));
@@ -160,7 +182,7 @@ int loadAllAlbums(FILE *file){
 	/*temp2 = strchr(temp, '%');*/
 	
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*get artistId out of file*/
 	char2int = malloc(sizeof(char)*(strlen(temp)+1));
@@ -210,7 +232,7 @@ int loadAllArtists(FILE *file){
 
 	temp = temp2 + 1; /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*get artist title from file*/
 	newArtist->name = malloc(sizeof(char)*(strlen(temp)+1));
@@ -275,13 +297,16 @@ int loadAllLoans(FILE *file){
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
 
-	/*get album title from file*/
-	newLoan->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2)+1));
-	if(newLoan->userCode == NULL) return E_MALLOC_FAILED;
+	/*get user ID from file*/
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	strncpy(newLoan->userCode, temp, (strlen(temp)-strlen(temp2)));
+	/*make album ID */
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
-	newLoan->userCode[strlen(temp)-strlen(temp2)] = '\0';
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	newLoan->userID = atoi(char2int);
+	free(char2int);
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
@@ -293,12 +318,12 @@ int loadAllLoans(FILE *file){
 	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	newLoan->timeStamp = atoi(char2int);
+	newLoan->timeStampIn = atoi(char2int);
 	free(char2int);
 	
 	temp = temp2 + 1; /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*get is REturned boolean out  of file*/
 	char2int = malloc(sizeof(char)*(strlen(temp)+1));
@@ -363,17 +388,20 @@ int loadAlbumComments(FILE *file){
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
 
-	/*get album title from file*/
-	newAlbumComment->userOwner = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newAlbumComment->userOwner == NULL) return E_MALLOC_FAILED;
+	/*get owner of comment out of file as char* */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	strncpy(newAlbumComment->userOwner, temp, (strlen(temp)-strlen(temp2)));
+	/*make user ID */
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
-	newAlbumComment->userOwner[strlen(temp)-strlen(temp2)] = '\0';
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	newAlbumComment->userOwner = atoi(char2int);
+	free(char2int);
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*now get emailaddress from last element in file*/
 	newAlbumComment->comment = malloc(sizeof(char)*(strlen(temp)+1));
@@ -390,6 +418,7 @@ int loadAlbumComments(FILE *file){
     return 1;
 
 }
+
 int loadArtistComments(FILE *file){
 
     char *line = NULL;
@@ -434,17 +463,20 @@ int loadArtistComments(FILE *file){
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
 
-	/*get comment owner from file*/
-	newArtistComment->userOwner = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newArtistComment->userOwner == NULL) return E_MALLOC_FAILED;
+	/*get owner of comment out of file as char* */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	strncpy(newArtistComment->userOwner, temp, (strlen(temp)-strlen(temp2)));
+	/*make user ID */
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
-	newArtistComment->userOwner[strlen(temp)-strlen(temp2)] = '\0';
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	newArtistComment->userOwner = atoi(char2int);
+	free(char2int);
 
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*now get comment from last element in file*/
 	newArtistComment->comment = malloc(sizeof(char)*(strlen(temp)+1));
@@ -491,27 +523,33 @@ int loadUserComments(FILE *file){
 	temp2 = strchr(temp, '%');
 
 	/*get comment user(not author) from file*/
-	newUserComment->user = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newUserComment->user == NULL) return E_MALLOC_FAILED;
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	strncpy(newUserComment->user, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate the new string*/
-	newUserComment->user[strlen(temp)-strlen(temp2)] = '\0';
+	/*make user ID */
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	newUserComment->userID = atoi(char2int);
+	free(char2int);
 	
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
 
-	/*get comment owner from file*/
-	newUserComment->userOwner = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
-	if(newUserComment->userOwner == NULL) return E_MALLOC_FAILED;
+	/*get owner of comment out of file as char* */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
 
-	strncpy(newUserComment->userOwner, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate the new string*/
-	newUserComment->userOwner[strlen(temp)-strlen(temp2)] = '\0';
-
+	/*make user ID */
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	newUserComment->userOwner = atoi(char2int);
+	free(char2int);
+	
 	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return LOAD_FAILURE;
+	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
 
 	/*now get comment from last element in file*/
 	newUserComment->comment = malloc(sizeof(char)*(strlen(temp)+1));
@@ -527,6 +565,5 @@ int loadUserComments(FILE *file){
     }
     return 1;
 }
-/*int loadComment(const int ID);*/
 
 /*char **stringLoader(char *string){}*/

@@ -6,10 +6,10 @@ LIBS=-Lcgi/ -lcgic -lm
 # Object files
 
 SHARED_OBJS=shared/read_line.o
-CGI_OBJS=cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o cgi/tester.o
+CGI_OBJS=cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o #cgi/tester.o
 DATABASE_OBJS=database/lib.o database/load.o database/save.o
 
-OBJS=$(CGI_OBJS) $(DATABASE_OBJS)
+OBJS=$(SHARED_OBJS) $(CGI_OBJS) $(DATABASE_OBJS)
 
 INSTALL_DIR=$(HOME)/public_html/testweb
 
@@ -31,28 +31,29 @@ cgi/libcgic.a: cgi/cgic.o cgi/cgic.h
 	(cd cgi; $(AR) rc libcgic.a cgic.o)
 
 ## Testing ##
-cgi/globals.h: cgi/tester.h
-cgi/tester.c: cgi/tester.h
+#cgi/globals.h: cgi/tester.h
+#cgi/tester.c: cgi/tester.h
 ## Testing ##
  
-cgi/cgic.c: cgi/cgic.h
-cgi/contact.c: cgi/globals.h shared/structs.h shared/defines.h
-cgi/globals.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/home.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/login.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/main.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/news.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/user.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/artist.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/album.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
-cgi/loan.c: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/cgic.o: cgi/cgic.h
+cgi/contact.o: cgi/globals.h shared/structs.h shared/defines.h
+cgi/globals.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/home.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/login.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/main.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/news.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/user.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/artist.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/album.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
+cgi/loan.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
 
 ##############################################
 # Database
 
-database/lib.c:  shared/defines.h shared/structs.h shared/lib.h database/globals.h database/save.h
-database/load.c: shared/defines.h shared/structs.h shared/read_line.h database/globals.h database/load.h
-database/save.c: shared/defines.h database/globals.h database/save.h
+database/lib.o:  shared/defines.h shared/structs.h shared/lib.h database/globals.h
+database/load.o: shared/defines.h shared/structs.h shared/read_line.h database/globals.h database/load.h
+database/save.o: shared/defines.h database/globals.h database/save.h
+database/add.o: shared/defines.h shared/structs.h database/globals.h database/save.h
 
 database/globals.h: shared/structs.h
 database/save.h: shared/defines.h

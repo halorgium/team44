@@ -6,7 +6,7 @@
 /*int saveDatabase();*/
 
 /*int  saveAllUsers();*/
-int saveUser(const char *name, const char* userCode, const char *email, Boolean bool, int ID);
+int saveUser(const char *name, const char* userCode, const char *email, Boolean librarian, int ID);
 
 /*int  saveAllAlbums();*/
 int saveAlbum(const char* title, const int artistID, int ID);
@@ -15,12 +15,12 @@ int saveAlbum(const char* title, const int artistID, int ID);
 int saveArtist(char *name, int ID);
 
 /*int  saveAllLoans();*/
-int saveLoan(int ID, int albumID, char *user, int time, int isReturned);
+int saveLoan(int ID, int albumID, int userID, int time, Boolean  isReturned);
 
 /*int  saveAllComments();*/
-int saveCommentArtist(char *owner, char *body, int ID, int artistID);
-int saveCommentAlbum(char *owner, char *body, int ID, int albumID);
-int saveCommentUser(char *owner, char *body, int ID, char *userCode);
+int saveCommentArtist(int owner, char *body, int ID, int artistID);
+int saveCommentAlbum(int owner, char *body, int ID, int albumID);
+int saveCommentUser(int owner, char *body, int ID, int userID);
 int saveLine(FILE *file, char *line);
 
 #endif

@@ -1,13 +1,15 @@
 #ifndef _CGI_GLOBALS_H
 #define _CGI_GLOBALS_H 1
 
+#include "../shared/structs.h"
+#include "../shared/lib.h"
+#include "../shared/defines.h"
+
 #define HTML_SRC_ROOT "."
 
 #define MAXSIZE_PAGENAME 10
 
-#include "tester.h"
-
-char *userCode;
+userNode_t *_currUserLogon_;
 
 void openFile(FILE *toecho, const char *name);
 void echoFile(FILE *input, FILE *output);

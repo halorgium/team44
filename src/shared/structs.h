@@ -5,22 +5,14 @@
 
 /* structure which holds a user and links next user in list*/
 typedef struct userNode{
-    int ID;               /*unique id based on usercode*/
+    int ID;           /*unique id based on usercode - but don't tell anyone*/
     char *userCode;   /*unique user name*/
     char *userName;
     char *emailAddress;
-    int isLibrarian;       /* FALSE-standard, TRUE-librarian*/
+    Boolean isLibrarian;       /* FALSE-standard, TRUE-librarian*/
     
     struct userNode *next;
 }userNode_t;
-
-/*struct to hold an artist*/
-typedef struct artistNode{
-    int ID;
-    char *name;
-    
-    struct artistNode *next;
-}artistNode_t;
 
 /* structure which holds an album and links to next album in list */
 typedef struct albumNode{
@@ -30,46 +22,54 @@ typedef struct albumNode{
     struct albumNode* next;
 }albumNode_t;
 
-/* structure which holds a comment about an artist and links to next comment in list*/
-typedef struct artistCommentNode{
+/*struct to hold an artist*/
+typedef struct artistNode{
     int ID;
-    int artistID;
+    char *name;
     
-    char *userOwner;
+    struct artistNode *next;
+}artistNode_t;
+
+/* structure which holds a comment about a user and links to next comment in list*/
+typedef struct userCommentNode{
+    int ID;
+    int userID;
+
+    int userOwner;
     char *comment;
-    
-    struct artistCommentNode *next;
-}artistCommentNode_t;
+
+    struct userCommentNode *next;
+}userCommentNode_t;
 
 /* structure which holds a comment about an album  and links to next comment in list*/
 typedef struct albumCommentNode{
     int ID;
     int albumID;
     
-    char *userOwner;
+    int userOwner;
     char *comment;
     
     struct albumCommentNode *next;
 }albumCommentNode_t;
 
-/* structure which holds a comment about a user and links to next comment in list*/
-typedef struct userCommentNode{
+/* structure which holds a comment about an artist and links to next comment in list*/
+typedef struct artistCommentNode{
     int ID;
-    char *user;
-
-    char *userOwner;
+    int artistID;
+    
+    int userOwner;
     char *comment;
+    
+    struct artistCommentNode *next;
+}artistCommentNode_t;
 
-    struct userCommentNode *next;
-}userCommentNode_t;
-
-
-/*struct to hold loans - may not be needed*/
+/*struct to hold loans */
 typedef struct loanNode{
     int ID;
     int albumID;
-    char *userCode;
-    int timeStamp;
+    int userID;
+    int timeStampIn;
+    int timeStampOut;
     int isReturned;
     
     struct loanNode *next;
