@@ -1,4 +1,7 @@
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "read_line.h"
 
 char *readLine(FILE *file){
