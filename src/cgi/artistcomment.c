@@ -55,14 +55,16 @@ static void doAddArtistComment(void) {
 	int newartistCommentid=processAddForm();
 	if(newartistCommentid > 0) {
 	    /* Artist Comment added ok */
+	    const char* artistname=getArtistName(getArtistCommentArtist(newartistCommentid));
+	    
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&amp;hash=%d\">[View Artist Comments for Artist]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Add Another Comment on this Artist]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Info about %s]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon, artistname);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=view&amp;artistid=%d&amp;hash=%d\">[View All Comments about %s]</a><br />\n", getArtistCommentArtist(newartistCommentid), _currUserLogon, artistname);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;artistid=%d&amp;hash=%d\">[Write another Comment about %s]</a>\n", getArtistCommentArtist(newartistCommentid), _currUserLogon, artistname);
 	}
 	else {
 	    /* Some sort of failure */
-	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;hash=%d\">[Add Another Comment on an Artist]</a>\n", _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=artistcomment&amp;func=add&amp;hash=%d\">[Write another Comment about an Artist]</a>\n", _currUserLogon);
 	}
     }
     else {

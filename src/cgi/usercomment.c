@@ -63,16 +63,18 @@ static void doAddUserComment(void) {
     if(isAdding) {
 	/* The curr data is ready for processing */
 	int newuserCommentid=processAddForm();
-	if(newuserCommentid != -1) {
+	if(newuserCommentid > 0) {
 	    /* User Comment added ok */
+	    const char *username=getUserName(getUserCommentUser(newuserCommentid));
+	    
 	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View User Comments for User]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Add another comment on User]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=user&amp;userid=%d&hash=%d\">[View Info about %s]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=view&amp;userid=%d&hash=%d\">[View All Comments about %s]</a><br />\n", getUserCommentUser(newuserCommentid), _currUserLogon, username);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;userid=%d&hash=%d\">[Write another comment about %s]</a>\n", getUserCommentUser(newuserCommentid), _currUserLogon, username);
 	}
 	else {
 	    /* Some sort of failure */
-	    fprintf(cgiOut, "Adding failed - %d\n", newuserCommentid);
+	    fprintf(cgiOut, "<a href=\"./?page=usercomment&amp;func=add&amp;hash=%d\">[Write another Comment about a User]</a>\n", _currUserLogon);
 	}
     }
     else {

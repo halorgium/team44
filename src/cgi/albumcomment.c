@@ -23,7 +23,7 @@ void printAlbumComment(void) {
     result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
     if(result != cgiFormSuccess || func == NULL) {
 	/* Some sort of failure */
-      strncpy(func, "view", MAXSIZE_PAGENAME);
+	strncpy(func, "view", MAXSIZE_PAGENAME);
     }
 
     if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
@@ -31,9 +31,9 @@ void printAlbumComment(void) {
 	doAddAlbumComment();
     }
     else {
-      /* Default */
-      /* Do view albumComment etc */
-      doViewAlbumComment();
+	/* Default */
+	/* Do view albumComment etc */
+	doViewAlbumComment();
     }
 }
 
@@ -51,23 +51,25 @@ static void doAddAlbumComment(void) {
     }
 
     if(isAdding) {
-      /* The curr data is ready for processing */
-      int newalbumCommentid=processAddForm();
-      if(newalbumCommentid > 0) {
-	/* Album Comment added ok */
-	fprintf(cgiOut, "Adding successful<br />\n");
-	fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&amp;hash=%d\">[View Album Comments for Album]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
-	fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Add Another Comment for this Album]</a>\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon);
-      }
-      else {
-	  /* Some sort of failure */
-	  fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;hash=%d\">[Add Another Comment on an Album]</a>\n", _currUserLogon);
-      }
+	/* The curr data is ready for processing */
+	int newalbumCommentid=processAddForm();
+	if(newalbumCommentid > 0) {
+	    /* Album Comment added ok */
+	    const char *albumtitle=getAlbumTitle(getAlbumCommentAlbum(newalbumCommentid));
+	  
+	    fprintf(cgiOut, "Adding successful<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon, albumtitle);
+	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=view&amp;albumid=%d&amp;hash=%d\">[View All Comments about &quot;%s&quot;]</a><br />\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon, albumtitle);
+	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;albumid=%d&amp;hash=%d\">[Write another Comment about &quot;%s&quot;]</a>\n", getAlbumCommentAlbum(newalbumCommentid), _currUserLogon, albumtitle);
+	}
+	else {
+	    /* Some sort of failure */
+	    fprintf(cgiOut, "<a href=\"./?page=albumcomment&amp;func=add&amp;hash=%d\">[Write another Comment about an Album]</a>\n", _currUserLogon);
+	}
     }
     else {
-      /* Need to print form */
-      printAddForm();
+	/* Need to print form */
+	printAddForm();
     }
 }
 
@@ -77,7 +79,7 @@ static int processAddForm(void) {
     int albumid=-1;
     char *combody=malloc(sizeof(char)*MAXSIZE_ALBUMCOMMENT);
 
-    result = cgiFormInteger("artid", &albumid, -1);
+    result = cgiFormInteger("albid", &albumid, -1);
     if(result != cgiFormSuccess || albumid == -1) {
 	newAlbumCommentid = E_FORM;
     }

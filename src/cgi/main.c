@@ -173,13 +173,13 @@ static void printLinks(FILE *output) {
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=artist&amp;hash=%d\">View&nbsp;All&nbsp;Artists</a></td>\n  </tr>\n", _currUserLogon);
     if(isUserLibrarian(_currUserLogon) == TRUE) {
 	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=artist&amp;func=add&amp;hash=%d\">Add&nbsp;New&nbsp;Artist</a></td>\n  </tr>\n", _currUserLogon);
-	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=artistcomment&amp;func=add&amp;hash=%d\">Comment&nbsp;about&nbsp;a&nbsp;Artist</a></td>\n  </tr>\n", _currUserLogon);
+	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=artistcomment&amp;func=add&amp;hash=%d\">Comment&nbsp;about&nbsp;an&nbsp;Artist</a></td>\n  </tr>\n", _currUserLogon);
 	fprintf(output, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
     }
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=album&amp;hash=%d\">View&nbsp;All&nbsp;Albums</a></td>\n  </tr>\n", _currUserLogon);
     if(isUserLibrarian(_currUserLogon) == TRUE) {
 	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=album&amp;func=add&amp;hash=%d\">Add&nbsp;New&nbsp;Album</a></td>\n  </tr>\n", _currUserLogon);
-	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=albumcomment&amp;func=add&amp;hash=%d\">Comment&nbsp;about&nbsp;a&nbsp;Album</a></td>\n  </tr>\n", _currUserLogon);
+	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=albumcomment&amp;func=add&amp;hash=%d\">Comment&nbsp;about&nbsp;an&nbsp;Album</a></td>\n  </tr>\n", _currUserLogon);
 	fprintf(output, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
 	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=user&amp;hash=%d\">View&nbsp;All&nbsp;Users</a></td>\n  </tr>\n", _currUserLogon);
 	fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=user&amp;func=add&amp;hash=%d\">Add&nbsp;New&nbsp;User</a></td>\n  </tr>\n", _currUserLogon);

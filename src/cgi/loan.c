@@ -57,7 +57,7 @@ static void doAddLoan(void) {
     int result=0;
     Boolean isAdding=-1;
 
-    fprintf(cgiOut, "<div class=\"head1\">Adding New Loan</div>\n");
+    fprintf(cgiOut, "<div class=\"head1\">Borrowing an Album</div>\n");
 
     /* if adding field is set */
     result=cgiFormIntegerBounded("adding", &isAdding, FALSE, TRUE, FALSE);
@@ -71,9 +71,14 @@ static void doAddLoan(void) {
 	int newloanid=processAddForm();
 	if(newloanid != -1) {
 	    /* Loan added ok */
-	    fprintf(cgiOut, "Adding successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a><br />\n", getLoanAlbum(newloanid), _currUserLogon);
-	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View User Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
+	    const char *albumtitle=getAlbumTitle(getLoanAlbum(newloanid));
+	    
+	    fprintf(cgiOut, "Borrowing successful<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getLoanAlbum(newloanid), _currUserLogon, getAlbumTitle(getLoanAlbum(newloanid)));
+	    if(isUserLibrarian(_currUserLogon) == TRUE) {
+		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", getLoanAlbum(newloanid), _currUserLogon, albumtitle);
+	    }
+	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */
@@ -155,7 +160,7 @@ static void doReturnLoan(void) {
     int result=0;
     Boolean isReturning=-1;
 
-    fprintf(cgiOut, "<div class=\"head1\">Returning Album</div>\n");
+    fprintf(cgiOut, "<div class=\"head1\">Returning an Album</div>\n");
 
     /* if adding field is set */
     result=cgiFormIntegerBounded("returning", &isReturning, FALSE, TRUE, FALSE);
@@ -169,12 +174,14 @@ static void doReturnLoan(void) {
 	int loanid=processReturnForm();
 	if(loanid != -1) {
 	    /* Album added ok */
-	    fprintf(cgiOut, "Album returned successful<br />\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a><br />\n", getLoanAlbum(loanid), _currUserLogon);
+	    const char* albumtitle=getAlbumTitle(getLoanAlbum(loanid));
+	    
+	    fprintf(cgiOut, "Album returned successfully<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Info about &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
 	    if(isUserLibrarian(_currUserLogon) == TRUE) {
-		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Album Borrowing History]</a><br />\n", getLoanAlbum(loanid), _currUserLogon);
+		fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;albumid=%d&hash=%d\">[View Borrowing History of &quot;%s&quot;]</a><br />\n", getLoanAlbum(loanid), _currUserLogon, albumtitle);
 	    }
-	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View User Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
+	    fprintf(cgiOut, "<a href=\"./?page=loan&amp;func=view&amp;userid=%d&hash=%d\">[View your Borrowing History]</a>\n", _currUserLogon, _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */
@@ -190,26 +197,30 @@ static int processReturnForm(void) {
 
     result = cgiFormInteger("loanid", &loanid, -1);
     if(result != cgiFormSuccess || loanid == -1) {
-	return -1;
+	success=E_FORM;
     }
-
-    if(getLoanExists(loanid) == FALSE) {
-	return -1;
-    }
-
-    if(getLoanUser(loanid) != _currUserLogon) {
-	return -1;
+    else {
+	if(getLoanExists(loanid) == FALSE) {
+	    success=E_NOLOAN;
+	}
+	else {
+	    if(getLoanUser(loanid) != _currUserLogon) {
+		fprintf(cgiOut, "You cannot return this album; It is already on loan to ");
+		userLink("", getLoanUser(loanid), getUserName(getLoanUser(loanid)), cgiOut);
+		fprintf(cgiOut, "<br />\n");
+	    }
+	    else {
+		if(isLoanReturned(loanid) == TRUE) {
+		    success=ALREADY_ADDED;
+		}
+		else {
+		    success=addLoanReturned(loanid);
+		}
+	    }
+	}
     }
     
-    if(isLoanReturned(loanid) == TRUE) {
-	return -1;
-    }
-
-    success=addLoanReturned(loanid);
-    if(success < 0) {
-	return -1;
-    }
-    return loanid;
+    return success;
 }
 
 static void doViewLoan(void) {
