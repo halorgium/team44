@@ -67,12 +67,11 @@ typedef struct userCommentNode{
 typedef struct loanNode{
     int ID;
     int albumID;
-    char *userName;
-    int timetake;
-    int timereturn;
-    int returned;
+    char *userCode;
+    int timeStamp;
+    int isReturned;
     
     struct loanNode *next;
-}loan_t;
+}loanNode_t;
 
 #endif

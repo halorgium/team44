@@ -12,6 +12,24 @@
 #define LOANS_FILE_NAME "loan"
 
 
+/*all are  pointers to the first node in the 3 lists*/
+static userNode_t *firstUser = NULL;  
+static albumNode_t *firstAlbum = NULL;
+static artistNode_t *firstArtist = NULL;
+static userCommentNode_t *firstUserComment = NULL;
+static artistCommentNode_t *firstArtistComment = NULL;
+static albumCommentNode_t *firstAlbumComment = NULL;
+static loanNode_t *firstLoan = NULL;
+
+/*simple ID's which are incremented after addition of new users etc*/
+/* these should be changed before final implementation*/
+static int nextArtistID = 100;
+static int nextAlbumID = 200;        
+static int nextCommentID = 300;
+static int nextLoanID = 400;      
+
+
+
 /* lib.c */
 int addAlbum(const char *title, const int artistID);
 int addUser(const char *, const char *, const char *, const Boolean);
