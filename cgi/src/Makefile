@@ -1,21 +1,19 @@
 CFLAGS=-Wall -ansi -pedantic
 CC=gcc
 AR=ar
+OBJS=globals.o main.o login.o home.o user.o
 LIBS=-L./ -lcgic
 
 INSTALL_DIR=$(HOME)/public_html/testweb
 
-all: libcgic.a ../bin/cgictest.cgi ../bin/capture.cgi
+all: libcgic.a ../bin/index.cgi
 
 libcgic.a: cgic.o cgic.h
 	rm -f libcgic.a
 	$(AR) rc libcgic.a cgic.o
 
-../bin/cgictest.cgi: cgictest.o libcgic.a
-	gcc cgictest.o -o ../bin/cgictest.cgi ${LIBS}
-
-../bin/capture.cgi: capture.o libcgic.a
-	gcc capture.o -o ../bin/capture.cgi ${LIBS}
+../bin/index.cgi: $(OBJS) libcgic.a globals.h
+	gcc $(OBJS) -o ../bin/index.cgi ${LIBS}
 
 install: 
 	rm -fr $(INSTALL_DIR)
@@ -24,5 +22,5 @@ install:
 	chmod -R o+rX $(INSTALL_DIR)
 
 clean:
-	rm -f *.o *.a ../bin/cgictest ../bin/capture
+	rm -f *.o *.a ../bin/index.cgi
 

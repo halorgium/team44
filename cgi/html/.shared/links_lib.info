@@ -1,0 +1,5 @@
+./?page=user%View all Users
+./?page=comment%View Comments
+				<p align="center"><a class="buttonref" href="addUser.html"><B>Add User</a></p></B>
+				<p align="center"><a class="buttonref" href="addAlbum.html"><B>Add Album</a></p></B>
+				<p align="center"><a class="buttonref" href="commentOnUser.html"><B>Add User Comment</a></p></B>
