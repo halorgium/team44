@@ -141,6 +141,22 @@ int addAlbum(const char *title, int artistID){
 	return E_NOARTIST;
     }
 
+    {
+	/*pointer to list of albums*/
+	int *albumsInLibrary = getAlbums();
+	int i;  /*counter*/
+
+	/*check for album 'already in' library*/
+    
+	for(i = 0; albumsInLibrary[i] != LAST_ID_IN_ARRAY; i++){
+	    if(strcmp(getAlbumTitle(albumsInLibrary[i]), title) == 0 &&
+	       artistID == getAlbumArtist(albumsInLibrary[i])){
+		/*album added is 'the same' as another in database*/
+		return ALREADY_ADDED;
+	    }
+	}
+    }
+    
     /*allocates memory for new Album*/
     newAlbumNode = (albumNode_t*) malloc(sizeof(albumNode_t));
     if(newAlbumNode == NULL){        /*malloc failure test*/

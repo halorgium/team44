@@ -59,7 +59,11 @@ static void doAddAlbum(void) {
     if(isAdding) {
 	/* The curr data is ready for processing */
 	int newalbumid=processAddForm();
-	if(newalbumid != -1) {
+	if(newalbumid == ALREADY_ADDED){
+	    fprintf(cgiOut, " Sorry there is already an album with that title by that artist. Adding failed.\n");
+	}
+	
+	else if(newalbumid != -1) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Adding successful<br />\n");
 	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a><br />\n", newalbumid, _currUserLogon);
@@ -82,6 +86,10 @@ static int processAddForm(void) {
     int newAlbumid=-1;
     char *albtitle=malloc(sizeof(char)*MAXSIZE_ALBUMTITLE);
     int artistid=-1;
+    /*pointer t0 list of albums*/
+    int *albumsInLibrary=0;
+    int albumCount;
+    int i;  /*counter*/
 
     result = cgiFormStringNoNewlines("albtitle", albtitle, MAXSIZE_ARTISTNAME);
     if(result != cgiFormSuccess || albtitle == NULL) {
@@ -91,6 +99,18 @@ static int processAddForm(void) {
     result = cgiFormInteger("artistid", &artistid, -1);
     if(result != cgiFormSuccess || artistid == -1) {
 	return -1;
+    }
+
+    /*check for album 'already in' library*/
+    albumsInLibrary = getAlbums();
+    albumCount = getAlbumsCount();
+    
+    for(i = 0; i < albumCount; i++){
+	if(strcmp(getAlbumTitle(albumsInLibrary[i]), albtitle) == 0 &&
+		   artistid == getAlbumArtist(albumsInLibrary[i])){
+	    /*album added is 'the same' as another in database*/
+	    return ALREADY_ADDED;
+	}
     }
 
     newAlbumid=addAlbum(albtitle, artistid);

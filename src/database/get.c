@@ -1,15 +1,12 @@
 /***************************************************************************
  *                                                                         *
- * @lib.c                                                                  *
+ * @get.c                                                                  *
  * @version: 19/05/2003
  * @continued 24/7/03
  * @Eden Sinclair, 2020812                                                 *
  *                                                                         *
- * This program implements a simple in-memory database for storing         *
- * information for a music discussion system.                              *
- * It proveides functions to add new users into the database, add new      *
- * albums to the database, and users can add comments about albums.        *
- * Various getter methods are available which search through the database  *
+ * This program provides all the necessary get methods for lib.c. Two      *
+ * private functions are provided for internal usage                       *
  *                                                                         *
  ***************************************************************************/
 
@@ -188,7 +185,7 @@ Boolean isUserLibrarian(int idNumber) {
     return FALSE;
 }
 
-/* Function: getAllUsers
+/* Function: getUsers
  * Params:  
  * Returns: int*.
  *
@@ -311,6 +308,7 @@ const char* getAlbumTitle(int idNumber){
 }
 /*end getAlbumTitle() */
 
+/*returns id number of albums' artist, or error*/
 int getAlbumArtist(int idNumber) {
     albumNode_t *a;
     a = getAlbum(idNumber);
