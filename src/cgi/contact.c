@@ -76,7 +76,7 @@ void printContact(void) {
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">\n");
-  fprintf(cgiOut, "      <label title=\"Position\">Manages daniel the baby</label>\n");
+  fprintf(cgiOut, "      <label title=\"Position\">Manages The Woman Inside Of Him</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "    <td>");
   fprintf(cgiOut, "    </td>\n");
@@ -127,12 +127,12 @@ void printContact(void) {
   fprintf(cgiOut, "<tbody>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">\n");
-  fprintf(cgiOut, "      <label title=\"Name\">Daniel &quot;Latex condoms up his ass master&quot; Bakker</label>\n");
+  fprintf(cgiOut, "      <label title=\"Name\">Daniel &quot;Don't mess with my piranha&quot; Bakker</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\">  \n");
-  fprintf(cgiOut, "      <label title=\"Position\">Having fun with himself</label>\n");
+  fprintf(cgiOut, "      <label title=\"Position\">Slightly Disgruntled</label>\n");
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "    <td>");
   fprintf(cgiOut, "    </td>\n");
