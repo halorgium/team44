@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco,v 1.1 2003/05/26 05:54:21 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco,v 1.2 2003/07/25 04:06:30 tsm20 Exp $
 
 CLEANOUT="/home/cosc/student/tsm20/team44clean"
    CVSIN="/home/cosc/student/tsm20/team44cvs"
@@ -26,11 +26,3 @@ chmod o-rwx `find $CLEANOUT`
 #   other has no perms
 #   group has rx for dirs and scripts
 #         has r  for random files
-
-echo "Add execute perm for other ("$MODULE")"
-chmod o+x $CLEANOUT
-chmod o+x $CLEANOUT/$MODULE
-echo "web - Add execute perm for other (all dirs and scripts under)"
-chmod o+X `find $CLEANOUT/$MODULE/web`
-echo "web - Add read perm for other (all files under)"
-chmod o+r `find $CLEANOUT/$MODULE/web -type f`

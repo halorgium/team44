@@ -6,6 +6,8 @@ LIBS=-L./ -lcgic
 all: libcgic.a ../bin/cgictest.cgi ../bin/capture.cgi
 
 libcgic.a: cgic.o cgic.h
+	rm -fr ../bin
+	mkdir ../bin
 	rm -f libcgic.a
 	$(AR) rc libcgic.a cgic.o
 
@@ -15,11 +17,11 @@ libcgic.a: cgic.o cgic.h
 ../bin/capture.cgi: capture.o libcgic.a
 	gcc capture.o -o ../bin/capture.cgi ${LIBS}
 
-install: ../bin/cgictest.cgi ../bin/capture.cgi
+install: 
 	rm -fr ../../testweb
 	cp -r ../html ../../testweb
 	cp ../bin/* ../../testweb
-	chmod g+rX ../../testweb
+	chmod -R g+rX ../../testweb
 
 clean:
 	rm -f *.o *.a ../bin/cgictest ../bin/capture
