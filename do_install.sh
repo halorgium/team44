@@ -57,27 +57,32 @@ echo
 
 # make the cgi dir
 echo " Making cgi dir" >&2
-mkdir -p $INSTALL_DIR
+mkdir -p $INSTALL_DIR 2>&1 >/dev/null || (echo " error making cgi dir" >&2 && exit 4)
 
 # copy and chmod cgi files 
 echo " Copying and chmoding cgi files" >&2
-cp $CGI_FILES $INSTALL_DIR
-chmod -R u+r $INSTALL_DIR
-chmod -R o+rX $INSTALL_DIR
+cp $CGI_FILES $INSTALL_DIR 2>&1 >/dev/null || (echo " error copying cgi files: make before make install" >&2 && exit 3)
+chmod -R o+rX $INSTALL_DIR 2>&1 >/dev/null 
 
 # make the data dir
 echo " Making db dir" >&2
-mkdir $DB_INSTALL_DIR
+mkdir -p $DB_INSTALL_DIR 2>&1 >/dev/null || (echo " error making db dir" >&2 && exit 4)
 
 # copy and chmod db files
 echo " Copying and chmoding db files" >&2
-cp $DB_FILES $DB_INSTALL_DIR
-chmod u+rw $DB_INSTALL_DIR/*
-chmod og-rwx $DB_INSTALL_DIR/*
-chmod og-rwx $DB_INSTALL_DIR
+cp $DB_FILES $DB_INSTALL_DIR 2>&1 >/dev/null || (echo " error copying db files" >&2 && exit 3)
+chmod u+rw $DB_INSTALL_DIR/* 2>&1 >/dev/null 
+chmod -R og-rwx $DB_INSTALL_DIR 2>&1 >/dev/null 
 
-# chmod main dir
-chmod o+rx $INSTALL_DIR
+TMP_DIR=$INSTALL_DIR 
+RES=0
+# loop towards / from $INSTALL_DIR
+while [[ $RES -eq 0 ]]; do
+	echo " chmod on '"$TMP_DIR"'" >&2
+	chmod o+x $TMP_DIR 2>&1 >/dev/null
+	RES=$?
+	TMP_DIR=$TMP_DIR"/.."
+done
 
 # print out pretty footer 
 echo >&2
