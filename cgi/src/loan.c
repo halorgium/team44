@@ -176,7 +176,7 @@ static void printAllLoansByUser(char *userid) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	    fprintf(cgiOut, "  <tr>\n");
 	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&user=%s\">%s</a>", getLoanAlbum(curr_id), userCode, getAlbumTitle(getLoanAlbum(curr_id)));
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%s\">%s</a>", getLoanAlbum(curr_id), userCode, getAlbumTitle(getLoanAlbum(curr_id)));
 	    fprintf(cgiOut, "    </td>\n");
 	    if(getLoanStatus(curr_id) == LOAN_ACTIVE) {
 		fprintf(cgiOut, "    <td>On Loan</td>\n");

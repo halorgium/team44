@@ -59,7 +59,7 @@ static void doAddAlbum(void) {
     if(newalbumid != -1) {
       /* Album added ok */
       fprintf(cgiOut, "Adding successful\n");
-      fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&user=%s\">[View Album]</a>", newalbumid, userCode);
+      fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%s\">[View Album]</a>", newalbumid, userCode);
     }
     else {
       /* Some sort of failure */
@@ -87,13 +87,17 @@ static void printAddForm(void) {
     return;
   }
 
-  fprintf(cgiOut, "<form method=\"POST\" action=\"./\">\n");
+  fprintf(cgiOut, "<form method=\"post\" action=\"./\">\n");
   fprintf(cgiOut, "<table>\n");
+  fprintf(cgiOut, "<tbody>\n");
+  fprintf(cgiOut, "  <tr class=\"hidden\">\n");
+  fprintf(cgiOut, "    <td>\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%s\" />\n", userCode);
-  fprintf(cgiOut, "<tbody>\n");
+  fprintf(cgiOut, "    </td>\n");
+  fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
   fprintf(cgiOut, "    <td class=\"describe\"><label for=\"title\" title=\"Album Title\">Album Title: </label></td>\n");
   fprintf(cgiOut, "  </tr>\n");
@@ -197,7 +201,7 @@ void printAllAlbums(void) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	  fprintf(cgiOut, "  <tr>\n");
 	  fprintf(cgiOut, "    <td>");
-	  fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&user=%s\">%s</a>", curr_id, userCode, getAlbumTitle(curr_id));
+	  fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%s\">%s</a>", curr_id, userCode, getAlbumTitle(curr_id));
 	  fprintf(cgiOut, "    </td>\n");
 	  fprintf(cgiOut, "    <td>%s</td>\n", getArtistName(getAlbumArtist(curr_id)));
 	  fprintf(cgiOut, "  </tr>\n");
@@ -254,7 +258,7 @@ static void printSpecificAlbum(int albumid) {
 	fprintf(cgiOut, "Album is on loan to <b>%s</b>\n", loanUserCode);
 
 	if(strncmp(loanUserCode, userCode, MAXSIZE_USERCODE) == 0) {
- 	  fprintf(cgiOut, "<form method=\"POST\" action=\"./\"\n");
+ 	  fprintf(cgiOut, "<form method=\"post\" action=\"./\">\n");
 	  fprintf(cgiOut, "  <p>\n");
 	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"delete\" />\n");
@@ -268,7 +272,7 @@ static void printSpecificAlbum(int albumid) {
       else {
 	fprintf(cgiOut, "Album is not on loan\n");
 
-	fprintf(cgiOut, "<form method=\"POST\" action=\"./\">\n");
+	fprintf(cgiOut, "<form method=\"post\" action=\"./\">\n");
 	fprintf(cgiOut, "  <p>\n");
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
