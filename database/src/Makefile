@@ -8,7 +8,7 @@ OFILES=main.o lib.o load.o save.o ../../shared/read_line.o
 all:	database
 
 database: $(OFILES)
-	$(LINK.c) -lm -o ../bin/lib $(OFILES)
+	$(LINK.c) -lm -o ../bin/database $(OFILES)
 
 main.o: ../../shared/defines.h lib.h load.h
 
