@@ -39,7 +39,7 @@ static int checkString(const char *string) {
 }
 
 /* Function: addUser
- * Params:  char* name, char* email
+ * Params:  const char* name, char* email
  * Returns: int.
  *
  * This function adds a user into the database. It returns
@@ -501,9 +501,13 @@ int addLoan(int albumID, int userID) {
 int addLoanReturned(int loanID){
     long tempTime=-1;
     
-    /*checks whether user existsL */
-    if(getLoanExists(loanID) == FALSE && isLoanReturned(loanID) == FALSE) {
+    /*checks whether loan exists */
+    if(getLoanExists(loanID) == FALSE) {
 	return E_NOLOAN;
+    }
+
+    if(isLoanReturned(loanID) == FALSE) {
+	return ALREADY_ADDED;
     }
 
     tempTime = getctime();
