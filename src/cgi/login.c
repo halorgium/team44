@@ -33,6 +33,9 @@ void printLogin()
     fprintf(cgiOut, "<td>\n");
     fprintf(cgiOut, "<p>Please login to use the Music Library</p>\n");
     fprintf(cgiOut, "\n");
+    fprintf(cgiOut,
+            "<p>For help, view the <a href=\"./help/index.html\">user documentation</a></p>\n");
+    fprintf(cgiOut, "\n");
     fprintf(cgiOut, "<form method=\"get\" action=\"./?page=home\">\n");
     fprintf(cgiOut, "<p>\n");
     fprintf(cgiOut,
