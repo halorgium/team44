@@ -340,15 +340,15 @@ int addArtistComment(int artistID, int owner, char *body){
     return _nextArtistCommentID++;    /*return and increment id*/
 }/* end addCommentArtist() */
 
-int addLoan(int userID, int albumID){
-    long tempTime=-1;   
+int addLoan(int albumID, int userID){
+    long tempTime=-1;
     loanNode_t *newLoanNode = NULL;
     
     /*checks whether user existsL */
     if(getUserExists(userID) == FALSE) {
       return E_NOUSER;
     }
-    if(getAlbumExists(albumID) == FALSE){
+    if(getAlbumExists(albumID) == FALSE && getAlbumCurrentLoan(albumID) != E_NOLOAN){
 	return E_NOALBUM;
     }
     
@@ -358,9 +358,9 @@ int addLoan(int userID, int albumID){
 	return E_MALLOC_FAILED;
     }
     
-    newLoanNode->userID = userID;
     newLoanNode->albumID = albumID;
-
+    newLoanNode->userID = userID;
+    
     tempTime=getctime();
     if(tempTime == -1) {
 	return DB_BAD_TIME;

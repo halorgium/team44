@@ -34,7 +34,7 @@ void printLoan(void) {
 	/* Do add loan etc */
 	doAddLoan();
     }
-    if(strncmp(func, "return", MAXSIZE_PAGENAME) == 0) {
+    else if(strncmp(func, "return", MAXSIZE_PAGENAME) == 0) {
 	/* Do add return etc */
 	doReturnLoan();
     }
@@ -63,11 +63,11 @@ static void doAddLoan(void) {
 
     if(isAdding) {
 	/* The curr data is ready for processing */
-	int newalbumid=processAddForm();
-	if(newalbumid != -1) {
-	    /* Album added ok */
-	    fprintf(cgiOut, "Adding successful\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a>", newalbumid, _currUserLogon);
+	int newloanid=processAddForm();
+	if(newloanid != -1) {
+	    /* Loan added ok */
+	    fprintf(cgiOut, "Adding successful<br />\n");
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a>", getLoanAlbum(newloanid), _currUserLogon);
 	}
 	else {
 	    /* Some sort of failure */
@@ -81,54 +81,63 @@ static void doAddLoan(void) {
 }
 
 static int processAddForm(void) {
-    return -1;
+    int result=0;
+    int newLoanid=-1;
+    int albumid=-1;
+
+    result = cgiFormInteger("albid", &albumid, -1);
+    if(result != cgiFormSuccess || albumid == -1) {
+	return -1;
+    }
+    
+    newLoanid=addLoan(albumid, _currUserLogon);
+    if(newLoanid < 0) {
+	return -1;
+    }
+    return newLoanid;
 }
 
 static void printAddForm(void) {
-    int *allArtists=getArtists();
+    int *allAlbums=getAlbums();
     int curr_id=0;
     int count=0;
 
-    if(allArtists == NULL) {
-	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Artists</div>");
+    if(allAlbums == NULL) {
+	fprintf(cgiOut, "<div class=\"head1\">Error retrieving all Albums.</div>");
 	return;
     }
 
-    fprintf(cgiOut, "<form method=\"POST\" action=\"./\">\n");
+    fprintf(cgiOut, "<form method=\"get\" action=\"./\">\n");
     fprintf(cgiOut, "<table>\n");
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
+    fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon);
     fprintf(cgiOut, "<tbody>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"title\" title=\"Album Title\">Album Title: </label></td>\n");
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"title\" name=\"title\" size=\"%d\"/></td>\n", MAXSIZE_ALBUMTITLE);
-    fprintf(cgiOut, "  </tr>\n");
-    fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"artist\" title=\"Artist Name\">Artist Name: </label></td>\n");
+    fprintf(cgiOut, "    <td class=\"describe\"><label for=\"albtitle\" title=\"Album Title\">Album Title: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"field\">\n");
-    fprintf(cgiOut, "<select id=\"artist\" name=\"artist\" size=\"5\">\n");
+    fprintf(cgiOut, "<select id=\"albtitle\" name=\"artist\" size=\"5\">\n");
 
-    curr_id=allArtists[count];
+    curr_id=allAlbums[count];
     while (curr_id != LAST_ID_IN_ARRAY) {
-	fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getArtistName(curr_id));
+	if(getAlbumCurrentLoan(curr_id) == E_NOLOAN) {
+	    fprintf(cgiOut, "  <option value=\"%d\">%s</option>\n", curr_id, getAlbumTitle(curr_id));
+	}
 	count++;
-	curr_id=allArtists[count];
+	curr_id=allAlbums[count];
     }
 
-    free(allArtists);
+    free(allAlbums);
 
     fprintf(cgiOut, "</select>\n");
     fprintf(cgiOut, "    </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td><input type=\"submit\" value=\"Add Album\" /></td>\n");
+    fprintf(cgiOut, "    <td><input type=\"submit\" value=\"Borrow Album\" /></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "</tbody>\n");
     fprintf(cgiOut, "</table>\n");

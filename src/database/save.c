@@ -75,7 +75,9 @@ int saveArtistComment(int ID, int artistID, int owner, const char *body){
 int saveLoan(int ID, int albumID, int userID, long timeIn){
     FILE *outFile = fopen(SOURCE_LOCATION""LOAN_FILE_NAME, "a");
 
-    if(outFile == NULL) return DB_SAVE_FAILURE;
+    if(outFile == NULL) {
+	return DB_SAVE_FAILURE;
+    }
     fprintf(outFile, "%d%%%d%%%d%%%ld%%\n", ID, albumID, userID, timeIn);
 
     return 1;

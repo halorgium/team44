@@ -74,9 +74,12 @@ index.cgi: $(OBJS) cgi/libcgic.a
 
 install: $(DPECNDS)
 	rm -fr $(INSTALL_DIR)
-	mkdir $(INSTALL_DIR)
-	cp $(CGI_FILES) $(INSTALL_DIR)
-	mkdir $(INSTALL_DIR)/var
-	cp $(DB_FILES) $(INSTALL_DIR)/var
-	chmod -R o+rX $(INSTALL_DIR)
 
+	mkdir $(INSTALL_DIR)
+	mkdir $(INSTALL_DIR)/var
+
+	cp $(CGI_FILES) $(INSTALL_DIR)
+	cp $(DB_FILES) $(INSTALL_DIR)/var
+
+	chmod -R o+rX $(INSTALL_DIR)
+	chmod u+w $(INSTALL_DIR)/var/*

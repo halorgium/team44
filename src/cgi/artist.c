@@ -110,7 +110,7 @@ static void printAddForm(void) {
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td><input type=\"submit\" value=\"Add Album\" /></td>\n");
+    fprintf(cgiOut, "    <td><input type=\"submit\" value=\"Add Artist\" /></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "</tbody>\n");
     fprintf(cgiOut, "</table>\n");
