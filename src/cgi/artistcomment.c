@@ -15,26 +15,17 @@ static void printAddForm(void);
 static void printAllArtistCommentsByUser(int);
 static void printAllArtistCommentsForArtist(int);
 
-void printArtistComment(void) {
-  int result=0;
-  char func[MAXSIZE_PAGENAME]={'\0'};
-
-  /* if func field is set */
-  result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-  if(result != cgiFormSuccess || func == NULL) {
-    /* Some sort of failure */
-    strncpy(func, "view", MAXSIZE_PAGENAME);
-  }
-
-  if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
-    /* Do add artistComment etc */
-    doAddArtistComment();
-  }
-  else {
-    /* Default */
-    /* Do view artistComment etc */
-    doViewArtistComment();
-  }
+void printArtistComment(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
+	/* Do add artistComment etc */
+	doAddArtistComment();
+	break;
+    default:
+	/* Default */
+	/* Do view artistComment etc */
+	doViewArtistComment();
+    }
 }
 
 static void doAddArtistComment(void) {

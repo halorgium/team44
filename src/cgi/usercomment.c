@@ -16,26 +16,18 @@ static void printAddForm(void);
 static void printAllUserCommentsByUser(int);
 static void printAllUserCommentsForUser(int);
 
-void printUserComment(void) {
-    int result=0;
-    char func[MAXSIZE_PAGENAME]={'\0'};
-
-    /* if func field is set */
-    result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-    if(result != cgiFormSuccess || func == NULL) {
-	/* Some sort of failure */
-	strncpy(func, "main", MAXSIZE_PAGENAME);
-    }
-
-    if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
+void printUserComment(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
 	/* Do add userComment etc */
 	doAddUserComment();
-    }
-    else if(strncmp(func, "view", MAXSIZE_PAGENAME) == 0) {
+	break;
+    case FUNC_VIEW:
 	/* Do view userComment etc */
 	doViewUserComment();
-    }
-    else {
+	break;
+    default:
+	/* Default */
 	/* Do view userComment etc */
 	doShowUserComment();
     }

@@ -19,7 +19,7 @@ void printLogin() {
   fprintf(cgiOut, "<p>\n");
   fprintf(cgiOut, "<input type=\"hidden\" name=\"dologin\" value=\"1\" />\n");
   fprintf(cgiOut, "<label for=\"usercode\" title=\"User Code\"><u>U</u>ser Code: </label>\n");
-  fprintf(cgiOut, "<input type=\"text\" id=\"usercode\" name=\"usercode\" value=\"\" size=\"%d\" maxlength=\"%d\" tabindex=\"1\" accesskey=\"u\" />\n", MAXSIZE_USERCODE, MAXSIZE_USERCODE);
+  fprintf(cgiOut, "<input type=\"text\" id=\"usercode\" name=\"usercode\" value=\"\" size=\"%d\" maxlength=\"%d\" tabindex=\"1\" accesskey=\"u\" />\n", MAXLEN_USERCODE, MAXLEN_USERCODE);
   fprintf(cgiOut, "<input type=\"submit\" value=\"Login\" />\n");
   fprintf(cgiOut, "</p>\n");
   fprintf(cgiOut, "</form>\n");

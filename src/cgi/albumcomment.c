@@ -17,25 +17,16 @@ static void printAddForm(void);
 static void printAllAlbumCommentsByUser(int);
 static void printAllAlbumCommentsForAlbum(int);
 
-void printAlbumComment(void) {
-    int result=0;
-    char func[MAXSIZE_PAGENAME]={'\0'};
-
-    /* if func field is set */
-    result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-    if(result != cgiFormSuccess || func == NULL) {
-	/* Some sort of failure */
-	strncpy(func, "view", MAXSIZE_PAGENAME);
-    }
-
-    if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
+void printAlbumComment(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
 	/* Do add albumComment etc */
 	doAddAlbumComment();
-    }
-    else {
-	/* Default */
+	break;
+    default:
 	/* Do view albumComment etc */
 	doViewAlbumComment();
+	break;
     }
 }
 

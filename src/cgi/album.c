@@ -19,23 +19,13 @@ static void printAddForm(void);
 static void printAllAlbums(void);
 static void printSpecificAlbum(int);
 
-void printAlbum(void) {
-    int result=0;
-    char func[MAXSIZE_PAGENAME]={'\0'};
-
-    /* if func field is set */
-    result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-    if(result != cgiFormSuccess || func == NULL) {
-	/* Some sort of failure */
-	/* Default to viewAlbums */
-	strncpy(func, "view", MAXSIZE_PAGENAME);
-    }
-
-    if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
+void printAlbum(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
 	/* Do add album etc */
 	doAddAlbum();
-    }
-    else {
+	break;
+    default:
 	/* Default */
 	/* Do view album etc */
 	doViewAlbum();

@@ -17,23 +17,13 @@ static void printAllUsersByType(Boolean);
 
 static void printSpecificUser(int);
 
-void printUser(void) {
-    int result=0;
-    char func[MAXSIZE_PAGENAME]={'\0'};
-
-    /* if func field is set */
-    result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-    if(result != cgiFormSuccess || func == NULL) {
-	/* Some sort of failure */
-	/* Default to viewUsers */
-	strncpy(func, "view", MAXSIZE_PAGENAME);
-    }
-
-    if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
+void printUser(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
 	/* Do add user etc */
 	doAddUser();
-    }
-    else {
+	break;
+    default:
 	/* Default */
 	/* Do view user etc */
 	doViewUser();
@@ -82,59 +72,91 @@ static void doAddUser(void) {
 
 static int processAddForm(void) {
     int result=0;
+    int size=-1;
+
+    Boolean err[3]={FALSE};
+    
     int newUserid=-1;
-    char *userCode= NULL;
-    char *userName= NULL; 
-    char *userEmail= NULL; 
+    char *userCode=NULL;
+    char *userName=NULL; 
+    char *userEmail=NULL; 
     Boolean isLib=FALSE;
 
-    /*mem allocation and testing*/
-    userCode =  malloc(sizeof(char)*MAXSIZE_USERCODE);
-    if(userCode == NULL){
-	fprintf(cgiOut, "Memory Allocation Error<br />\n");
-	return E_MALLOC_FAILED;
-    }
-    userName = malloc(sizeof(char)*MAXSIZE_USERNAME);
-    if(userName == NULL){
-	fprintf(cgiOut, "Memory Allocation Error<br />\n");
-	free(userCode);
-	return E_MALLOC_FAILED;
-    }
-    userEmail = malloc(sizeof(char)*MAXSIZE_USEREMAIL);
-    if(userEmail == NULL){
-	fprintf(cgiOut, "Memory Allocation Error<br />\n");
-	free(userCode);
-	free(userName);
-	return E_MALLOC_FAILED;
-    }
-
-    result = cgiFormStringNoNewlines("usrcode", userCode, MAXSIZE_USERCODE);
-    if(result != cgiFormSuccess || userCode == NULL) {
-	newUserid = E_INVALID_PARAM;
+    /* Get user code */
+    result = cgiFormStringSpaceNeeded("usrcode", &size);
+    if(result != cgiFormSuccess || size < 0 || size > MAXLEN_USERCODE) {
+	err[0]=TRUE;
+	newUserid=E_FORM;
     }
     else {
-	result = cgiFormStringNoNewlines("usrname", userName, MAXSIZE_USERNAME);
-	if(result != cgiFormSuccess || userName == NULL) {
-	    newUserid = E_INVALID_PARAM;
+	userCode=malloc(sizeof(char)*(size+1));
+	if(userCode == NULL) {
+	    newUserid=E_MALLOC_FAILED;
 	}
 	else {
-	    result = cgiFormStringNoNewlines("usremail", userEmail, MAXSIZE_USEREMAIL);
-	    if(result != cgiFormSuccess || userEmail == NULL) {
-		newUserid = E_INVALID_PARAM;
+	    result = cgiFormStringNoNewlines("usrcode", userCode, size);
+	    if(result != cgiFormSuccess || userCode == NULL) {
+		err[0]=TRUE;
+		newUserid=E_FORM;
 	    }
-	    else {
-		result = cgiFormCheckboxSingle("islib");
-		if(result != cgiFormSuccess) {
-		    isLib=FALSE;
-		}
-		else {
-		    isLib=TRUE;
-		}
-		newUserid=addUser(userCode, userName, userEmail, isLib);
+	    else if(checkString(userCode) == FALSE) {
+		err[0]=TRUE;
+		newUserid=E_INVALID_PARAM;
+		free(userCode);
 	    }
 	}
     }
-    
+    /* Get user name */
+    result = cgiFormStringSpaceNeeded("usrname", &size);
+    if(result != cgiFormSuccess || size < 0 || size > MAXLEN_USERNAME) {
+	err[1]=TRUE;
+	newUserid=E_FORM;
+    }
+    else {
+	userName=malloc(sizeof(char)*(size+1));
+	if(userName == NULL) {
+	    newUserid=E_MALLOC_FAILED;
+	}
+	else {
+	    result = cgiFormStringNoNewlines("usrname", userName, size);
+	    if(result != cgiFormSuccess || userName == NULL) {
+		err[1]=TRUE;
+		newUserid = E_FORM;
+	    }
+	}
+    }
+    /* Get email address */
+    result = cgiFormStringSpaceNeeded("usremail", &size);
+    if(result != cgiFormSuccess || size < 0 || size > MAXLEN_USEREMAIL) {
+	err[2]=TRUE;
+	newUserid=E_FORM;
+    }
+    else {
+	userEmail=malloc(sizeof(char)*(size+1));
+	if(userEmail == NULL) {
+	    newUserid=E_MALLOC_FAILED;
+	}
+	else {
+	    result = cgiFormStringNoNewlines("usremail", userEmail, size);
+	    if(result != cgiFormSuccess || userEmail == NULL) {
+		err[2]=TRUE;
+		newUserid = E_FORM;
+	    }
+	}
+    }
+    /* Get isLibrarian */
+    result = cgiFormCheckboxSingle("islib");
+    if(result != cgiFormSuccess) {
+	isLib=FALSE;
+    }
+    else {
+	isLib=TRUE;
+    }
+
+    if(newUserid > 0) {
+	newUserid=addUser(userCode, userName, userEmail, isLib);
+    }
+			    
     if(newUserid < 0) {
 	switch(newUserid) {
 	case DB_NEXTID_ERROR:
@@ -142,6 +164,17 @@ static int processAddForm(void) {
 	    break;
 	case DB_SAVE_FAILURE:
 	    fprintf(cgiOut, "Database failure: User save incomplete<br />\n");
+	    break;
+	case E_FORM:
+	    if(err[0] == TRUE) {
+		fprintf(cgiOut, "User code is incorrect");
+	    }
+	    if(err[1] == TRUE) {
+		fprintf(cgiOut, "User name is incorrect");
+	    }
+	    if(err[2] == TRUE) {
+		fprintf(cgiOut, "Email address is incorrect");
+	    }
 	    break;
 	case E_INVALID_PARAM:
 	    fprintf(cgiOut, "One or more input fields are invalid<br />\n");
@@ -183,21 +216,21 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"usrcode\" title=\"User Code\">User Code: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrcode\" name=\"usrcode\" size=\"%d\" /></td>\n", MAXSIZE_USERCODE);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrcode\" name=\"usrcode\" size=\"%d\" maxlength=\"%d\" /></td>\n", MAXLEN_USERCODE, MAXLEN_USERCODE);
     fprintf(cgiOut, "  </tr>\n");
 
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"usrname\" title=\"User Name\">User Name: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrname\" name=\"usrname\" size=\"%d\" /></td>\n", MAXSIZE_USERNAME);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usrname\" name=\"usrname\" size=\"%d\" maxlength=\"%d\" /></td>\n", MAXLEN_USERNAME, MAXLEN_USERNAME);
     fprintf(cgiOut, "  </tr>\n");
 
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"usremail\" title=\"Email Address\">Email Address: </label></td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usremail\" name=\"usremail\" size=\"%d\" /></td>\n", MAXSIZE_USEREMAIL);
+    fprintf(cgiOut, "    <td class=\"field\"><input type=\"text\" id=\"usremail\" name=\"usremail\" size=\"%d\" maxlength=\"%d\" /></td>\n", MAXLEN_USEREMAIL, MAXLEN_USEREMAIL);
     fprintf(cgiOut, "  </tr>\n");
 
     fprintf(cgiOut, "  <tr>\n");

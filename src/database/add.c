@@ -32,7 +32,7 @@ static long getctime(void) {
 }
 
 /* Checks that string is acceptable for entering into the database */
-static Boolean checkString(const char *string) {
+Boolean checkString(const char *string) {
     if(string == NULL) {
 	return FALSE;
     }

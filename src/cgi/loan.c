@@ -21,33 +21,23 @@ static void printAllLoansByAlbum(int);
 static void printCurrentLoanByAlbum(int);
 static void printPreviousLoansByAlbum(int);
 
-void printLoan(void) {
-    int result=0;
-    char func[MAXSIZE_PAGENAME]={'\0'};
-
-    /* if func field is set */
-    result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-    if(result != cgiFormSuccess || func == NULL) {
-	/* Some sort of failure */
-	fprintf(cgiOut, "Invalid request\n");
-	return;
-    }
-
-    if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
+void printLoan(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
 	/* Do add loan etc */
 	doAddLoan();
-    }
-    else if(strncmp(func, "return", MAXSIZE_PAGENAME) == 0) {
+	break;
+    case FUNC_RETURN:
 	/* Do add return etc */
 	doReturnLoan();
-    }
-    else if(strncmp(func, "view", MAXSIZE_PAGENAME) == 0) {
+	break;
+    case FUNC_VIEW:
 	/* Do view loan etc */
 	doViewLoan();
-    }
-    else {
+	break;
+    default:
 	/* Invalid function */
-	fprintf(cgiOut, "Invalid request\n");
+	fprintf(cgiOut, "<div class=\"head1\">Loans</div>\nInvalid request\n");
     }
 }
 

@@ -78,10 +78,12 @@ TMP_DIR=$INSTALL_DIR
 RES=0
 # loop towards / from $INSTALL_DIR
 while [[ $RES -eq 0 ]]; do
-	echo " chmod on '"$TMP_DIR"'" >&2
-	chmod o+x $TMP_DIR 2>&1 >/dev/null
+	chmod o+x $TMP_DIR 2>/dev/null >/dev/null
 	RES=$?
 	TMP_DIR=$TMP_DIR"/.."
+	if [[ $RES -eq 0 ]]; then
+		echo " chmod on '"$TMP_DIR"'" >&2
+	fi
 done
 
 # print out pretty footer 

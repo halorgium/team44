@@ -30,7 +30,8 @@ int cgiMain() {
 static void theRealWork(void) {
     int result=0;
 
-    char pageName[MAXSIZE_PAGENAME]={'\0'};
+    pageName_t pageName=PAGE_UNKNOWN;
+    funcName_t funcName=FUNC_UNKNOWN;
 
     int userHash=0;
    
@@ -40,7 +41,7 @@ static void theRealWork(void) {
     result=loadDatabase();
     if(result != DB_LOAD_SUCCESS) {
 	/* some problem with loading */
-	fprintf(cgiOut, "<td>Some DB Load problem [%d]</td>\n</tr>\n<tr>\n", result);
+	fprintf(cgiOut, "<td id=\"bodycontent\">DB Load problem [%d]</td>\n</tr>\n<tr>\n", result);
 	return;
     }
     
@@ -50,40 +51,52 @@ static void theRealWork(void) {
 
 	/* check for login attempt */
 	int dologin = 0;
-	int result2 = cgiFormInteger("dologin", &dologin, FALSE);
+	result = cgiFormInteger("dologin", &dologin, FALSE);
 	
-	if(result2 != cgiFormSuccess || dologin == FALSE) {
+	if(result != cgiFormSuccess || dologin == FALSE) {
 	    /* No attempt */
 	    /* Display login */
-	    strcpy(pageName, "login");
+	    pageName=PAGE_LOGIN;
 	}
 	else {
 	    /* Hey someone is trying to login */
 	    /* Get the userCode */
-	    char *userCode=malloc(sizeof(char)*(MAXSIZE_USERCODE+1));
-	    if(userCode == NULL) {
-		fprintf(cgiOut, "<td>Memory Error</td></tr>\n<tr>\n");
-		return;
-	    }
-	    
-	    result = cgiFormStringNoNewlines("usercode", userCode, MAXSIZE_USERCODE);
+	    int size=-1;
+		
+	    result=cgiFormStringSpaceNeeded("usercode", &size);
 	    if(result != cgiFormSuccess) {
 		/* Unsuccessful */
-		/* Display login */
-		fprintf(cgiOut, "<td>No such user</td></tr>\n<tr>\n");
-		strcpy(pageName, "login");
+		/* Display Login */
+		fprintf(cgiOut, "<td id=\"bodycontent\">No such user</td></tr>\n<tr>\n");
+		pageName=PAGE_LOGIN;
 	    }
 	    else {
-		/* Now check user */
-		int tempHash=makeUserID(userCode);
-		if(getUserExists(tempHash) == FALSE) {
-		    /* No such user */
-		    fprintf(cgiOut, "<td>No such user</td></tr>\n<tr>\n");
-		    strcpy(pageName, "login");
+		/* Get the usercode variable */
+		char *userCode=malloc(sizeof(char)*(size+1));
+		if(userCode == NULL) {
+		    fprintf(cgiOut, "<td id=\"bodycontent\">Memory Error</td></tr>\n<tr>\n");
+		    return;
+		}
+		
+		result = cgiFormStringNoNewlines("usercode", userCode, size);
+		if(result != cgiFormSuccess) {
+		    /* Unsuccessful */
+		    /* Display login */
+		    fprintf(cgiOut, "<td id=\"bodycontent\">No such user</td></tr>\n<tr>\n");
+		    pageName=PAGE_LOGIN;
 		}
 		else {
-		    _currUserLogon=tempHash;
-		    strcpy(pageName, "home");
+		    /* Now check user */
+		    int tempHash=makeUserID(userCode);
+		    if(getUserExists(tempHash) == FALSE) {
+			/* No such user */
+			fprintf(cgiOut, "<td id=\"bodycontent\">No such user</td></tr>\n<tr>\n");
+			pageName=PAGE_LOGIN;			
+		    }
+		    else {
+			_currUserLogon=tempHash;
+			pageName=PAGE_HOME;
+		    }
 		}
 	    }
 	}
@@ -93,20 +106,122 @@ static void theRealWork(void) {
 	/* Make sure logged in */
 	if(getUserExists(userHash) == FALSE) {
 	    /* UserHash invalid */
-	    fprintf(cgiOut, "<td>Bad hash</td></tr>\n<tr>\n");
-	    strcpy(pageName, "login");
+	    fprintf(cgiOut, "<td id=\"bodycontent\">Bad hash</td></tr>\n<tr>\n");
+	    pageName=PAGE_LOGIN;
 	}
 	else {
+	    int size=-1;
+
 	    _currUserLogon=userHash;
-	    
-	    result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
+
+	    result=cgiFormStringSpaceNeeded("page", &size);
 	    if(result != cgiFormSuccess) {
-		strcpy(pageName, "home");
+		/* Unsuccessful */
+		/* Display Home */
+		pageName=PAGE_HOME;
+	    }
+	    else {
+		/* Get the page variable */
+		char *temppageName=malloc(sizeof(char)*(size+1));
+		if(temppageName == NULL) {
+		    /* Malloc fail */
+		    /* Display Home */
+		    pageName=PAGE_HOME;
+		}
+		else {
+		    result = cgiFormStringNoNewlines("page", temppageName, size);
+		    if(result != cgiFormSuccess) {
+			/* Display Home */
+			pageName=PAGE_HOME;
+		    }
+		    
+		    if(strncmp(temppageName, "login", size) == 0) {
+			pageName=PAGE_LOGIN;
+		    }
+		    else if(strncmp(temppageName, "contact", size) == 0) {
+			pageName=PAGE_CONTACT;
+		    }
+		    else if(strncmp(temppageName, "user", size) == 0) {
+			pageName=PAGE_USER;
+		    }
+		    else if(strncmp(temppageName, "album", size) == 0) {
+			pageName=PAGE_ALBUM;
+		    }
+		    else if(strncmp(temppageName, "artist", size) == 0) {
+			pageName=PAGE_ARTIST;
+		    }
+		    else if(strncmp(temppageName, "usercomment", size) == 0) {
+			pageName=PAGE_USERCOMMENT;
+		    }
+		    else if(strncmp(temppageName, "albumcomment", size) == 0) {
+			pageName=PAGE_ALBUMCOMMENT;
+		    }
+		    else if(strncmp(temppageName, "artistcomment", size) == 0) {
+			pageName=PAGE_ARTISTCOMMENT;
+		    }
+		    else if(strncmp(temppageName, "loan", size) == 0) {
+			pageName=PAGE_LOAN;
+		    }
+		    else {
+			/* Default */
+			pageName=PAGE_HOME;
+		    }
+		    free(temppageName);
+		    
+		    /* Now get the func variable if necessary */
+		    switch(pageName) {
+		    case PAGE_USER:
+		    case PAGE_ALBUM:
+		    case PAGE_ARTIST:
+		    case PAGE_USERCOMMENT:
+		    case PAGE_ALBUMCOMMENT:
+		    case PAGE_ARTISTCOMMENT:
+		    case PAGE_LOAN:
+			result=cgiFormStringSpaceNeeded("func", &size);
+			if(result != cgiFormSuccess) {
+			    /* Unsuccessful */
+			    /* Func is unknown */
+			    funcName=FUNC_UNKNOWN;
+			}
+			else {
+			    /* Get the page variable */
+			    char *tempfuncName=malloc(sizeof(char)*(size+1));
+			    if(tempfuncName == NULL) {
+				/* Malloc fail */
+				/* Func is unknown */
+				funcName=FUNC_UNKNOWN;
+			    }
+			    else {
+				result = cgiFormStringNoNewlines("func", tempfuncName, size);
+				if(result != cgiFormSuccess) {
+				    /* Func is unknown */
+				    funcName=FUNC_UNKNOWN;
+				}
+				else {
+				    if(strncmp(tempfuncName, "add", size) == 0) {
+					funcName=FUNC_ADD;
+				    }
+				    else if(strncmp(tempfuncName, "return", size) == 0) {
+					funcName=FUNC_RETURN;
+				    }
+				    else {
+					funcName=FUNC_VIEW;
+				    }
+ 				}
+				free(tempfuncName);
+			    }
+			}
+			break;
+		    default:
+			/* Func is not necessary for these pages */
+			funcName=FUNC_UNKNOWN;
+		    }
+		}
 	    }
 	}
     }
-
-    /* If links are neccessary print them */
+    
+    /* If links are necessary print them */
     if(_currUserLogon != E_NOUSER) {
 	printLinks(cgiOut);
     }
@@ -118,37 +233,37 @@ static void theRealWork(void) {
 	fprintf(cgiOut, "<a name=\"navskip\"></a>\n");
 	fprintf(cgiOut, "<!-- Start Body -->\n");
 
-
-	if(strncmp(pageName, "login", MAXSIZE_PAGENAME) == 0) {
-	    printLogin();
-	}
-	else if(strncmp(pageName, "contact", MAXSIZE_PAGENAME) == 0) {
-	    printContact();
-	}
-	else if(strncmp(pageName, "user", MAXSIZE_PAGENAME) == 0) {
-	    printUser();
-	}
-	else if(strncmp(pageName, "album", MAXSIZE_PAGENAME) == 0) {
-	    printAlbum();
-	}
-	else if(strncmp(pageName, "artist", MAXSIZE_PAGENAME) == 0) {
-	    printArtist();
-	}
-	else if(strncmp(pageName, "usercomment", MAXSIZE_PAGENAME) == 0) {
-	    printUserComment();
-	}
-	else if(strncmp(pageName, "albumcomment", MAXSIZE_PAGENAME) == 0) {
-	    printAlbumComment();
-	}
-	else if(strncmp(pageName, "artistcomment", MAXSIZE_PAGENAME) == 0) {
-	    printArtistComment();
-	}
-	else if(strncmp(pageName, "loan", MAXSIZE_PAGENAME) == 0) {
-	    printLoan();
-	}
-	else {
-	    /* Default */
+	switch(pageName) {
+	case PAGE_HOME:
 	    printHome();
+	    break;
+	case PAGE_CONTACT:
+	    printContact();
+	    break;
+	case PAGE_USER:
+	    printUser(funcName);
+	    break;
+	case PAGE_ALBUM:
+	    printAlbum(funcName);
+	    break;
+	case PAGE_ARTIST:
+	    printArtist(funcName);
+	    break;
+	case PAGE_USERCOMMENT:
+	    printUserComment(funcName);
+	    break;
+	case PAGE_ALBUMCOMMENT:
+	    printAlbumComment(funcName);
+	    break;
+	case PAGE_ARTISTCOMMENT:
+	    printArtistComment(funcName);
+	    break;
+	case PAGE_LOAN:
+	    printLoan(funcName);
+	    break;
+	default:
+	    /* Default */
+	    printLogin();
 	}
 
 	fprintf(cgiOut, "<!-- End Body -->\n");

@@ -11,9 +11,9 @@ typedef int Boolean;
 
 /* Data limits */
 
-#define MAXSIZE_USERCODE 16
-#define MAXSIZE_USERNAME 50
-#define MAXSIZE_USEREMAIL 100
+#define MAXLEN_USERCODE 16
+#define MAXLEN_USERNAME 50
+#define MAXLEN_USEREMAIL 100
 
 #define MAXSIZE_ALBUMTITLE 50
 

@@ -23,32 +23,21 @@ static void printSpecificArtist(int);
 
 /*
   function: printArtist
-  parameters: none
-  Used to: This function is used to print the artist whenever it is needed
+  parameters: int func
+  Used to: This function calls the another function based on the func value
 */
 
-void printArtist(void) {
-    int result=0;
-    char func[MAXSIZE_PAGENAME]={'\0'};
-
-    /* if func field is set */
-    result = cgiFormStringNoNewlines("func", func, MAXSIZE_PAGENAME);
-    if(result != cgiFormSuccess || func == NULL) {
-	/* Some sort of failure */
-	/* Default to viewArtists */
-	strncpy(func, "view", MAXSIZE_PAGENAME);
-    }
-
-    if(strncmp(func, "add", MAXSIZE_PAGENAME) == 0) {
-	/* Do add album etc */
+void printArtist(funcName_t func) {
+    switch(func) {
+    case FUNC_ADD:
+	/* Do add artist etc */
 	doAddArtist();
-    }
-    else {
+	break;
+    default:
 	/* Default */
-	/* Do view album etc */
+	/* Do view artist etc */
 	doViewArtist();
     }
-
 }
 
   

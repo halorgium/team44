@@ -5,6 +5,9 @@
 
 int loadDatabase(void);
 
+/* This method checks whether the string is acceptable */
+Boolean checkString(char *);
+
 /* Add methods */
 int addUser(const char *, const char *, const char *, Boolean);
 int addAlbum(const char *, int);
