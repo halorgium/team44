@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #define SOURCE_LOCATION "../var/"
 #define ALBUMS_FILE_NAME "albums"

@@ -1,4 +1,4 @@
-
+int saveLine(FILE *file, char *line);
 
 int saveDatabase();
 
