@@ -22,7 +22,7 @@ install-cgi:
 
 install-db: install-cgi
 #	mkdir $(DB_INSTALL_DIR)
-	cp $(DB_FILES) $(INSTALL_DIR)
+	cp $(DB_FILES) $(DB_INSTALL_DIR)
 	chmod u+w $(DB_INSTALL_DIR)/*
 
 install-help: 
