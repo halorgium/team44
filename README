@@ -60,3 +60,12 @@
       For keeping linux1 online and running while us students run our 
       CGI applications, consuming all the remaining CPU time and memory. 
 
+    o Marco Dorfliger
+      For supplying an 'interesting' egg
+        To enjoy this fun, run the following: 
+          $ cd egg
+          $ make run
+       [ Please note: You must have the OpenGL libraries 
+                      to compile this bonus feature ]
+
+
