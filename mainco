@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.10 2003/05/15 05:28:58 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/mainco,v 1.1 2003/05/26 05:54:21 tsm20 Exp $
 
 CLEANOUT="/home/cosc/student/tsm20/team44clean"
    CVSIN="/home/cosc/student/tsm20/team44cvs"
