@@ -1,5 +1,6 @@
 #!/bin/sh
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_webperms,v 1.2 2003/05/08 21:39:39 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_webperms,v 1.3 2003/05/08 23:51:07 tsm20 Exp $
 
-chmod -R o+r web/
-chmod o+x `find web/ -type d`
+chmod o+r .htpasswd
+chmod -R o+r web
+chmod o+x `find web -type d`
