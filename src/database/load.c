@@ -76,58 +76,76 @@ int loadAllUsers(FILE *file){
 
     while((line = readLine(file)) != NULL ){
 
+      /* Format to parse */
+      /* [ID]%[userCode]%[userName]%[emailAddress]%[isLib] */
+
 	userNode_t *newUser = NULL;
 	char *temp = line;
 	char *temp2 = NULL;
 	char *char2int = NULL;
 	
 	newUser = malloc(sizeof(userNode_t));
-	if(newUser == NULL) return E_MALLOC_FAILED;
+	if(newUser == NULL) return DB_LOAD_FAILURE;
 	
 	temp2 = strchr(temp, '%');
 
-	/*get userCode from file*/
+	/* get ID */
+	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(char2int == NULL) return E_MALLOC_FAILED;
+	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	char2int[strlen(temp)-strlen(temp2)] = '\0';
+	
+	newUser->ID = atoi(char2int);
+	free(char2int);
+
+	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/* get userCode */
 	newUser->userCode = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->userCode == NULL) return E_MALLOC_FAILED;
-
 	strncpy(newUser->userCode, temp, (strlen(temp)-strlen(temp2)));
 	/*null terminate new string*/
 	newUser->userCode[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get user name from file*/
+	/*get userName */
 	newUser->userName = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newUser->userName == NULL) return E_MALLOC_FAILED;
+	strncpy(newUser->userName, temp, (strlen(temp)-strlen(temp2)));
+	/*null terminate new string*/
+	newUser->userName[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*temp string getting smaller*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get isLibrarian Boolean out of file, if char ==1 (49) then true*/
+	/* get emailAddress */
+	newUser->emailAddress = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
+	if(newUser->emailAddress == NULL) return E_MALLOC_FAILED;
+	strncpy(newUser->emailAddress, temp, (strlen(temp)-strlen(temp2)));
+	/* null terminate new string */
+	newUser->userCode[strlen(temp)-strlen(temp2)] = '\0';
+	
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
+
+	/* get isLibrarian [Boolean] */
+	/* if char == '1' then true*/
 	if(temp[0] == '1') newUser->isLibrarian = TRUE;
 	else newUser->isLibrarian = FALSE;
 
-	temp = temp2 + 1;  /*temp string getting smaller*/
-	temp2 = strchr(temp, '%');
-
-	/*get ID*/
-	strncpy(char2int, temp, (strlen(temp)-strlen(temp2)));
-	/*null terminate new string*/
-	char2int[strlen(temp)-strlen(temp2)] = '\0';
-	
-	newUser->ID =  atoi(char2int);
-	free(char2int);
-
-	temp = temp2 + 1;  /*remove '%' char*/
 	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
+	temp = temp2 + 1;  /*temp string getting smaller*/
+	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
 
-	/*now get emailaddress from last element in file*/
-	newUser->emailAddress = malloc(sizeof(char)*(strlen(temp)+1));
-	if(newUser->emailAddress == NULL) return E_MALLOC_FAILED;
-
-	strcpy(newUser->emailAddress, temp);
+	/* Everything OK */
 						     
 	newUser->next = firstUser;   /*insert at front of list*/
 	firstUser = newUser;
@@ -138,13 +156,14 @@ int loadAllUsers(FILE *file){
     }
     return 1;
 }
-/*int loadUser(FILE *file);*/
 
 int loadAllAlbums(FILE *file){
-
     char *line = NULL;
 
     while((line = readLine(file)) != NULL ){
+
+      /* Format to parse */
+      /* [ID]%[title]%[artistID] */
 
 	albumNode_t *newAlbum = NULL;
 	char *temp = line;
@@ -155,8 +174,9 @@ int loadAllAlbums(FILE *file){
 	if(newAlbum == NULL) return E_MALLOC_FAILED;
 	
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get albumCode from file*/
+	/*get albumID */
 	char2int = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(char2int == NULL) return E_MALLOC_FAILED;
 
@@ -164,13 +184,14 @@ int loadAllAlbums(FILE *file){
 	/*null terminate new string*/
 	char2int[strlen(temp)-strlen(temp2)] = '\0';
 	
-	newAlbum->ID =  atoi(char2int);
+	newAlbum->ID = atoi(char2int);
 	free(char2int);
 
 	temp = temp2 + 1;  /*temp string getting smaller, also skip the '%'*/
 	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 
-	/*get album title from file*/
+	/*get album title */
 	newAlbum->title = malloc(sizeof(char)*(strlen(temp)-strlen(temp2))+1);
 	if(newAlbum->title == NULL) return E_MALLOC_FAILED;
 
@@ -179,11 +200,9 @@ int loadAllAlbums(FILE *file){
 	newAlbum->title[strlen(temp)-strlen(temp2)] = '\0';
 
 	temp = temp2 + 1;  /*remove '%' char*/
-	/*temp2 = strchr(temp, '%');*/
+	temp2 = strchr(temp, '%');
+	if(temp2 == NULL) return DB_LOAD_FAILURE;
 	
-	/*end of line test*/
-	if((strchr(temp, '%'))!= NULL)return DB_LOAD_FAILURE;
-
 	/*get artistId out of file*/
 	char2int = malloc(sizeof(char)*(strlen(temp)+1));
 	if(char2int == NULL) return E_MALLOC_FAILED;
@@ -191,7 +210,11 @@ int loadAllAlbums(FILE *file){
 	strcpy(char2int, temp);
 	newAlbum->artistID = atoi(char2int);
 	free(char2int);
-							     
+	
+	/*end of line test*/
+	temp = temp2 + 1;  /*remove '%' char*/
+	if((strchr(temp, '%'))!= NULL) return DB_LOAD_FAILURE;
+						     
 	newAlbum->next = firstAlbum;   /*insert at front of list*/
 	firstAlbum = newAlbum;
 

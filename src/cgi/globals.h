@@ -9,7 +9,7 @@
 
 #define MAXSIZE_PAGENAME 10
 
-userNode_t *_currUserLogon_;
+userNode_t *_currUserLogon;
 
 void openFile(FILE *toecho, const char *name);
 void echoFile(FILE *input, FILE *output);

@@ -3,24 +3,18 @@
 
 #include "../shared/defines.h"
 
-/*int saveDatabase();*/
+int saveUser(int ID, const char* userCode, const char *userName, const char *emailAddress, Boolean librarian);
 
-/*int  saveAllUsers();*/
-int saveUser(const char *name, const char* userCode, const char *email, Boolean librarian, int ID);
+int saveAlbum(int ID, const char* title, const int artistID);
 
-/*int  saveAllAlbums();*/
-int saveAlbum(const char* title, const int artistID, int ID);
+int saveArtist(int ID, char *name);
 
-/*int  saveAllArtists();*/
-int saveArtist(char *name, int ID);
+int saveUserComment(int ID, int userID, int owner, char *body);
+int saveAlbumComment(int ID, int albumID, int owner, char *body);
+int saveArtistComment(int ID, int artistID, int owner, char *body);
 
-/*int  saveAllLoans();*/
-int saveLoan(int ID, int albumID, int userID, int time, Boolean  isReturned);
+int saveLoan(int ID, int albumID, int userID, int timeIn, int timeOut, Boolean isReturned);
 
-/*int  saveAllComments();*/
-int saveCommentArtist(int owner, char *body, int ID, int artistID);
-int saveCommentAlbum(int owner, char *body, int ID, int albumID);
-int saveCommentUser(int owner, char *body, int ID, int userID);
 int saveLine(FILE *file, char *line);
 
 #endif

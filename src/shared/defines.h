@@ -27,9 +27,10 @@ typedef int Boolean;
 #define LAST_ID_IN_ARRAY -5
 #define ALREADY_ADDED -6
 
+#define DB_SAVE_FAILURE -7
+
 #define DB_LOAD_SUCCESS 1
 
-#define SAVE_FAILURE -7
 #define USER_LOAD_FAILURE -8
 #define ALBUM_LOAD_FAILURE -9
 #define ARTIST_LOAD_FAILURE -10

@@ -7,7 +7,7 @@ LIBS=-Lcgi/ -lcgic -lm
 
 SHARED_OBJS=shared/read_line.o
 CGI_OBJS=cgi/globals.o cgi/main.o cgi/login.o cgi/home.o cgi/contact.o cgi/user.o cgi/artist.o cgi/album.o cgi/loan.o cgi/news.o #cgi/tester.o
-DATABASE_OBJS=database/lib.o database/load.o database/save.o
+DATABASE_OBJS=database/lib.o database/load.o database/save.o database/add.o
 
 OBJS=$(SHARED_OBJS) $(CGI_OBJS) $(DATABASE_OBJS)
 
@@ -30,11 +30,6 @@ cgi/libcgic.a: cgi/cgic.o cgi/cgic.h
 	rm -f cgi/libcgic.a
 	(cd cgi; $(AR) rc libcgic.a cgic.o)
 
-## Testing ##
-#cgi/globals.h: cgi/tester.h
-#cgi/tester.c: cgi/tester.h
-## Testing ##
- 
 cgi/cgic.o: cgi/cgic.h
 cgi/contact.o: cgi/globals.h shared/structs.h shared/defines.h
 cgi/globals.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
@@ -51,7 +46,7 @@ cgi/loan.o: cgi/cgic.h cgi/globals.h shared/structs.h shared/defines.h
 # Database
 
 database/lib.o:  shared/defines.h shared/structs.h shared/lib.h database/globals.h
-database/load.o: shared/defines.h shared/structs.h shared/read_line.h database/globals.h database/load.h
+database/load.o: shared/defines.h shared/structs.h shared/read_line.h database/globals.h 
 database/save.o: shared/defines.h database/globals.h database/save.h
 database/add.o: shared/defines.h shared/structs.h database/globals.h database/save.h
 
@@ -76,6 +71,7 @@ clean:
 install: 
 	rm -fr $(INSTALL_DIR)
 	cp -r ../html $(INSTALL_DIR)
+	cp -r ../var $(INSTALL_DIR)/var
 	cp ../bin/* $(INSTALL_DIR)
 	chmod -R o+rX $(INSTALL_DIR)
 

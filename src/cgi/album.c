@@ -59,7 +59,7 @@ static void doAddAlbum(void) {
     if(newalbumid != -1) {
       /* Album added ok */
       fprintf(cgiOut, "Adding successful\n");
-      fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%s\">[View Album]</a>", newalbumid, _currUserLogon_->userCode);
+      fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">[View Album]</a>", newalbumid, _currUserLogon->ID);
     }
     else {
       /* Some sort of failure */
@@ -95,7 +95,7 @@ static void printAddForm(void) {
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
-  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%s\" />\n", _currUserLogon_->userCode);
+  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon->ID);
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
@@ -201,7 +201,7 @@ void printAllAlbums(void) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	  fprintf(cgiOut, "  <tr>\n");
 	  fprintf(cgiOut, "    <td>");
-	  fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon_->ID, getAlbumTitle(curr_id));
+	  fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon->ID, getAlbumTitle(curr_id));
 	  fprintf(cgiOut, "    </td>\n");
 	  fprintf(cgiOut, "    <td>%s</td>\n", getArtistName(getAlbumArtist(curr_id)));
 	  fprintf(cgiOut, "  </tr>\n");
@@ -235,7 +235,7 @@ static void printSpecificAlbum(int albumid) {
     fprintf(cgiOut, "    <td class=\"describe\">Artist Name: </td>\n");
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "  <tr>\n");
-    fprintf(cgiOut, "    <td class=\"field\">%s&nbsp;<a class=\"small\" href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a></td>\n", getArtistName(artistid), artistid, _currUserLogon_->ID);
+    fprintf(cgiOut, "    <td class=\"field\">%s&nbsp;<a class=\"small\" href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a></td>\n", getArtistName(artistid), artistid, _currUserLogon->ID);
     fprintf(cgiOut, "  </tr>\n");
     fprintf(cgiOut, "</tbody>\n");
     fprintf(cgiOut, "</table>\n");
@@ -244,26 +244,17 @@ static void printSpecificAlbum(int albumid) {
 
     /* is album on loan */
     {
-      Boolean albumOnLoan=FALSE;
+      int currLoan=getAlbumCurrentLoan(albumid);
+      if(currLoan == E_NOLOAN) {
+	fprintf(cgiOut, "Album is on loan to <b>%s</b>\n", getUserCode(getLoanUser(currLoan)));
 
-      /*********************/
-      if(albumid == 4) {
-	albumOnLoan=TRUE;
-      }
-      /*********************/
-
-      if(albumOnLoan) {
-	int loanUserID=20;
-
-	fprintf(cgiOut, "Album is on loan to <b>%s</b>\n", getUserCode(loanUserID));
-
-	if(loanUserID == _currUserLogon_->ID) {
+	if(getLoanUser(currLoan) == _currUserLogon->ID) {
  	  fprintf(cgiOut, "<form method=\"post\" action=\"./\">\n");
 	  fprintf(cgiOut, "  <p>\n");
 	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"delete\" />\n");
 	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"albumid\" value=\"%d\" />\n", albumid);
-	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon_->ID);
+	  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon->ID);
 	  fprintf(cgiOut, "    <input type=\"submit\" value=\"Return Album\" />\n");
 	  fprintf(cgiOut, "  </p>\n");
 	  fprintf(cgiOut, "</form>\n");
@@ -277,7 +268,7 @@ static void printSpecificAlbum(int albumid) {
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"loan\" />\n");
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
 	fprintf(cgiOut, "    <input type=\"hidden\" name=\"albumid\" value=\"%d\" />\n", albumid);
-	fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%d\" />\n", _currUserLogon_->ID);
+	fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%d\" />\n", _currUserLogon->ID);
 	fprintf(cgiOut, "    <input type=\"submit\" value=\"Borrow Album\" />\n");
 	fprintf(cgiOut, "  </p>\n");
 	fprintf(cgiOut, "</form>\n");

@@ -59,7 +59,7 @@ static void doAddArtist(void) {
     if(newartistid != -1) {
       /* Artist added ok */
       fprintf(cgiOut, "Adding successful<br />\n");
-      fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;user=%s\">[View Artist]</a>", newartistid, _currUserLogon_->userCode);
+      fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">[View Artist]</a>", newartistid, _currUserLogon->ID);
     }
     else {
       /* Some sort of failure */
@@ -86,7 +86,7 @@ static void printAddForm(void) {
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"artist\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
   fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
-  fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%s\" />\n", _currUserLogon_->userCode);
+  fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon->ID);
   fprintf(cgiOut, "    </td>\n");
   fprintf(cgiOut, "  </tr>\n");
   fprintf(cgiOut, "  <tr>\n");
@@ -174,7 +174,7 @@ static void printAllArtists(void) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	  fprintf(cgiOut, "  <tr>\n");
 	  fprintf(cgiOut, "    <td>");
-	  fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon_->ID, getArtistName(curr_id));
+	  fprintf(cgiOut, "<a href=\"./?page=artist&amp;artistid=%d&amp;hash=%d\">%s</a>", curr_id, _currUserLogon->ID, getArtistName(curr_id));
 	  fprintf(cgiOut, "    </td>\n");
 	  fprintf(cgiOut, "    <td>%d</td>\n", 34);
 	  fprintf(cgiOut, "  </tr>\n");

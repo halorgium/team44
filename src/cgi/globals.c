@@ -24,5 +24,5 @@ void echoFile(FILE *input, FILE *output) {
 }
 
 void printLink(const char *href, const char *title, FILE *output) {
-    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;hash=%d\">%s</a></td>\n  </tr>\n", href, _currUserLogon_->ID, title);
+    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"%s&amp;hash=%d\">%s</a></td>\n  </tr>\n", href, _currUserLogon->ID, title);
 }

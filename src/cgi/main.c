@@ -26,10 +26,9 @@ int cgiMain() {
     printHeader();
 
     /* Do the real work */
-    theRealWork();
+     theRealWork();
     
     /* Start outputting the footer */
-    
     printFooter();
 
     return 0;
@@ -38,7 +37,6 @@ int cgiMain() {
 void theRealWork(void) {
     int result=0;
 
-    Boolean links=TRUE;
     char pageName[MAXSIZE_PAGENAME]={'\0'};
 
     int userHash=0;
@@ -49,11 +47,13 @@ void theRealWork(void) {
     result=loadDatabase();
     if(result != DB_LOAD_SUCCESS) {
 	/* some problem with loading */
-	fprintf(cgiOut, "<td>Some problem</td>\n");
+	fprintf(cgiOut, "<td>Some DB Load problem</td>\n");
 /* 	errorPage(HTML_ERR_DB); */
 	return;
     }
     
+    _currUserLogon =NULL;
+
     result = cgiFormInteger("hash", &userHash, -1);
     if(result != cgiFormSuccess || userHash == -1) {
 	/* No hash */
@@ -66,7 +66,6 @@ void theRealWork(void) {
 	    /* No attempt */
 	    /* Display login */
 	    strcpy(pageName, "login");
-	    links=FALSE;
 	}
 	else {
 	    /* Hey someone is trying to login */
@@ -77,20 +76,19 @@ void theRealWork(void) {
 	    if(result != cgiFormSuccess) {
 		/* Unsuccessful */
 		/* Display login */
+	      fprintf(cgiOut, "<td>bad login</td>\n");
 		strcpy(pageName, "login");
-		links=FALSE;
 	    }
 	    else {
 		/* Now check user */
-		_currUserLogon_=getUser(makeUserID(userCode));
-		if(_currUserLogon_ == NULL) {
+		_currUserLogon=getUser(makeUserID(userCode));
+		if(_currUserLogon == NULL) {
 		    /* No such user */
+		  fprintf(cgiOut, "<td>No such user</td>\n");
 		    strcpy(pageName, "login");
-		    links=FALSE;
 		}
 		else {
 		    strcpy(pageName, "home");
-		    links=TRUE;
 		}
 	    }
 	}
@@ -98,13 +96,15 @@ void theRealWork(void) {
     else {
         /* Check & get user */
 	/* Make sure logged in */
-	if(isUserInDatabase(userHash) == FALSE) {
+      _currUserLogon=getUser(userHash);
+
+	if(_currUserLogon == NULL) {
 	    /* UserHash invalid */
+	  fprintf(cgiOut, "<td>Bad hash : [%d]</td>\n", userHash);
 	    strcpy(pageName, "login");
-	    links=FALSE;
 	}
 	else {
-	    _currUserLogon_=getUser(userHash);
+	    _currUserLogon=getUser(userHash);
 	    
 	    result = cgiFormStringNoNewlines("page", pageName, MAXSIZE_PAGENAME);
 	    if(result != cgiFormSuccess) {
@@ -114,13 +114,12 @@ void theRealWork(void) {
 	    if(strncmp(pageName, "logout", MAXSIZE_PAGENAME) == 0) {
 		/* Set user to be inactive in mem on DB */
 		strcpy(pageName, "login");
-		links=FALSE;
 	    }
 	}
     }
 
     /* If links are neccessary print them */
-    if(links) {
+    if(_currUserLogon != NULL) {
 	FILE *linksStart;
 	FILE *linksEnd;
 
@@ -133,10 +132,10 @@ void theRealWork(void) {
 	echoFile(linksStart, cgiOut);
 	fclose(linksStart);
 
-	fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as <b>%s</b></td>\n  </tr>\n", _currUserLogon_->userCode);
+	fprintf(cgiOut, "  <tr>\n    <td class=\"username\">You are logged on as <b>%s</b></td>\n  </tr>\n", _currUserLogon->userCode);
 	fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
 	
-	if(_currUserLogon_->isLibrarian) {
+	if(_currUserLogon->isLibrarian) {
 	    FILE *thelinks;
 	    
 	    thelinks=fopen(HTML_SRC_ROOT"/.shared/links_lib.info", "r");

@@ -58,7 +58,7 @@ static void doAddLoan(void) {
 	if(newalbumid != -1) {
 	    /* Album added ok */
 	    fprintf(cgiOut, "Adding successful\n");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&user=%d\">[View Album]</a>", newalbumid, _currUserLogon_->ID);
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&hash=%d\">[View Album]</a>", newalbumid, _currUserLogon->ID);
 	}
 	else {
 	    /* Some sort of failure */
@@ -91,7 +91,7 @@ static void printAddForm(void) {
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"page\" value=\"album\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"func\" value=\"add\" />\n");
     fprintf(cgiOut, "    <input type=\"hidden\" name=\"adding\" value=\"%d\" />\n", TRUE);
-    fprintf(cgiOut, "    <input type=\"hidden\" name=\"user\" value=\"%d\" />\n", _currUserLogon_->ID);
+    fprintf(cgiOut, "    <input type=\"hidden\" name=\"hash\" value=\"%d\" />\n", _currUserLogon->ID);
     fprintf(cgiOut, "<tbody>\n");
     fprintf(cgiOut, "  <tr>\n");
     fprintf(cgiOut, "    <td class=\"describe\"><label for=\"title\" title=\"Album Title\">Album Title: </label></td>\n");
@@ -135,7 +135,7 @@ static void doViewLoan(void) {
     if(result != cgiFormSuccess || userid == -1) {
 	/* Some sort of failure */
 	/* Default to view for currUser */
-	userid=_currUserLogon_->ID;
+	userid=_currUserLogon->ID;
     }
 
     printAllLoansByUser(userid);
@@ -146,7 +146,7 @@ static void printAllLoansByUser(int userid) {
     int curr_id=0;
     int count=0;
 
-    fprintf(cgiOut, "<div class=\"head1\">Viewing All Loans for <b>%s</b></div>", _currUserLogon_->userCode);
+    fprintf(cgiOut, "<div class=\"head1\">Viewing All Loans for <b>%s</b></div>", _currUserLogon->userCode);
 
     allLoans=getLoansByUser(userid);
 
@@ -177,7 +177,7 @@ static void printAllLoansByUser(int userid) {
         while (curr_id != LAST_ID_IN_ARRAY) {
 	    fprintf(cgiOut, "  <tr>\n");
 	    fprintf(cgiOut, "    <td>");
-	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;user=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon_->ID, getAlbumTitle(getAlbumCurrentLoan(curr_id)));
+	    fprintf(cgiOut, "<a href=\"./?page=album&amp;albumid=%d&amp;hash=%d\">%s</a>", getLoanAlbum(curr_id), _currUserLogon->ID, getAlbumTitle(getAlbumCurrentLoan(curr_id)));
 	    fprintf(cgiOut, "    </td>\n");
 	    if(getLoanStatus(curr_id) == LOAN_ACTIVE) {
 		fprintf(cgiOut, "    <td>On Loan</td>\n");
