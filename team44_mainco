@@ -1,9 +1,11 @@
 #!/bin/sh
 
-# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.3 2003/05/08 21:38:12 tsm20 Exp $
+# $Header: /Users/tim/tmp/keep/uni_2004/to_keep/team44cvs/casestudy/Attic/team44_mainco,v 1.4 2003/05/09 00:06:11 tsm20 Exp $
 
-cd /home/cosc/student/tsm20/team44clean/casestudy/
-rm -fr /home/cosc/student/tsm20/team44clean/casestudy/*
+cd /home/cosc/student/tsm20/team44clean/
+rm -fr casestudy
+mkdir casestudy
+
 cvs -d /home/cosc/student/tsm20/team44cvs/ export -r HEAD -d /home/cosc/student/tsm20/team44clean/casestudy/ casestudy
 
 echo "----------------------------------"
@@ -17,3 +19,6 @@ echo "web - Add execute perm for other (all dirs and scripts under)"
 chmod o+X `find /home/cosc/student/tsm20/team44clean/casestudy/web`
 echo "web - Add read perm for other (all files under)"
 chmod o+r `find /home/cosc/student/tsm20/team44clean/casestudy/web -type f`
+echo "web - Add read perm for other (.htpasswd)"
+chmod o+r /home/cosc/student/tsm20/team44clean/casestudy/.htpasswd
+
