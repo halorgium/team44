@@ -118,9 +118,6 @@ static void theRealWork(void) {
 	if(strncmp(pageName, "login", MAXSIZE_PAGENAME) == 0) {
 	    printLogin();
 	}
-	else if(strncmp(pageName, "news", MAXSIZE_PAGENAME) == 0) {
-	    printNews();
-	}
 	else if(strncmp(pageName, "contact", MAXSIZE_PAGENAME) == 0) {
 	    printContact();
 	}
@@ -166,7 +163,6 @@ static void printLinks(FILE *output) {
     fprintf(cgiOut, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");
 
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?hash=%d\">Home</a></td>\n  </tr>\n", _currUserLogon);
-    fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=news&amp;hash=%d\">News</a></td>\n  </tr>\n", _currUserLogon);
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=contact&amp;hash=%d\">Contact&nbsp;Us</a></td>\n  </tr>\n", _currUserLogon);
     fprintf(output, "  <tr>\n    <td class=\"link\"><a class=\"buttonref\" href=\"./?page=logout\">Logout</a></td>\n  </tr>\n");
     fprintf(output, "  <tr>\n    <td class=\"spacer\">&nbsp;</td>\n  </tr>\n");

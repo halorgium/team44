@@ -13,7 +13,6 @@ void printTime(long ctime, FILE *output);
 
 void printLogin(void);
 void printHome(void);
-void printNews(void);
 void printContact(void);
 void printUser(void);
 void printArtist(void);
