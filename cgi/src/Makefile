@@ -21,7 +21,7 @@ install:
 	rm -fr ../../testweb
 	cp -r ../html ../../testweb
 	cp ../bin/* ../../testweb
-	chmod -R g+rX ../../testweb
+	chmod g+rX ../../testweb
 
 clean:
 	rm -f *.o *.a ../bin/cgictest ../bin/capture
